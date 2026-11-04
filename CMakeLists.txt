@@ -19,6 +19,7 @@ include(cmake/Documentation.cmake)
 
 # Source files
 add_executable(ft_newton
+    src/common/Logger.cpp
     src/main.cpp
 )
 
