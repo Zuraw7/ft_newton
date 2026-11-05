@@ -2,6 +2,10 @@
 
 #include "graphics/Context.hpp"
 
+#include <GLFW/glfw3.h>
+
+#include <memory>
+
 #include "common/Logger.hpp"
 
 namespace
@@ -14,49 +18,59 @@ namespace newton::graphics
 {
 	common::Logger &Context::m_logger = common::Logger::getInstance();
 
-	GLFWwindow *Context::m_window = nullptr;
-	double Context::m_lastFrameTime = 0.0;
-	double Context::m_deltaTime = 0.0;
-
-	double Context::m_fpsLastTime = 0.0;
-	int Context::m_frameCount = 0;
-	int Context::m_currentFPS = 0;
-	double Context::m_avgFPS = 0.0;
-
 	/**
 	 * @brief Creates the window and loads OpenGL.
 	 *
-	 * On failure everything created so far is released, so @ref cleanup() must not be called.
+	 * On failure everything created so far is released.
 	 *
 	 * @param width Window width in screen coordinates.
 	 * @param height Window height in screen coordinates.
 	 * @param title Window title.
-	 * @return True on success.
+	 * @return The context, or nullptr on failure.
 	 */
-	bool Context::setup(const int width, const int height, const char *title)
+	std::unique_ptr<Context> Context::create(const int width, const int height, const char *title)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing graphics context\n", cClassName);
 
-		if (!setupGLFW(width, height, title))
-			return false;
+		GLFWwindow *window = setupGLFW(width, height, title);
+		if (!window)
+			return nullptr;
+
 		if (!setupGLAD()) {
-			cleanupGLFW();
-			return false;
+			glfwDestroyWindow(window);
+			glfwTerminate();
+			return nullptr;
 		}
+
+		auto context = std::unique_ptr<Context>(new Context(window));
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context initialized successfully\n", cClassName);
 
-		return true;
+		return context;
 	}
 
 	/**
-	 * @brief Destroys the window and terminates GLFW. Call only after a successful @ref setup().
+	 * @brief Takes ownership of an already created window. Called by @ref create().
 	 */
-	void Context::cleanup()
+	Context::Context(GLFWwindow *window)
+		: m_window(window)
+		, m_lastFrameTime(0.0)
+		, m_deltaTime(0.0)
+		, m_frameCount(0)
+		, m_fpsLastTime(0.0)
+		, m_currentFPS(0)
+		, m_avgFPS(0.0)
+	{}
+
+	/**
+	 * @brief Destroys the window and terminates GLFW.
+	 */
+	Context::~Context()
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Cleaning up graphics context\n", cClassName);
 
-		cleanupGLFW();
+		glfwDestroyWindow(m_window);
+		glfwTerminate();
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context cleaned up successfully\n", cClassName);
 	}
@@ -125,26 +139,17 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Updates the smoothed FPS with an exponential moving average.
-	 */
-	void Context::calculateAvgFPS()
-	{
-		double currentFPS = 1.0 / m_deltaTime;
-		m_avgFPS = 0.9 * m_avgFPS + 0.1 * currentFPS;
-	}
-
-	/**
 	 * @brief Initializes GLFW and creates the window with its OpenGL context.
 	 *
 	 * Terminates GLFW itself if the window cannot be created.
 	 *
-	 * @return True on success.
+	 * @return The created window, or nullptr on failure.
 	 */
-	bool Context::setupGLFW(const int width, const int height, const char *title)
+	GLFWwindow *Context::setupGLFW(const int width, const int height, const char *title)
 	{
 		if (!glfwInit()) {
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialize GLFW\n", cClassName);
-			return false;
+			return nullptr;
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -152,30 +157,22 @@ namespace newton::graphics
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
-		m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-		if (!m_window) {
+		GLFWwindow *window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+		if (!window) {
 			glfwTerminate();
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to create GLFW window\n", cClassName);
-			return false;
+			return nullptr;
 		}
 
-		glfwMakeContextCurrent(m_window);
+		glfwMakeContextCurrent(window);
 
-		glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
+		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-		glfwSetWindowAspectRatio(m_window, 16, 9);
+		glfwSetWindowAspectRatio(window, 16, 9);
 
 		glfwSwapInterval(0);
-		return true;
-	}
 
-	/**
-	 * @brief Destroys the window and terminates GLFW.
-	 */
-	void Context::cleanupGLFW()
-	{
-		glfwDestroyWindow(m_window);
-		glfwTerminate();
+		return window;
 	}
 
 	/**
@@ -237,6 +234,15 @@ namespace newton::graphics
 			m_frameCount = 0;
 			m_fpsLastTime = currentTime;
 		}
+	}
+
+	/**
+	 * @brief Updates the smoothed FPS with an exponential moving average.
+	 */
+	void Context::calculateAvgFPS()
+	{
+		double currentFPS = 1.0 / m_deltaTime;
+		m_avgFPS = 0.9 * m_avgFPS + 0.1 * currentFPS;
 	}
 
 } // namespace newton::graphics

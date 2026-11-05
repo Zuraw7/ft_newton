@@ -8,7 +8,7 @@ namespace newton::graphics
 	/**
 	 * @brief Owns the drawing state of a frame.
 	 *
-	 * Methods call OpenGL directly, so they can be used only after a successful @ref Context::setup().
+	 * Methods call OpenGL directly, so they can be used only after a successful @ref Context::create().
 	 */
 	class Renderer
 	{

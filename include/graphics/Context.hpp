@@ -3,55 +3,61 @@
 
 #include <GLFW/glfw3.h>
 
+#include <memory>
+
 #include "common/Logger.hpp"
 
 namespace newton::graphics
 {
 	/**
-	 * @brief Static owner of the window, the OpenGL context and frame timing.
+	 * @brief Owner of the window, the OpenGL context and frame timing.
 	 *
-	 * Creates an OpenGL context. The window keeps a 16:9 aspect ratio. @ref setup()
-	 * must succeed before any other call.
+	 * Created only through @ref create(), so an existing object always has a valid window.
+	 * Only one instance may exist at a time, because the destructor terminates GLFW.
+	 * The window keeps a 16:9 aspect ratio.
 	 */
 	class Context
 	{
 		public:
-			Context() = delete;
+			static std::unique_ptr<Context> create(int width, int height, const char *title);
+			~Context();
 
-			static bool setup(int width, int height, const char *title);
-			static void cleanup();
-			static bool shouldClose();
-			static void requestClose();
-			static void update();
-			static void pollEvents();
-			static void swapBuffers();
-			static GLFWwindow *window();
+			Context(const Context &) = delete;
+			Context &operator=(const Context &) = delete;
 
-			static double deltaTime();
-			[[deprecated("Use avgFPS() for more stable, smoothed value.")]] static int FPS();
-			static double avgFPS();
+			bool shouldClose();
+			void requestClose();
+			void update();
+			void pollEvents();
+			void swapBuffers();
+			GLFWwindow *window();
+
+			double deltaTime();
+			[[deprecated("Use avgFPS() for more stable, smoothed value.")]] int FPS();
+			double avgFPS();
 
 		private:
-			static bool setupGLFW(int width, int height, const char *title);
-			static void cleanupGLFW();
-			static bool setupGLAD();
+			explicit Context(GLFWwindow *window);
 
+			static GLFWwindow *setupGLFW(int width, int height, const char *title);
+			static bool setupGLAD();
 			static void framebufferSizeCallback(GLFWwindow *window, const int width, const int height);
 
-			static void calculateDelta();
-			static void calculateFPS();
-			static void calculateAvgFPS();
+			void calculateDelta();
+			void calculateFPS();
+			void calculateAvgFPS();
 
 			static common::Logger &m_logger;
 
-			static GLFWwindow *m_window;   ///< Null until @ref setup() succeeds.
-			static double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
-			static double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
+			GLFWwindow *m_window;
 
-			static int m_frameCount;     ///< Frames counted in the current one-second window.
-			static double m_fpsLastTime; ///< GLFW time when the current one-second window started.
-			static int m_currentFPS;     ///< Frames counted in the last full second.
-			static double m_avgFPS;      ///< Smoothed FPS.
+			double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
+			double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
+
+			int m_frameCount;     ///< Frames counted in the current one-second window.
+			double m_fpsLastTime; ///< GLFW time when the current one-second window started.
+			int m_currentFPS;     ///< Frames counted in the last full second.
+			double m_avgFPS;      ///< Smoothed FPS.
 	};
 
 } // namespace newton::graphics
