@@ -16,6 +16,8 @@ namespace newton::graphics
 			static void cleanup();
 			static bool shouldClose();
 			static void update();
+			static void pollEvents();
+			static void swapBuffers();
 			static GLFWwindow *window();
 
 			static double deltaTime();

@@ -3,7 +3,6 @@
 #include "../../include/graphics/Context.hpp"
 
 #include "../../include/common/Logger.hpp"
-#include "../../include/input/InputManager.hpp"
 
 namespace
 {
@@ -55,11 +54,15 @@ namespace newton::graphics
 		calculateDelta();
 		calculateFPS();
 		calculateAvgFPS();
+	}
 
+	void Context::pollEvents()
+	{
 		glfwPollEvents();
+	}
 
-		input::InputManager::processInput(m_window);
-
+	void Context::swapBuffers()
+	{
 		glfwSwapBuffers(m_window);
 	}
 
