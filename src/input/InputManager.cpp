@@ -239,7 +239,7 @@ namespace newton::input
 	}
 
 	/**
-	 * @return Horizontal cursor movement since the last update(), positive to the right.
+	 * @return Horizontal cursor movement since the last @ref update(), positive to the right.
 	 */
 	double InputManager::getMouseOffsetX()
 	{
@@ -247,7 +247,7 @@ namespace newton::input
 	}
 
 	/**
-	 * @return Vertical cursor movement since the last update(), positive downwards (screen coordinates).
+	 * @return Vertical cursor movement since the last @ref update(), positive downwards (screen coordinates).
 	 */
 	double InputManager::getMouseOffsetY()
 	{
@@ -255,7 +255,7 @@ namespace newton::input
 	}
 
 	/**
-	 * @return Vertical scroll since the last update(), positive when scrolling up.
+	 * @return Vertical scroll since the last @ref update(), positive when scrolling up.
 	 */
 	double InputManager::getScrollOffsetY()
 	{

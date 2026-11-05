@@ -43,7 +43,7 @@ namespace newton::controllers
 	/**
 	 * @brief Applies this frame's input to the bound camera.
 	 *
-	 * Must be called after events are polled and before InputManager::update(),
+	 * Must be called after events are polled and before @ref input::InputManager::update(),
 	 * which resets the per-frame input state (mouse offsets, pressed keys).
 	 *
 	 * @param deltaTime Time since the last frame, in seconds. Scales movement only;

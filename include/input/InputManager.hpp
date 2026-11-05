@@ -14,8 +14,8 @@ namespace newton::input
 	 *
 	 * Per-frame contract:
 	 * 1. GLFW callbacks update the current state during event polling.
-	 * 2. Game code queries the state (isKeyPressed(), getMouseOffsetX(), ...).
-	 * 3. update() ends the input frame - must be called after all queries.
+	 * 2. Game code queries the state (@ref isKeyPressed(), @ref getMouseOffsetX(), ...).
+	 * 3. @ref update() ends the input frame - must be called after all queries.
 	 *
 	 * Pressed and released are true only in the single frame the state changed,
 	 * held is true in every frame while the key or button is down.
@@ -69,9 +69,9 @@ namespace newton::input
 			static double m_mouseLastX;    ///< Cursor X from the last cursor event.
 			static double m_mouseLastY;    ///< Cursor Y from the last cursor event.
 			static bool m_firstMouse;      ///< True until the first cursor event, prevents a jump from (0, 0).
-			static double m_mouseOffsetX;  ///< Cursor X movement accumulated since the last update().
-			static double m_mouseOffsetY;  ///< Cursor Y movement accumulated since the last update().
-			static double m_scrollOffsetY; ///< Vertical scroll accumulated since the last update().
+			static double m_mouseOffsetX;  ///< Cursor X movement accumulated since the last @ref update().
+			static double m_mouseOffsetY;  ///< Cursor Y movement accumulated since the last @ref update().
+			static double m_scrollOffsetY; ///< Vertical scroll accumulated since the last @ref update().
 	};
 
 } // namespace newton::input

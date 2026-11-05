@@ -23,7 +23,7 @@ namespace newton::graphics
 	};
 
 	/**
-	 * @brief Free-flying perspective camera controlled by yaw and pitch.
+	 * @brief Free-flying perspective camera controlled by @ref m_yaw and @ref m_pitch.
 	 *
 	 * Orientation is stored as yaw and pitch angles, from which the direction,
 	 * right and up vectors are derived. Provides view and projection matrices for rendering.
@@ -59,15 +59,15 @@ namespace newton::graphics
 
 			// Vectors
 			glm::vec3 m_camPosition;
-			[[maybe_unused]] glm::vec3 m_targetPos; ///< Initial direction comes from yaw and pitch.
+			[[maybe_unused]] glm::vec3 m_targetPos; ///< Initial direction comes from @ref m_yaw and @ref m_pitch.
 			glm::vec3 m_worldUp; ///< World up axis, used for vertical movement and to build the camera axes.
 
-			glm::vec3 m_camDirection; ///< Normalized forward vector, derived from yaw and pitch.
-			glm::vec3 m_camRight;     ///< Normalized right vector, derived from yaw and pitch.
-			glm::vec3 m_camUp;        ///< Normalized up vector, derived from yaw and pitch.
+			glm::vec3 m_camDirection; ///< Normalized forward vector, derived from @ref m_yaw and @ref m_pitch.
+			glm::vec3 m_camRight;     ///< Normalized right vector, derived from @ref m_yaw and @ref m_pitch.
+			glm::vec3 m_camUp;        ///< Normalized up vector, derived from @ref m_yaw and @ref m_pitch.
 
 			// Matrices
-			glm::mat4 m_view;       ///< Cached view matrix, refreshed in getCamView().
+			glm::mat4 m_view;       ///< Cached view matrix, refreshed in @ref getCamView().
 			glm::mat4 m_projection; ///< Projection matrix, refreshed on zoom.
 
 			float m_yaw;   ///< Horizontal angle in degrees, -90 looks along -Z.

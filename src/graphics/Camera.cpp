@@ -22,8 +22,8 @@ namespace newton::graphics
 	/**
 	 * @brief Creates a camera looking along -Z.
 	 * @param position Starting position in world space.
-	 * @param target Initial direction comes from the default yaw and pitch.
-	 * @param worldUp World up axis, expected (0, 1, 0). Yaw and pitch assume a Y-up world.
+	 * @param target Initial direction comes from the default @ref m_yaw and @ref m_pitch.
+	 * @param worldUp World up axis, expected (0, 1, 0). @ref m_yaw and @ref m_pitch assume a Y-up world.
 	 *                A zero vector or one parallel to the view direction makes the camera axes NaN.
 	 */
 	Camera::Camera(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &worldUp)
@@ -125,7 +125,7 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Recalculates the direction, right and up vectors from yaw and pitch.
+	 * @brief Recalculates @ref m_camDirection, @ref m_camRight and @ref m_camUp from @ref m_yaw and @ref m_pitch.
 	 */
 	void Camera::updateCameraVectors()
 	{
