@@ -3,6 +3,9 @@
 
 namespace newton::input
 {
+	/**
+	 * @brief Converts a GLFW key code to a readable name for logs. Returns "UNKNOWN" for unmapped codes.
+	 */
 	std::string keyToString(int key)
 	{
 		// 0-9
@@ -93,6 +96,9 @@ namespace newton::input
 		return "UNKNOWN";
 	}
 
+	/**
+	 * @brief Converts a GLFW button code to a readable name for logs. Returns "UNKNOWN" for unmapped codes.
+	 */
 	std::string buttonToString(int button)
 	{
 		switch (button) {
