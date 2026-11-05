@@ -27,7 +27,7 @@ namespace newton::controllers
 		m_camera = &camera;
 	}
 
-	// Must be called after glfwPollEvents and before InputManager::processInput,
+	// Must be called after glfwPollEvents and before InputManager::update,
 	// which resets the per-frame input state
 	void CameraController::update(const double deltaTime)
 	{

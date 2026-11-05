@@ -15,6 +15,7 @@ namespace newton::graphics
 			static bool setup(int width, int height, const char *title);
 			static void cleanup();
 			static bool shouldClose();
+			static void requestClose();
 			static void update();
 			static void pollEvents();
 			static void swapBuffers();

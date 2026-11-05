@@ -6,7 +6,6 @@
 
 namespace newton::input
 {
-	void polygonModeManagement(GLFWwindow *window);
 	std::string keyToString(int key);
 
 } // namespace newton::input

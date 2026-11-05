@@ -28,7 +28,6 @@ namespace newton::graphics
 		, m_pitch(0.0f)
 		, m_speed(20.0f)
 		, m_fov(60.0f)
-		, m_polygonMode(false)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing camera\n", cClassName);
 
@@ -53,11 +52,6 @@ namespace newton::graphics
 	const glm::vec3 &Camera::getPosition() const
 	{
 		return m_camPosition;
-	}
-
-	bool Camera::getPolygonMode() const
-	{
-		return m_polygonMode;
 	}
 
 	void Camera::updateCameraDirection(double dx, double dy)
@@ -105,11 +99,6 @@ namespace newton::graphics
 		m_camDirection = glm::normalize(direction);
 		m_camRight = glm::normalize(glm::cross(m_camDirection, m_worldUp));
 		m_camUp = glm::normalize(glm::cross(m_camRight, m_camDirection));
-	}
-
-	void Camera::switchPolygonMode()
-	{
-		m_polygonMode = !m_polygonMode;
 	}
 
 	void Camera::setCameraPosition(glm::vec3 newPos)

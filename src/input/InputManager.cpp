@@ -41,12 +41,10 @@ namespace newton::input
 		m_logger.printf(common::LogLevel::INFO, "[%s] Input manager initialized successfully\n", cClassName);
 	}
 
-	void InputManager::processInput(GLFWwindow *window)
+	void InputManager::update()
 	{
-		if (isKeyPressed(GLFW_KEY_ESCAPE))
-			glfwSetWindowShouldClose(window, true);
-		polygonModeManagement(window);
-		update();
+		m_previousKey = m_currentKey;
+		resetMouseOffsets();
 	}
 
 	void InputManager::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -138,12 +136,6 @@ namespace newton::input
 	double InputManager::getScrollOffsetY()
 	{
 		return m_scrollOffsetY;
-	}
-
-	void InputManager::update()
-	{
-		m_previousKey = m_currentKey;
-		resetMouseOffsets();
 	}
 
 	void InputManager::resetMouseOffsets()

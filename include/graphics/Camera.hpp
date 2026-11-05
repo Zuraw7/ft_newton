@@ -35,13 +35,10 @@ namespace newton::graphics
 			const glm::mat4 &getCamProjection() const;
 			const glm::vec3 &getPosition() const;
 
-			bool getPolygonMode() const;
-
 			void updateCameraDirection(double dx, double dy);
 			void updateCameraPos(CameraDirection dir, double deltaTime);
 			void updateCameraZoom(double dy);
 			void updateCameraVectors();
-			void switchPolygonMode();
 
 			void setCameraPosition(glm::vec3 newPos);
 
@@ -52,7 +49,7 @@ namespace newton::graphics
 
 			// Vectors
 			glm::vec3 m_camPosition;
-			[[maybe_unused]] glm::vec3 m_targetPos;
+			[[maybe_unused]] glm::vec3 m_targetPos; // maybe_unused is temp and will be used
 			glm::vec3 m_worldUp;
 
 			glm::vec3 m_camDirection;
@@ -67,8 +64,6 @@ namespace newton::graphics
 			float m_pitch;
 			float m_speed;
 			float m_fov;
-
-			bool m_polygonMode;
 	};
 
 } // namespace newton::graphics

@@ -16,7 +16,7 @@ namespace newton::input
 
 			// Management
 			static void init(GLFWwindow *window);
-			static void processInput(GLFWwindow *window);
+			static void update();
 
 			// Callbacks
 			static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -35,7 +35,6 @@ namespace newton::input
 			static double getScrollOffsetY();
 
 		private:
-			static void update();
 			static void resetMouseOffsets();
 
 			static common::Logger &m_logger;

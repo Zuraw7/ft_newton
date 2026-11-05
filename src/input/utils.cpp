@@ -1,21 +1,8 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
-#include "../../include/graphics/Camera.hpp"
-#include "../../include/input/InputManager.hpp"
-
-extern newton::graphics::Camera gCamera;
-
 namespace newton::input
 {
-	void polygonModeManagement(GLFWwindow *window)
-	{
-		(void) window;
-
-		if (InputManager::isKeyPressed(GLFW_KEY_P))
-			gCamera.switchPolygonMode();
-	}
-
 	std::string keyToString(int key)
 	{
 		// 0-9

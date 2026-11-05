@@ -49,6 +49,11 @@ namespace newton::graphics
 		return glfwWindowShouldClose(m_window);
 	}
 
+	void Context::requestClose()
+	{
+		glfwSetWindowShouldClose(m_window, GLFW_TRUE);
+	}
+
 	void Context::update()
 	{
 		calculateDelta();
