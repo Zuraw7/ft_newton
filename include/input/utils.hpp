@@ -1,5 +1,5 @@
-#ifndef INPUTFUNCTIONS_HPP
-#define INPUTFUNCTIONS_HPP
+#ifndef INPUT_UTILS_HPP
+#define INPUT_UTILS_HPP
 
 #include <GLFW/glfw3.h>
 #include <string>
@@ -11,4 +11,4 @@ namespace newton::input
 
 } // namespace newton::input
 
-#endif // INPUTFUNCTIONS_HPP
+#endif // INPUT_UTILS_HPP

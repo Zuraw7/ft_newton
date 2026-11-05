@@ -4,7 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-#include "../common/Logger.hpp"
+#include "common/Logger.hpp"
 
 namespace newton::graphics
 {

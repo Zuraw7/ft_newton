@@ -1,10 +1,10 @@
-#include "../../include/input/InputManager.hpp"
+#include "input/InputManager.hpp"
 
 #include <GLFW/glfw3.h>
 #include <cstddef>
 
-#include "../../include/common/Logger.hpp"
-#include "../../include/input/utils.hpp"
+#include "common/Logger.hpp"
+#include "input/utils.hpp"
 
 namespace
 {

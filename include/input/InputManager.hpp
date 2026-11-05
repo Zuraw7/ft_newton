@@ -5,7 +5,7 @@
 
 #include <array>
 
-#include "../../include/common/Logger.hpp"
+#include "common/Logger.hpp"
 
 namespace newton::input
 {

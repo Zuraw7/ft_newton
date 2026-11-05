@@ -1,12 +1,12 @@
 #include <GLFW/glfw3.h>
 
-#include "../include/common/Logger.hpp"
-#include "../include/controllers/CameraController.hpp"
-#include "../include/graphics/Camera.hpp"
-#include "../include/graphics/Context.hpp"
-#include "../include/graphics/Renderer.hpp"
-#include "../include/graphics/resolution.hpp"
-#include "../include/input/InputManager.hpp"
+#include "common/Logger.hpp"
+#include "controllers/CameraController.hpp"
+#include "graphics/Camera.hpp"
+#include "graphics/Context.hpp"
+#include "graphics/Renderer.hpp"
+#include "graphics/Resolution.hpp"
+#include "input/InputManager.hpp"
 
 using namespace newton;
 

@@ -1,8 +1,8 @@
-#include "../../include/controllers/CameraController.hpp"
+#include "controllers/CameraController.hpp"
 
-#include "../../include/common/Logger.hpp"
-#include "../../include/graphics/Camera.hpp"
-#include "../../include/input/InputManager.hpp"
+#include "common/Logger.hpp"
+#include "graphics/Camera.hpp"
+#include "input/InputManager.hpp"
 
 namespace
 {

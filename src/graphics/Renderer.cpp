@@ -1,8 +1,8 @@
-#include "../../include/graphics/Renderer.hpp"
+#include "graphics/Renderer.hpp"
 
 #include <glad/gl.h>
 
-#include "../../include/common/Logger.hpp"
+#include "common/Logger.hpp"
 
 namespace
 {

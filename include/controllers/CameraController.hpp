@@ -1,8 +1,8 @@
 #ifndef CONTROLLERS_CAMERA_CONTROLLER_HPP
 #define CONTROLLERS_CAMERA_CONTROLLER_HPP
 
-#include "../common/Logger.hpp"
-#include "../graphics/Camera.hpp"
+#include "common/Logger.hpp"
+#include "graphics/Camera.hpp"
 
 namespace newton::controllers
 {

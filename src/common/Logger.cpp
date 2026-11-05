@@ -1,4 +1,4 @@
-#include "../include/common/Logger.hpp"
+#include "common/Logger.hpp"
 
 #include <cstdarg>
 #include <cstdio>

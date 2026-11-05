@@ -1,5 +1,5 @@
-#ifndef COMMON_LOGGER_H
-#define COMMON_LOGGER_H
+#ifndef COMMON_LOGGER_HPP
+#define COMMON_LOGGER_HPP
 
 #include <cstdio>
 #include <memory>
@@ -54,4 +54,4 @@ namespace newton::common
 
 } // namespace newton::common
 
-#endif // COMMON_LOGGER_H
+#endif // COMMON_LOGGER_HPP

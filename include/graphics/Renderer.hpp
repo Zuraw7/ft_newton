@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_RENDERER_HPP
 #define GRAPHICS_RENDERER_HPP
 
-#include "../common/Logger.hpp"
+#include "common/Logger.hpp"
 
 namespace newton::graphics
 {

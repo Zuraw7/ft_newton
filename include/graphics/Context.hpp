@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "../common/Logger.hpp"
+#include "common/Logger.hpp"
 
 namespace newton::graphics
 {

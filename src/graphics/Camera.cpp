@@ -1,12 +1,12 @@
-#include "../../include/graphics/Camera.hpp"
+#include "graphics/Camera.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-#include "../../include/common/Logger.hpp"
-#include "../../include/graphics/resolution.hpp"
+#include "common/Logger.hpp"
+#include "graphics/Resolution.hpp"
 
 namespace
 {
