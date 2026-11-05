@@ -19,7 +19,7 @@ int main()
 	logger.setLogLevel(common::LogLevel::DEBUG);
 
 	// Setup
-	Resolution res = FHD;
+	graphics::Resolution res = graphics::FHD;
 
 	if (!graphics::Context::setup(res.width, res.height, "ft_newton"))
 		return -1;

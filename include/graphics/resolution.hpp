@@ -1,28 +1,32 @@
 #ifndef GRAPHICS_RESOLUTION_HPP
 #define GRAPHICS_RESOLUTION_HPP
 
-/**
- * @brief Window size preset.
- *
- * All presets are 16:9, matching @ref aspect. The same ratio is forced on the window
- * and used by the camera projection.
- */
-struct Resolution
+namespace newton::graphics
 {
-		int width;
-		int height;
-		constexpr static float aspect = 16.0f / 9.0f;
+	/**
+	 * @brief Window size preset.
+	 *
+	 * All presets are 16:9, matching @ref aspect. The same ratio is forced on the window
+	 * and used by the camera projection.
+	 */
+	struct Resolution
+	{
+			int width;
+			int height;
+			constexpr static float aspect = 16.0f / 9.0f;
 
-		Resolution(const int w, const int h)
-			: width(w)
-			, height(h)
-		{}
-};
+			constexpr Resolution(const int w, const int h)
+				: width(w)
+				, height(h)
+			{}
+	};
 
-extern Resolution qHD; ///< 960x540
-extern Resolution HD;  ///< 1280x720
-extern Resolution HDP; ///< 1600x900
-extern Resolution FHD; ///< 1920x1080
-extern Resolution QHD; ///< 2560x1440
+	inline constexpr Resolution qHD(960, 540);
+	inline constexpr Resolution HD(1280, 720);
+	inline constexpr Resolution HDP(1600, 900);
+	inline constexpr Resolution FHD(1920, 1080);
+	inline constexpr Resolution QHD(2560, 1440);
+
+} // namespace newton::graphics
 
 #endif // GRAPHICS_RESOLUTION_HPP
