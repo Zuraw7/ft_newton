@@ -85,8 +85,8 @@ namespace newton::input
 			m_firstMouse = false;
 		}
 
-		m_mouseOffsetX = xpos - m_mouseLastX;
-		m_mouseOffsetY = ypos - m_mouseLastY;
+		m_mouseOffsetX += xpos - m_mouseLastX;
+		m_mouseOffsetY += ypos - m_mouseLastY;
 
 		m_mouseLastX = xpos;
 		m_mouseLastY = ypos;
@@ -97,7 +97,7 @@ namespace newton::input
 		(void) window;
 		(void) xoffset;
 
-		m_scrollOffsetY = yoffset;
+		m_scrollOffsetY += yoffset;
 	}
 
 	bool InputManager::isKeyPressed(int key)
