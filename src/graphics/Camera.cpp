@@ -27,7 +27,7 @@ namespace newton::graphics
 		, m_yaw(-90.0f)
 		, m_pitch(0.0f)
 		, m_speed(20.0f)
-		, m_fov(80.0f)
+		, m_fov(60.0f)
 		, m_polygonMode(false)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing camera\n", cClassName);
@@ -90,7 +90,7 @@ namespace newton::graphics
 	void Camera::updateCameraZoom(double dy)
 	{
 		m_fov -= static_cast<float>(dy);
-		m_fov = std::clamp(m_fov, 1.0f, 45.0f);
+		m_fov = std::clamp(m_fov, 20.0f, 90.0f);
 
 		m_projection = glm::perspective(glm::radians(m_fov), Resolution::aspect, NEAR, FAR);
 	}
