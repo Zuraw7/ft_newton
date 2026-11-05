@@ -23,6 +23,16 @@ namespace newton::graphics
 	int Context::m_currentFPS = 0;
 	double Context::m_avgFPS = 0.0;
 
+	/**
+	 * @brief Creates the window and loads OpenGL.
+	 *
+	 * On failure everything created so far is released, so @ref cleanup() must not be called.
+	 *
+	 * @param width Window width in screen coordinates.
+	 * @param height Window height in screen coordinates.
+	 * @param title Window title.
+	 * @return True on success.
+	 */
 	bool Context::setup(const int width, const int height, const char *title)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing graphics context\n", cClassName);
@@ -39,6 +49,9 @@ namespace newton::graphics
 		return true;
 	}
 
+	/**
+	 * @brief Destroys the window and terminates GLFW. Call only after a successful @ref setup().
+	 */
 	void Context::cleanup()
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Cleaning up graphics context\n", cClassName);
@@ -53,11 +66,18 @@ namespace newton::graphics
 		return glfwWindowShouldClose(m_window);
 	}
 
+	/**
+	 * @brief Marks the window to close. The current frame still finishes,
+	 * @ref shouldClose() returns true from the next check.
+	 */
 	void Context::requestClose()
 	{
 		glfwSetWindowShouldClose(m_window, GLFW_TRUE);
 	}
 
+	/**
+	 * @brief Updates @ref m_deltaTime, @ref m_currentFPS and @ref m_avgFPS. Call once per frame.
+	 */
 	void Context::update()
 	{
 		calculateDelta();
@@ -65,6 +85,9 @@ namespace newton::graphics
 		calculateAvgFPS();
 	}
 
+	/**
+	 * @brief Processes pending window events, which triggers the input callbacks.
+	 */
 	void Context::pollEvents()
 	{
 		glfwPollEvents();
@@ -80,11 +103,17 @@ namespace newton::graphics
 		return m_window;
 	}
 
+	/**
+	 * @return Time between the last two @ref update() calls, in seconds.
+	 */
 	double Context::deltaTime()
 	{
 		return m_deltaTime;
 	}
 
+	/**
+	 * @return Frames counted in the last full second, refreshed once per second.
+	 */
 	int Context::FPS()
 	{
 		return m_currentFPS;
@@ -95,12 +124,22 @@ namespace newton::graphics
 		return m_avgFPS;
 	}
 
+	/**
+	 * @brief Updates the smoothed FPS with an exponential moving average.
+	 */
 	void Context::calculateAvgFPS()
 	{
 		double currentFPS = 1.0 / m_deltaTime;
 		m_avgFPS = 0.9 * m_avgFPS + 0.1 * currentFPS;
 	}
 
+	/**
+	 * @brief Initializes GLFW and creates the window with its OpenGL context.
+	 *
+	 * Terminates GLFW itself if the window cannot be created.
+	 *
+	 * @return True on success.
+	 */
 	bool Context::setupGLFW(const int width, const int height, const char *title)
 	{
 		if (!glfwInit()) {
@@ -130,12 +169,22 @@ namespace newton::graphics
 		return true;
 	}
 
+	/**
+	 * @brief Destroys the window and terminates GLFW.
+	 */
 	void Context::cleanupGLFW()
 	{
 		glfwDestroyWindow(m_window);
 		glfwTerminate();
 	}
 
+	/**
+	 * @brief Loads OpenGL functions and sets the global render state.
+	 *
+	 * Requires a current OpenGL context, so it must run after @ref setupGLFW().
+	 *
+	 * @return True on success.
+	 */
 	bool Context::setupGLAD()
 	{
 		int version = gladLoadGL(glfwGetProcAddress);
@@ -160,6 +209,9 @@ namespace newton::graphics
 		return true;
 	}
 
+	/**
+	 * @brief GLFW callback, resizes the viewport to the framebuffer.
+	 */
 	void Context::framebufferSizeCallback(GLFWwindow *window, const int width, const int height)
 	{
 		(void) window;
@@ -173,6 +225,9 @@ namespace newton::graphics
 		m_lastFrameTime = currentTime;
 	}
 
+	/**
+	 * @brief Counts frames and stores the count once every full second.
+	 */
 	void Context::calculateFPS()
 	{
 		m_frameCount++;

@@ -7,6 +7,12 @@
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Static owner of the window, the OpenGL context and frame timing.
+	 *
+	 * Creates an OpenGL context. The window keeps a 16:9 aspect ratio. @ref setup()
+	 * must succeed before any other call.
+	 */
 	class Context
 	{
 		public:
@@ -38,14 +44,14 @@ namespace newton::graphics
 
 			static common::Logger &m_logger;
 
-			static GLFWwindow *m_window;
-			static double m_lastFrameTime;
-			static double m_deltaTime;
+			static GLFWwindow *m_window;   ///< Null until @ref setup() succeeds.
+			static double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
+			static double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
 
-			static int m_frameCount;
-			static double m_fpsLastTime;
-			static int m_currentFPS;
-			static double m_avgFPS;
+			static int m_frameCount;     ///< Frames counted in the current one-second window.
+			static double m_fpsLastTime; ///< GLFW time when the current one-second window started.
+			static int m_currentFPS;     ///< Frames counted in the last full second.
+			static double m_avgFPS;      ///< Smoothed FPS.
 	};
 
 } // namespace newton::graphics
