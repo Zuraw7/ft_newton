@@ -28,6 +28,7 @@ int main()
 	graphics::Camera mainCamera({0, 0, 0}, {0, 0, 0}, {0, 0, 0});
 	controllers::CameraController cameraController(mainCamera);
 
+	renderer.setBackgroundColor(0.07f, 0.11f, 0.18f, 1.0f);
 	// Game loop
 	while (graphics::Context::shouldClose() == false) {
 		graphics::Context::pollEvents();
@@ -40,6 +41,7 @@ int main()
 
 		input::InputManager::update();
 
+		renderer.clear();
 		graphics::Context::swapBuffers();
 	}
 
