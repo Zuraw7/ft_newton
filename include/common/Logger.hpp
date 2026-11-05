@@ -7,6 +7,9 @@
 
 namespace newton::common
 {
+	/**
+	 * @brief Message severity, ordered from the most verbose.
+	 */
 	enum class LogLevel {
 		DEBUG,
 		INFO,
@@ -15,6 +18,13 @@ namespace newton::common
 		DISABLED
 	};
 
+	/**
+	 * @brief Thread-safe printf-style logger with severity filtering.
+	 *
+	 * Each message gets a "[LEVEL] " prefix, the newline must be part of the message if needed.
+	 * Use @ref getInstance() for the shared logger, or @ref createInstance() for a separate one.
+	 * The default level is WARN, so DEBUG and INFO messages are hidden until @ref setLogLevel() is called.
+	 */
 	class Logger
 	{
 		public:
@@ -38,8 +48,8 @@ namespace newton::common
 				__attribute__((format(printf, 4, 0)));
 			const char *levelToString(LogLevel level);
 
-			LogLevel m_level = LogLevel::WARN;
-			std::mutex m_mutex;
+			LogLevel m_level = LogLevel::WARN; ///< Messages below this level are skipped.
+			std::mutex m_mutex;                ///< Guards @ref m_level and writes.
 	};
 
 } // namespace newton::common

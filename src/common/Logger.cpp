@@ -11,12 +11,20 @@ namespace newton::common
 		: m_level(level)
 	{}
 
+	/**
+	 * @brief Returns the shared logger, created on first use with the WARN level.
+	 */
 	Logger &Logger::getInstance()
 	{
 		static Logger instance;
 		return instance;
 	}
 
+	/**
+	 * @brief Creates a logger independent from the shared one.
+	 *
+	 * @param level Initial level.
+	 */
 	std::unique_ptr<Logger> Logger::createInstance(LogLevel level)
 	{
 		return std::unique_ptr<Logger>(new Logger(level));
@@ -28,6 +36,12 @@ namespace newton::common
 		m_level = level;
 	}
 
+	/**
+	 * @brief Logs a formatted message to stdout.
+	 * @param level Message severity.
+	 * @param msg printf-style format string.
+	 * @return Number of characters written, 0 if the message was filtered out, negative on error.
+	 */
 	int Logger::printf(LogLevel level, const char *msg, ...)
 	{
 		va_list args;
@@ -40,6 +54,13 @@ namespace newton::common
 		return result;
 	}
 
+	/**
+	 * @brief Logs a formatted message to the given stream.
+	 * @param level Message severity.
+	 * @param stream Output stream, e.g. stderr or an open file.
+	 * @param msg printf-style format string.
+	 * @return Number of characters written, 0 if the message was filtered out, negative on error.
+	 */
 	int Logger::fprintf(LogLevel level, FILE *stream, const char *msg, ...)
 	{
 		va_list args;
@@ -52,6 +73,9 @@ namespace newton::common
 		return result;
 	}
 
+	/**
+	 * @brief Filters by level and writes the prefix and the message under one lock.
+	 */
 	int Logger::vfprintf(LogLevel level, FILE *stream, const char *msg, va_list args)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
