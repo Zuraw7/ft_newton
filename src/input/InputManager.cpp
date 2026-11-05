@@ -28,6 +28,13 @@ namespace newton::input
 	double InputManager::m_mouseOffsetY;
 	double InputManager::m_scrollOffsetY;
 
+	/**
+	 * @brief Registers input callbacks on the window.
+	 *
+	 * Call once, after the window is created and before the main loop.
+	 *
+	 * @param window Window to receive input from.
+	 */
 	void InputManager::init(GLFWwindow *window)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing input manager\n", cClassName);
@@ -44,6 +51,12 @@ namespace newton::input
 		m_logger.printf(common::LogLevel::INFO, "[%s] Input manager initialized successfully\n", cClassName);
 	}
 
+	/**
+	 * @brief Ends the input frame.
+	 *
+	 * Stores the current key and button state as previous and resets mouse offsets.
+	 * Call once per frame, after everything that reads input.
+	 */
 	void InputManager::update()
 	{
 		m_previousKey = m_currentKey;
@@ -51,6 +64,9 @@ namespace newton::input
 		resetMouseOffsets();
 	}
 
+	/**
+	 * @brief GLFW key callback, updates the current key state.
+	 */
 	void InputManager::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		(void) window;
@@ -76,6 +92,9 @@ namespace newton::input
 		}
 	}
 
+	/**
+	 * @brief GLFW mouse button callback, updates the current button state.
+	 */
 	void InputManager::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 	{
 		(void) window;
@@ -101,6 +120,9 @@ namespace newton::input
 		}
 	}
 
+	/**
+	 * @brief GLFW cursor callback, accumulates cursor movement.
+	 */
 	void InputManager::cursorPosCallback(GLFWwindow *window, double xpos, double ypos)
 	{
 		(void) window;
@@ -118,6 +140,9 @@ namespace newton::input
 		m_mouseLastY = ypos;
 	}
 
+	/**
+	 * @brief GLFW scroll callback, accumulates vertical scroll.
+	 */
 	void InputManager::scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 	{
 		(void) window;
@@ -126,6 +151,11 @@ namespace newton::input
 		m_scrollOffsetY += yoffset;
 	}
 
+	/**
+	 * @brief Checks if the key went down this frame.
+	 * @param key GLFW key code (GLFW_KEY_*).
+	 * @return True only in the frame of the press. False for out-of-range codes.
+	 */
 	bool InputManager::isKeyPressed(int key)
 	{
 		if (key < 0 || key > GLFW_KEY_LAST)
@@ -136,6 +166,11 @@ namespace newton::input
 		return m_currentKey[index] && !m_previousKey[index];
 	}
 
+	/**
+	 * @brief Checks if the key is down.
+	 * @param key GLFW key code (GLFW_KEY_*).
+	 * @return True in every frame while the key is down, including the press frame.
+	 */
 	bool InputManager::isKeyHeld(int key)
 	{
 		if (key < 0 || key > GLFW_KEY_LAST)
@@ -143,6 +178,11 @@ namespace newton::input
 		return m_currentKey[static_cast<std::size_t>(key)];
 	}
 
+	/**
+	 * @brief Checks if the key went up this frame.
+	 * @param key GLFW key code (GLFW_KEY_*).
+	 * @return True only in the frame of the release. False for out-of-range codes.
+	 */
 	bool InputManager::isKeyReleased(int key)
 	{
 		if (key < 0 || key > GLFW_KEY_LAST)
@@ -153,6 +193,11 @@ namespace newton::input
 		return !m_currentKey[index] && m_previousKey[index];
 	}
 
+	/**
+	 * @brief Checks if the mouse button went down this frame.
+	 * @param button GLFW mouse button code (GLFW_MOUSE_BUTTON_*).
+	 * @return True only in the frame of the press. False for out-of-range codes.
+	 */
 	bool InputManager::isButtonPressed(int button)
 	{
 		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
@@ -163,6 +208,11 @@ namespace newton::input
 		return m_currentButton[index] && !m_previousButton[index];
 	}
 
+	/**
+	 * @brief Checks if the mouse button is down.
+	 * @param button GLFW mouse button code (GLFW_MOUSE_BUTTON_*).
+	 * @return True in every frame while the button is down, including the press frame.
+	 */
 	bool InputManager::isButtonHeld(int button)
 	{
 		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
@@ -173,6 +223,11 @@ namespace newton::input
 		return m_currentButton[index];
 	}
 
+	/**
+	 * @brief Checks if the mouse button went up this frame.
+	 * @param button GLFW mouse button code (GLFW_MOUSE_BUTTON_*).
+	 * @return True only in the frame of the release. False for out-of-range codes.
+	 */
 	bool InputManager::isButtonReleased(int button)
 	{
 		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
@@ -183,21 +238,33 @@ namespace newton::input
 		return !m_currentButton[index] && m_previousButton[index];
 	}
 
+	/**
+	 * @return Horizontal cursor movement since the last update(), positive to the right.
+	 */
 	double InputManager::getMouseOffsetX()
 	{
 		return m_mouseOffsetX;
 	}
 
+	/**
+	 * @return Vertical cursor movement since the last update(), positive downwards (screen coordinates).
+	 */
 	double InputManager::getMouseOffsetY()
 	{
 		return m_mouseOffsetY;
 	}
 
+	/**
+	 * @return Vertical scroll since the last update(), positive when scrolling up.
+	 */
 	double InputManager::getScrollOffsetY()
 	{
 		return m_scrollOffsetY;
 	}
 
+	/**
+	 * @brief Clears cursor and scroll offsets accumulated during the frame.
+	 */
 	void InputManager::resetMouseOffsets()
 	{
 		m_mouseOffsetX = 0.0;

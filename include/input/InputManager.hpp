@@ -9,6 +9,17 @@
 
 namespace newton::input
 {
+	/**
+	 * @brief Static store of keyboard and mouse state, fed by GLFW callbacks.
+	 *
+	 * Per-frame contract:
+	 * 1. GLFW callbacks update the current state during event polling.
+	 * 2. Game code queries the state (isKeyPressed(), getMouseOffsetX(), ...).
+	 * 3. update() ends the input frame - must be called after all queries.
+	 *
+	 * Pressed and released are true only in the single frame the state changed,
+	 * held is true in every frame while the key or button is down.
+	 */
 	class InputManager
 	{
 		public:
@@ -47,18 +58,20 @@ namespace newton::input
 
 			// Keyboard state
 			using KeyStateArray = std::array<bool, GLFW_KEY_LAST + 1>;
-			static KeyStateArray m_currentKey;
-			static KeyStateArray m_previousKey;
+			static KeyStateArray m_currentKey;  ///< Key state from the latest polled events.
+			static KeyStateArray m_previousKey; ///< Key state from the previous frame.
 
 			// Mouse state
 			using ButtonStateArray = std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1>;
-			static ButtonStateArray m_currentButton;
-			static ButtonStateArray m_previousButton;
+			static ButtonStateArray m_currentButton;  ///< Button state from the latest polled events.
+			static ButtonStateArray m_previousButton; ///< Button state from the previous frame.
 
-			static double m_mouseLastX, m_mouseLastY;
-			static bool m_firstMouse;
-			static double m_mouseOffsetX, m_mouseOffsetY;
-			static double m_scrollOffsetY;
+			static double m_mouseLastX;    ///< Cursor X from the last cursor event.
+			static double m_mouseLastY;    ///< Cursor Y from the last cursor event.
+			static bool m_firstMouse;      ///< True until the first cursor event, prevents a jump from (0, 0).
+			static double m_mouseOffsetX;  ///< Cursor X movement accumulated since the last update().
+			static double m_mouseOffsetY;  ///< Cursor Y movement accumulated since the last update().
+			static double m_scrollOffsetY; ///< Vertical scroll accumulated since the last update().
 	};
 
 } // namespace newton::input
