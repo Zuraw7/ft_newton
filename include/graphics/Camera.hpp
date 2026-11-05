@@ -1,0 +1,81 @@
+#ifndef GRAPHICS_CAMERA_HPP
+#define GRAPHICS_CAMERA_HPP
+
+#include "common/Logger.hpp"
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+namespace newton::graphics
+{
+
+	#define NEAR 0.1f
+	#define FAR 450.0f
+	#define SENSITIVITY 0.1f
+
+	enum CameraDirection
+	{
+		NONE = 0,
+		FORWARD,
+		BACKWARD,
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
+
+	class Camera
+	{
+		public:
+			Camera() = delete;
+			Camera(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &worldUp);
+			Camera(Camera &) = delete;
+			Camera(Camera &&) = delete;
+			~Camera() = default;
+
+			Camera &operator=(const Camera&) = delete;
+			Camera &operator=(const Camera&&) = delete;
+
+			const glm::mat4 &getCamView();
+			const glm::mat4 &getCamProjection() const;
+			const glm::vec3 &getPosition() const;
+
+			bool getPolygonMode() const;
+
+			void updateCameraDirection(double dx, double dy);
+			void updateCameraPos(CameraDirection dir, double deltaTime);
+			void updateCameraZoom(double dy);
+			void updateCameraVectors();
+			void switchPolygonMode();
+
+			void setCameraPosition(glm::vec3 newPos);
+
+		private:
+			glm::mat4 lookAt() const;
+
+			common::Logger &m_logger;
+
+			// Vectors
+			glm::vec3 m_camPosition;
+			[[maybe_unused]] glm::vec3 m_targetPos;
+			glm::vec3 m_worldUp;
+
+			glm::vec3 m_camDirection;
+			glm::vec3 m_camRight;
+			glm::vec3 m_camUp;
+
+			// Matrices
+			glm::mat4 m_view;
+			glm::mat4 m_projection;
+
+			float m_yaw;
+			float m_pitch;
+			float m_speed;
+			float m_fov;
+
+			bool m_polygonMode;
+
+	};
+
+} // namespace newton::graphics
+
+#endif //GRAPHICS_CAMERA_HPP

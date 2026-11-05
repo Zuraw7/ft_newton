@@ -54,11 +54,11 @@ namespace newton::common
 
 	int Logger::vfprintf(LogLevel level, FILE *stream, const char *msg, va_list args)
 	{
-		if (level < m_level) {
+		std::lock_guard<std::mutex> lock(m_mutex);
+
+		if (level == LogLevel::DISABLED || level < m_level) {
 			return 0;
 		}
-
-		std::lock_guard<std::mutex> lock(m_mutex);
 
 		int result = 0;
 
@@ -80,6 +80,7 @@ namespace newton::common
 			case LogLevel::INFO : return "INFO";
 			case LogLevel::WARN : return "WARN";
 			case LogLevel::ERROR : return "ERROR";
+			case LogLevel::DISABLED : return "DISABLED";
 			default : return "UNKNOWN";
 		}
 	}

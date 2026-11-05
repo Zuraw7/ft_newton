@@ -1,13 +1,37 @@
-#include "../include/common/Logger.hpp"
+#include "common/Logger.hpp"
+#include "graphics/Camera.hpp"
+#include "graphics/Context.hpp"
+#include "graphics/resolution.hpp"
+#include "input/InputManager.hpp"
 
-using namespace newton::common;
+using namespace newton;
 
+graphics::Camera gCamera(
+	{0,0,0},
+	{0,0,0},
+	{0,0,0}
+);
 
 int main() {
 
-	Logger &logger = Logger::getInstance();
+	common::Logger &logger = common::Logger::getInstance();
+	logger.setLogLevel(common::LogLevel::DEBUG);
 
-	logger.printf(LogLevel::WARN ,"Hello World\n");
+	Resolution res = FHD;
+
+	if (!graphics::Context::setup(res.width, res.height, "ft_newton")) {
+		return -1;
+	}
+
+	input::InputManager::init(graphics::Context::window());
+
+
+	while (graphics::Context::shouldClose() == false) {
+
+		graphics::Context::update();
+	}
+
+	graphics::Context::cleanup();
 
 	return 0;
 }

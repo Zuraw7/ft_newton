@@ -1,5 +1,5 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef COMMON_LOGGER_H
+#define COMMON_LOGGER_H
 
 #include <cstdio>
 #include <memory>
@@ -8,10 +8,11 @@
 namespace newton::common
 {
 	enum class LogLevel {
-		DEBUG = 0,
-		INFO = 1,
-		WARN = 2,
-		ERROR = 3
+		DEBUG,
+		INFO,
+		WARN,
+		ERROR,
+		DISABLED
 	};
 
 	class Logger
@@ -43,4 +44,4 @@ namespace newton::common
 
 } // namespace newton::common
 
-#endif // LOGGER_H
+#endif // COMMON_LOGGER_H
