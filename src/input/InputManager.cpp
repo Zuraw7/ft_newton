@@ -60,13 +60,13 @@ namespace newton::input
 
 		if (action == GLFW_PRESS) {
 			m_currentKey[index] = true;
-			m_logger.printf(common::LogLevel::INFO, "[%s] Key pressed: [%s] [%d]\n", cClassName,
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Key pressed: [%s] [%d]\n", cClassName,
 			                keyToString(key).c_str(), key);
 		}
 
 		if (action == GLFW_RELEASE) {
 			m_currentKey[index] = false;
-			m_logger.printf(common::LogLevel::INFO, "[%s] Key released: [%s] [%d]\n", cClassName,
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Key released: [%s] [%d]\n", cClassName,
 			                keyToString(key).c_str(), key);
 		}
 	}

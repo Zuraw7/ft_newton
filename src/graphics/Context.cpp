@@ -41,7 +41,11 @@ namespace newton::graphics
 
 	void Context::cleanup()
 	{
+		m_logger.printf(common::LogLevel::INFO, "[%s] Cleaning up graphics context\n", cClassName);
+
 		cleanupGLFW();
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context cleaned up successfully\n", cClassName);
 	}
 
 	bool Context::shouldClose()
@@ -100,7 +104,7 @@ namespace newton::graphics
 	bool Context::setupGLFW(const int width, const int height, const char *title)
 	{
 		if (!glfwInit()) {
-			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to init GLFW\n", cClassName);
+			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialize GLFW\n", cClassName);
 			return false;
 		}
 
@@ -137,7 +141,7 @@ namespace newton::graphics
 		int version = gladLoadGL(glfwGetProcAddress);
 
 		if (version == 0) {
-			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialized OpenGL context\n", cClassName);
+			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialize OpenGL context\n", cClassName);
 			return false;
 		}
 
