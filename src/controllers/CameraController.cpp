@@ -15,16 +15,20 @@ namespace newton::controllers
 	CameraController::CameraController(graphics::Camera &camera)
 		: m_camera(&camera)
 		, m_logger(common::Logger::getInstance())
-	{}
+	{
+		m_logger.printf(common::LogLevel::INFO, "[%s] Camera controller initialized successfully\n", cClassName);
+	}
 
 	void CameraController::switchCamera(graphics::Camera &camera)
 	{
 		if (&camera == m_camera) {
-			m_logger.printf(common::LogLevel::DEBUG, "[%s] Given camera is already bound.\n", cClassName);
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Given camera is already bound\n", cClassName);
 			return;
 		}
 
 		m_camera = &camera;
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] Camera switched successfully\n", cClassName);
 	}
 
 	// Must be called after glfwPollEvents and before InputManager::update,
