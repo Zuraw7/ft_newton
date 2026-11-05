@@ -8,36 +8,6 @@ extern newton::graphics::Camera gCamera;
 
 namespace newton::input
 {
-	void moveCamera(GLFWwindow *window, double deltaTime)
-	{
-		(void) window;
-
-		if (InputManager::isKeyHeld(GLFW_KEY_W))
-			gCamera.updateCameraPos(graphics::CameraDirection::FORWARD, deltaTime);
-		if (InputManager::isKeyHeld(GLFW_KEY_S))
-			gCamera.updateCameraPos(graphics::CameraDirection::BACKWARD, deltaTime);
-		if (InputManager::isKeyHeld(GLFW_KEY_A))
-			gCamera.updateCameraPos(graphics::CameraDirection::LEFT, deltaTime);
-		if (InputManager::isKeyHeld(GLFW_KEY_D))
-			gCamera.updateCameraPos(graphics::CameraDirection::RIGHT, deltaTime);
-		if (InputManager::isKeyHeld(GLFW_KEY_SPACE))
-			gCamera.updateCameraPos(graphics::CameraDirection::UP, deltaTime);
-		if (InputManager::isKeyHeld(GLFW_KEY_LEFT_SHIFT))
-			gCamera.updateCameraPos(graphics::CameraDirection::DOWN, deltaTime);
-	}
-
-	void rotateCamera(GLFWwindow *window)
-	{
-		(void) window;
-
-		const double x = InputManager::getMouseOffsetX();
-		const double y = InputManager::getMouseOffsetY();
-		if (x != 0 || y != 0)
-			gCamera.updateCameraDirection(x, y);
-		if (InputManager::getScrollOffsetY() != 0)
-			gCamera.updateCameraZoom(InputManager::getScrollOffsetY());
-	}
-
 	void polygonModeManagement(GLFWwindow *window)
 	{
 		(void) window;

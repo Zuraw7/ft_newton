@@ -41,12 +41,10 @@ namespace newton::input
 		m_logger.printf(common::LogLevel::INFO, "[%s] Input manager initialized successfully\n", cClassName);
 	}
 
-	void InputManager::processInput(GLFWwindow *window, double deltaTime)
+	void InputManager::processInput(GLFWwindow *window)
 	{
 		if (isKeyPressed(GLFW_KEY_ESCAPE))
 			glfwSetWindowShouldClose(window, true);
-		moveCamera(window, deltaTime);
-		rotateCamera(window);
 		polygonModeManagement(window);
 		update();
 	}

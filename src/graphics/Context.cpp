@@ -58,7 +58,7 @@ namespace newton::graphics
 
 		glfwPollEvents();
 
-		input::InputManager::processInput(m_window, m_deltaTime);
+		input::InputManager::processInput(m_window);
 
 		glfwSwapBuffers(m_window);
 	}

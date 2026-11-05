@@ -6,8 +6,6 @@
 
 namespace newton::input
 {
-	void moveCamera(GLFWwindow *window, double deltaTime);
-	void rotateCamera(GLFWwindow *window);
 	void polygonModeManagement(GLFWwindow *window);
 	std::string keyToString(int key);
 

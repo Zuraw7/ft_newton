@@ -19,6 +19,7 @@ include(cmake/Documentation.cmake)
 
 # Source files
 add_executable(ft_newton
+    src/controllers/CameraController.cpp
     src/common/Logger.cpp
     src/graphics/Camera.cpp
     src/graphics/Context.cpp

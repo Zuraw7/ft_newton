@@ -16,7 +16,7 @@ namespace newton::input
 
 			// Management
 			static void init(GLFWwindow *window);
-			static void processInput(GLFWwindow *window, double deltaTime);
+			static void processInput(GLFWwindow *window);
 
 			// Callbacks
 			static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
