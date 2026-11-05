@@ -5,6 +5,11 @@
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Owns the drawing state of a frame.
+	 *
+	 * Methods call OpenGL directly, so they can be used only after a successful @ref Context::setup().
+	 */
 	class Renderer
 	{
 		public:
@@ -17,7 +22,7 @@ namespace newton::graphics
 
 		private:
 			common::Logger &m_logger;
-			bool m_polygonMode;
+			bool m_polygonMode; ///< True draws wireframes.
 	};
 
 } // namespace newton::graphics
