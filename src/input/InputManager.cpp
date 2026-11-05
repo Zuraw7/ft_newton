@@ -1,7 +1,6 @@
 #include "../../include/input/InputManager.hpp"
 
 #include <GLFW/glfw3.h>
-#include <stdbool.h>
 #include <cstddef>
 
 #include "../../include/common/Logger.hpp"
