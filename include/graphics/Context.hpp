@@ -5,7 +5,6 @@
 
 #include "../common/Logger.hpp"
 
-
 namespace newton::graphics
 {
 	class Context
@@ -28,13 +27,13 @@ namespace newton::graphics
 			static void cleanupGLFW();
 			static bool setupGLAD();
 
-			static void framebufferSizeCallback(GLFWwindow* window, const int width, const int height);
+			static void framebufferSizeCallback(GLFWwindow *window, const int width, const int height);
 
 			static void calculateDelta();
 			static void calculateFPS();
 			static void calculateAvgFPS();
 
-			static common::Logger& m_logger;
+			static common::Logger &m_logger;
 
 			static GLFWwindow *m_window;
 			static double m_lastFrameTime;
@@ -48,5 +47,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-
-#endif //GRAPHICS_CONTEXT_HPP
+#endif // GRAPHICS_CONTEXT_HPP

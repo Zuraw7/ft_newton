@@ -31,15 +31,15 @@ namespace newton::common
 		private:
 			explicit Logger(LogLevel level = LogLevel::WARN);
 
-			Logger(const Logger&) = delete;
-			Logger& operator=(const Logger&) = delete;
+			Logger(const Logger &) = delete;
+			Logger &operator=(const Logger &) = delete;
 
-			int vfprintf(LogLevel level, FILE *stream, const char *msg, va_list args) __attribute__((format(printf, 4, 0)));
+			int vfprintf(LogLevel level, FILE *stream, const char *msg, va_list args)
+				__attribute__((format(printf, 4, 0)));
 			const char *levelToString(LogLevel level);
 
 			LogLevel m_level = LogLevel::WARN;
 			std::mutex m_mutex;
-
 	};
 
 } // namespace newton::common

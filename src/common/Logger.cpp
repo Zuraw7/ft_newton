@@ -32,7 +32,7 @@ namespace newton::common
 	{
 		va_list args;
 		va_start(args, msg);
-		
+
 		int result = vfprintf(level, stdout, msg, args);
 
 		va_end(args);
@@ -44,7 +44,7 @@ namespace newton::common
 	{
 		va_list args;
 		va_start(args, msg);
-		
+
 		int result = vfprintf(level, stream, msg, args);
 
 		va_end(args);
@@ -86,4 +86,3 @@ namespace newton::common
 	}
 
 } // namespace newton::common
-

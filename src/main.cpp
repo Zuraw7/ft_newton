@@ -6,14 +6,10 @@
 
 using namespace newton;
 
-graphics::Camera gCamera(
-	{0,0,0},
-	{0,0,0},
-	{0,0,0}
-);
+graphics::Camera gCamera({0, 0, 0}, {0, 0, 0}, {0, 0, 0});
 
-int main() {
-
+int main()
+{
 	common::Logger &logger = common::Logger::getInstance();
 	logger.setLogLevel(common::LogLevel::DEBUG);
 
@@ -25,9 +21,7 @@ int main() {
 
 	input::InputManager::init(graphics::Context::window());
 
-
 	while (graphics::Context::shouldClose() == false) {
-
 		graphics::Context::update();
 	}
 

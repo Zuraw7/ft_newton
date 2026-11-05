@@ -5,12 +5,17 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-#include "../../include/graphics/resolution.hpp"
 #include "../../include/common/Logger.hpp"
+#include "../../include/graphics/resolution.hpp"
 
-namespace {
+namespace
+{
 	const char *cClassName = "Camera";
-}
+	constexpr float NEAR = 0.1f;
+	constexpr float FAR = 450.0f;
+	constexpr float SENSITIVITY = 0.1f;
+
+} // unnamed namespace
 
 namespace newton::graphics
 {
@@ -45,7 +50,7 @@ namespace newton::graphics
 		return m_projection;
 	}
 
-	const glm::vec3 & Camera::getPosition() const
+	const glm::vec3 &Camera::getPosition() const
 	{
 		return m_camPosition;
 	}
@@ -55,7 +60,8 @@ namespace newton::graphics
 		return m_polygonMode;
 	}
 
-	void Camera::updateCameraDirection(double dx, double dy) {
+	void Camera::updateCameraDirection(double dx, double dy)
+	{
 		m_yaw += static_cast<float>(dx) * SENSITIVITY;
 		m_pitch -= static_cast<float>(dy) * SENSITIVITY;
 
@@ -71,26 +77,13 @@ namespace newton::graphics
 		float velocity = static_cast<float>(deltaTime) * m_speed;
 
 		switch (dir) {
-			case CameraDirection::FORWARD:
-				m_camPosition += m_camDirection * velocity;
-				break;
-			case CameraDirection::BACKWARD:
-				m_camPosition -= m_camDirection * velocity;
-				break;
-			case CameraDirection::RIGHT:
-				m_camPosition += m_camRight * velocity;
-				break;
-			case CameraDirection::LEFT:
-				m_camPosition -= m_camRight * velocity;
-				break;
-			case CameraDirection::UP:
-				m_camPosition += m_worldUp * velocity;
-				break;
-			case CameraDirection::DOWN:
-				m_camPosition -= m_worldUp * velocity;
-				break;
-			case CameraDirection::NONE:
-				break;
+			case CameraDirection::FORWARD : m_camPosition += m_camDirection * velocity; break;
+			case CameraDirection::BACKWARD : m_camPosition -= m_camDirection * velocity; break;
+			case CameraDirection::RIGHT : m_camPosition += m_camRight * velocity; break;
+			case CameraDirection::LEFT : m_camPosition -= m_camRight * velocity; break;
+			case CameraDirection::UP : m_camPosition += m_worldUp * velocity; break;
+			case CameraDirection::DOWN : m_camPosition -= m_worldUp * velocity; break;
+			case CameraDirection::NONE : break;
 		}
 	}
 
@@ -111,7 +104,7 @@ namespace newton::graphics
 
 		m_camDirection = glm::normalize(direction);
 		m_camRight = glm::normalize(glm::cross(m_camDirection, m_worldUp));
-		m_camUp = glm::normalize(glm::cross( m_camRight, m_camDirection));
+		m_camUp = glm::normalize(glm::cross(m_camRight, m_camDirection));
 	}
 
 	void Camera::switchPolygonMode()
@@ -119,7 +112,8 @@ namespace newton::graphics
 		m_polygonMode = !m_polygonMode;
 	}
 
-	void Camera::setCameraPosition(glm::vec3 newPos) {
+	void Camera::setCameraPosition(glm::vec3 newPos)
+	{
 		m_camPosition = newPos;
 	}
 

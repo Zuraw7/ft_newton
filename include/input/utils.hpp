@@ -11,7 +11,6 @@ namespace newton::input
 	void polygonModeManagement(GLFWwindow *window);
 	std::string keyToString(int key);
 
-} // newton::input
+} // namespace newton::input
 
-
-#endif //INPUTFUNCTIONS_HPP
+#endif // INPUTFUNCTIONS_HPP

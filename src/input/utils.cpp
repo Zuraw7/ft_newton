@@ -8,8 +8,8 @@ extern newton::graphics::Camera gCamera;
 
 namespace newton::input
 {
-
-	void moveCamera(GLFWwindow *window, double deltaTime) {
+	void moveCamera(GLFWwindow *window, double deltaTime)
+	{
 		(void) window;
 
 		if (InputManager::isKeyHeld(GLFW_KEY_W))
@@ -26,7 +26,8 @@ namespace newton::input
 			gCamera.updateCameraPos(graphics::CameraDirection::DOWN, deltaTime);
 	}
 
-	void rotateCamera(GLFWwindow *window) {
+	void rotateCamera(GLFWwindow *window)
+	{
 		(void) window;
 
 		const double x = InputManager::getMouseOffsetX();
@@ -37,7 +38,8 @@ namespace newton::input
 			gCamera.updateCameraZoom(InputManager::getScrollOffsetY());
 	}
 
-	void polygonModeManagement(GLFWwindow *window) {
+	void polygonModeManagement(GLFWwindow *window)
+	{
 		(void) window;
 
 		if (InputManager::isKeyPressed(GLFW_KEY_P))
@@ -84,7 +86,7 @@ namespace newton::input
 
 			case GLFW_KEY_WORLD_1 : return "WORLD_1";
 			case GLFW_KEY_WORLD_2 : return "WORLD_2";
-			
+
 			case GLFW_KEY_ESCAPE : return "ESCAPE";
 			case GLFW_KEY_ENTER : return "ENTER";
 			case GLFW_KEY_TAB : return "TAB";
@@ -108,15 +110,15 @@ namespace newton::input
 			case GLFW_KEY_PRINT_SCREEN : return "PRINT_SCREEN";
 			case GLFW_KEY_PAUSE : return "PAUSE";
 
-			case GLFW_KEY_LEFT_SHIFT: return "LEFT_SHIFT";
-			case GLFW_KEY_LEFT_CONTROL: return "LEFT_CONTROL";
-			case GLFW_KEY_LEFT_ALT: return "LEFT_ALT";
-			case GLFW_KEY_LEFT_SUPER: return "LEFT_SUPER";
+			case GLFW_KEY_LEFT_SHIFT : return "LEFT_SHIFT";
+			case GLFW_KEY_LEFT_CONTROL : return "LEFT_CONTROL";
+			case GLFW_KEY_LEFT_ALT : return "LEFT_ALT";
+			case GLFW_KEY_LEFT_SUPER : return "LEFT_SUPER";
 
-			case GLFW_KEY_RIGHT_SHIFT: return "RIGHT_SHIFT";
-			case GLFW_KEY_RIGHT_CONTROL: return "RIGHT_CONTROL";
-			case GLFW_KEY_RIGHT_ALT: return "RIGHT_ALT";
-			case GLFW_KEY_RIGHT_SUPER: return "RIGHT_SUPER";
+			case GLFW_KEY_RIGHT_SHIFT : return "RIGHT_SHIFT";
+			case GLFW_KEY_RIGHT_CONTROL : return "RIGHT_CONTROL";
+			case GLFW_KEY_RIGHT_ALT : return "RIGHT_ALT";
+			case GLFW_KEY_RIGHT_SUPER : return "RIGHT_SUPER";
 
 			case GLFW_KEY_MENU : return "MENU";
 
@@ -134,4 +136,4 @@ namespace newton::input
 		return "UNKNOWN";
 	}
 
-} // newton::input
+} // namespace newton::input

@@ -19,10 +19,10 @@ namespace newton::input
 			static void processInput(GLFWwindow *window, double deltaTime);
 
 			// Callbacks
-			static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+			static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-			static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-			static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+			static void cursorPosCallback(GLFWwindow *window, double xpos, double ypos);
+			static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 			// Key state
 			static bool isKeyPressed(int key);
@@ -53,5 +53,4 @@ namespace newton::input
 
 } // namespace newton::input
 
-
-#endif //INPUT_MANAGER_HPP
+#endif // INPUT_MANAGER_HPP

@@ -2,18 +2,20 @@
 
 #include "../../include/graphics/Context.hpp"
 
-#include "../../include/input/InputManager.hpp"
 #include "../../include/common/Logger.hpp"
+#include "../../include/input/InputManager.hpp"
 
-namespace {
+namespace
+{
 	const char *cClassName = "Context";
-}
+
+} // unnamed namespace
 
 namespace newton::graphics
 {
-	common::Logger& Context::m_logger = common::Logger::getInstance();
+	common::Logger &Context::m_logger = common::Logger::getInstance();
 
-	GLFWwindow* Context::m_window = nullptr;
+	GLFWwindow *Context::m_window = nullptr;
 	double Context::m_lastFrameTime = 0.0;
 	double Context::m_deltaTime = 0.0;
 
@@ -131,8 +133,8 @@ namespace newton::graphics
 			return false;
 		}
 
-		m_logger.printf(common::LogLevel::INFO, "[%s] Loaded OpenGL %d.%d\n", cClassName,
-			GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+		m_logger.printf(common::LogLevel::INFO, "[%s] Loaded OpenGL %d.%d\n", cClassName, GLAD_VERSION_MAJOR(version),
+		                GLAD_VERSION_MINOR(version));
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
@@ -146,7 +148,7 @@ namespace newton::graphics
 		return true;
 	}
 
-	void Context::framebufferSizeCallback(GLFWwindow* window, const int width, const int height)
+	void Context::framebufferSizeCallback(GLFWwindow *window, const int width, const int height)
 	{
 		(void) window;
 		glViewport(0, 0, width, height);

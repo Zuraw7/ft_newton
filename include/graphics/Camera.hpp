@@ -9,12 +9,7 @@
 namespace newton::graphics
 {
 
-	#define NEAR 0.1f
-	#define FAR 450.0f
-	#define SENSITIVITY 0.1f
-
-	enum CameraDirection
-	{
+	enum CameraDirection {
 		NONE = 0,
 		FORWARD,
 		BACKWARD,
@@ -33,8 +28,8 @@ namespace newton::graphics
 			Camera(Camera &&) = delete;
 			~Camera() = default;
 
-			Camera &operator=(const Camera&) = delete;
-			Camera &operator=(const Camera&&) = delete;
+			Camera &operator=(const Camera &) = delete;
+			Camera &operator=(const Camera &&) = delete;
 
 			const glm::mat4 &getCamView();
 			const glm::mat4 &getCamProjection() const;
@@ -74,9 +69,8 @@ namespace newton::graphics
 			float m_fov;
 
 			bool m_polygonMode;
-
 	};
 
 } // namespace newton::graphics
 
-#endif //GRAPHICS_CAMERA_HPP
+#endif // GRAPHICS_CAMERA_HPP
