@@ -1,15 +1,43 @@
-BasedOnStyle: LLVM
+BasedOnStyle: Google
+Language: Cpp
+Standard: c++17
 
 IndentWidth: 4
 TabWidth: 4
-UseTab: Always
+UseTab: AlignWithSpaces
+ContinuationIndentWidth: 4
+ColumnLimit: 120
 
-ColumnLimit: 100
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
 
-BreakBeforeBraces: Attach
+NamespaceIndentation: All
+IndentAccessModifiers: true
 
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
+SpaceBeforeCaseColon: true
+
+DerivePointerAlignment: false
+PointerAlignment: Right
+SpaceAfterCStyleCast: true
+SpacesBeforeTrailingComments: 1
+InsertNewlineAtEOF: true
 
 SortIncludes: CaseSensitive
-PointerAlignment: Left
+IncludeBlocks: Preserve
