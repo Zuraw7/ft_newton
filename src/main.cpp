@@ -25,7 +25,7 @@ int main()
 		return -1;
 	input::InputManager::init(graphics::Context::window());
 	graphics::Renderer renderer;
-	graphics::Camera mainCamera({0, 0, 0}, {0, 0, 0}, {0, 0, 0});
+	graphics::Camera mainCamera({0, 0, 3}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
 
 	renderer.setBackgroundColor(0.07f, 0.11f, 0.18f, 1.0f);
