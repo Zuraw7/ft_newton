@@ -6,7 +6,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "../../include/graphics/resolution.hpp"
-#include "common/Logger.hpp"
+#include "../../include/common/Logger.hpp"
 
 namespace {
 	const char *cClassName = "Camera";

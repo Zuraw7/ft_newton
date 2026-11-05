@@ -1,9 +1,10 @@
 #ifndef GRAPHICS_CAMERA_HPP
 #define GRAPHICS_CAMERA_HPP
 
-#include "common/Logger.hpp"
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+
+#include "../common/Logger.hpp"
 
 namespace newton::graphics
 {

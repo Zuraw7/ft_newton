@@ -1,9 +1,11 @@
 #ifndef INPUT_MANAGER_HPP
 #define INPUT_MANAGER_HPP
 
-#include "common/Logger.hpp"
 #include <GLFW/glfw3.h>
+
 #include <array>
+
+#include "../../include/common/Logger.hpp"
 
 namespace newton::input
 {
