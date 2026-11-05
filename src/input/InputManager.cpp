@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <cstddef>
 
-#include "../../include/input/inputFunctions.hpp"
+#include "../../include/input/utils.hpp"
 #include "../../include/common/Logger.hpp"
 
 namespace {

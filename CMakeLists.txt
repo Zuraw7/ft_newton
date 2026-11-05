@@ -23,8 +23,8 @@ add_executable(ft_newton
     src/graphics/Camera.cpp
     src/graphics/Context.cpp
     src/graphics/resolution.cpp
-    src/input/inputFunctions.cpp
     src/input/InputManager.cpp
+    src/input/utils.cpp
     src/main.cpp
 )
 
