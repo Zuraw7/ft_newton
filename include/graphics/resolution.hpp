@@ -1,6 +1,12 @@
 #ifndef GRAPHICS_RESOLUTION_HPP
 #define GRAPHICS_RESOLUTION_HPP
 
+/**
+ * @brief Window size preset.
+ *
+ * All presets are 16:9, matching @ref aspect. The same ratio is forced on the window
+ * and used by the camera projection.
+ */
 struct Resolution
 {
 		int width;
@@ -13,10 +19,10 @@ struct Resolution
 		{}
 };
 
-extern Resolution qHD;
-extern Resolution HD;
-extern Resolution HDP;
-extern Resolution FHD;
-extern Resolution QHD;
+extern Resolution qHD; ///< 960x540
+extern Resolution HD;  ///< 1280x720
+extern Resolution HDP; ///< 1600x900
+extern Resolution FHD; ///< 1920x1080
+extern Resolution QHD; ///< 2560x1440
 
 #endif // GRAPHICS_RESOLUTION_HPP
