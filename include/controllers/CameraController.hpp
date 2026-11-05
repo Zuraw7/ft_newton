@@ -6,8 +6,19 @@
 
 namespace newton::controllers
 {
-	// TODO: documentation (include that Camera MUST outlive this controller,
-	// 	that means be created before and removed/destroyed after)
+	/**
+	 * @brief Translates keyboard and mouse input into movement of a bound camera.
+	 *
+	 * Controls:
+	 * - W / S / A / D - move forward / backward / left / right
+	 * - Space / Left Shift - move up / down
+	 * - Mouse movement - rotate
+	 * - Scroll - zoom (changes FOV)
+	 *
+	 * The controller does not own the camera, it only stores a pointer to it.
+	 * The bound camera must outlive the controller: create it before the controller
+	 * and destroy it after.
+	 */
 	class CameraController
 	{
 		public:
@@ -20,7 +31,7 @@ namespace newton::controllers
 			void moveCamera(double deltaTime);
 			void rotateCamera();
 
-			graphics::Camera *m_camera;
+			graphics::Camera *m_camera; ///< Currently controlled camera. Never null, set only from references.
 			common::Logger &m_logger;
 	};
 

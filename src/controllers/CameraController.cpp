@@ -12,6 +12,10 @@ namespace
 
 namespace newton::controllers
 {
+	/**
+	 * @brief Creates a controller bound to the given camera.
+	 * @param camera Camera to control. Must outlive this controller.
+	 */
 	CameraController::CameraController(graphics::Camera &camera)
 		: m_camera(&camera)
 		, m_logger(common::Logger::getInstance())
@@ -19,6 +23,11 @@ namespace newton::controllers
 		m_logger.printf(common::LogLevel::INFO, "[%s] Camera controller initialized successfully\n", cClassName);
 	}
 
+	/**
+	 * @brief Binds the controller to another camera.
+	 *
+	 * @param camera Camera to control. Must outlive this controller.
+	 */
 	void CameraController::switchCamera(graphics::Camera &camera)
 	{
 		if (&camera == m_camera) {
@@ -31,14 +40,26 @@ namespace newton::controllers
 		m_logger.printf(common::LogLevel::INFO, "[%s] Camera switched successfully\n", cClassName);
 	}
 
-	// Must be called after glfwPollEvents and before InputManager::update,
-	// which resets the per-frame input state
+	/**
+	 * @brief Applies this frame's input to the bound camera.
+	 *
+	 * Must be called after events are polled and before InputManager::update(),
+	 * which resets the per-frame input state (mouse offsets, pressed keys).
+	 *
+	 * @param deltaTime Time since the last frame, in seconds. Scales movement only;
+	 *                  rotation and zoom use raw mouse offsets.
+	 */
 	void CameraController::update(const double deltaTime)
 	{
 		moveCamera(deltaTime);
 		rotateCamera();
 	}
 
+	/**
+	 * @brief Moves the camera according to held movement keys.
+	 *
+	 * @param deltaTime Time since the last frame, in seconds. Keeps speed independent of FPS.
+	 */
 	void CameraController::moveCamera(double deltaTime)
 	{
 		if (input::InputManager::isKeyHeld(GLFW_KEY_W))
@@ -55,6 +76,12 @@ namespace newton::controllers
 			m_camera->updateCameraPos(graphics::CameraDirection::DOWN, deltaTime);
 	}
 
+	/**
+	 * @brief Rotates and zooms the camera using mouse offsets accumulated this frame.
+	 *
+	 * Offsets are distances, not speeds, so they are not scaled by delta time.
+	 * The camera is only updated when there was actual movement or scrolling.
+	 */
 	void CameraController::rotateCamera()
 	{
 		const double x = input::InputManager::getMouseOffsetX();
