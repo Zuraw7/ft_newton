@@ -1,6 +1,7 @@
 #include "../../include/input/InputManager.hpp"
 
 #include <GLFW/glfw3.h>
+#include <stdbool.h>
 #include <cstddef>
 
 #include "../../include/common/Logger.hpp"
@@ -16,8 +17,10 @@ namespace newton::input
 {
 	common::Logger &InputManager::m_logger = common::Logger::getInstance();
 
-	std::array<bool, GLFW_KEY_LAST + 1> InputManager::m_currentKey;
-	std::array<bool, GLFW_KEY_LAST + 1> InputManager::m_previousKey;
+	InputManager::KeyStateArray InputManager::m_currentKey;
+	InputManager::KeyStateArray InputManager::m_previousKey;
+	InputManager::ButtonStateArray InputManager::m_currentButton;
+	InputManager::ButtonStateArray InputManager::m_previousButton;
 
 	double InputManager::m_mouseLastX = 0.0;
 	double InputManager::m_mouseLastY = 0.0;
@@ -35,6 +38,7 @@ namespace newton::input
 
 		// Mouse
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetCursorPosCallback(window, cursorPosCallback);
 		glfwSetScrollCallback(window, scrollCallback);
 
@@ -44,17 +48,19 @@ namespace newton::input
 	void InputManager::update()
 	{
 		m_previousKey = m_currentKey;
+		m_previousButton = m_currentButton;
 		resetMouseOffsets();
 	}
 
 	void InputManager::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		(void) window;
-		(void) scancode;
 		(void) mods;
 
-		if (key < 0 || key > GLFW_KEY_LAST)
+		if (key < 0 || key > GLFW_KEY_LAST) {
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Unknown key, scancode: [%d]\n", cClassName, scancode);
 			return;
+		}
 
 		const auto index = static_cast<std::size_t>(key);
 
@@ -68,6 +74,31 @@ namespace newton::input
 			m_currentKey[index] = false;
 			m_logger.printf(common::LogLevel::DEBUG, "[%s] Key released: [%s] [%d]\n", cClassName,
 			                keyToString(key).c_str(), key);
+		}
+	}
+
+	void InputManager::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
+	{
+		(void) window;
+		(void) mods;
+
+		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST) {
+			m_logger.printf(common::LogLevel::WARN, "[%s] Unknown mouse button: [%d]\n", cClassName, button);
+			return;
+		}
+
+		const auto index = static_cast<std::size_t>(button);
+
+		if (action == GLFW_PRESS) {
+			m_currentButton[index] = true;
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Button pressed: [%s] [%d]\n", cClassName,
+			                buttonToString(button).c_str(), button);
+		}
+
+		if (action == GLFW_RELEASE) {
+			m_currentButton[index] = false;
+			m_logger.printf(common::LogLevel::DEBUG, "[%s] Button released: [%s] [%d]\n", cClassName,
+			                buttonToString(button).c_str(), button);
 		}
 	}
 
@@ -121,6 +152,36 @@ namespace newton::input
 		const auto index = static_cast<std::size_t>(key);
 
 		return !m_currentKey[index] && m_previousKey[index];
+	}
+
+	bool InputManager::isButtonPressed(int button)
+	{
+		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
+			return false;
+
+		const auto index = static_cast<std::size_t>(button);
+
+		return m_currentButton[index] && !m_previousButton[index];
+	}
+
+	bool InputManager::isButtonHeld(int button)
+	{
+		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
+			return false;
+
+		const auto index = static_cast<std::size_t>(button);
+
+		return m_currentButton[index];
+	}
+
+	bool InputManager::isButtonReleased(int button)
+	{
+		if (button < GLFW_MOUSE_BUTTON_1 || button > GLFW_MOUSE_BUTTON_LAST)
+			return false;
+
+		const auto index = static_cast<std::size_t>(button);
+
+		return !m_currentButton[index] && m_previousButton[index];
 	}
 
 	double InputManager::getMouseOffsetX()

@@ -7,6 +7,7 @@
 namespace newton::input
 {
 	std::string keyToString(int key);
+	std::string buttonToString(int button);
 
 } // namespace newton::input
 

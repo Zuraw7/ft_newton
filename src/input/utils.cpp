@@ -93,4 +93,18 @@ namespace newton::input
 		return "UNKNOWN";
 	}
 
+	std::string buttonToString(int button)
+	{
+		switch (button) {
+			case GLFW_MOUSE_BUTTON_LEFT : return "LEFT";
+			case GLFW_MOUSE_BUTTON_RIGHT : return "RIGHT";
+			case GLFW_MOUSE_BUTTON_MIDDLE : return "MIDDLE";
+		}
+
+		if (button >= GLFW_MOUSE_BUTTON_1 && button <= GLFW_MOUSE_BUTTON_LAST)
+			return "BUTTON_" + std::to_string(button + 1);
+
+		return "UNKNOWN";
+	}
+
 } // namespace newton::input
