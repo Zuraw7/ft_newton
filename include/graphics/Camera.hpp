@@ -9,6 +9,9 @@
 namespace newton::graphics
 {
 
+	/**
+	 * @brief Movement direction.
+	 */
 	enum CameraDirection {
 		NONE = 0,
 		FORWARD,
@@ -19,6 +22,13 @@ namespace newton::graphics
 		DOWN
 	};
 
+	/**
+	 * @brief Free-flying perspective camera controlled by yaw and pitch.
+	 *
+	 * Orientation is stored as yaw and pitch angles, from which the direction,
+	 * right and up vectors are derived. Provides view and projection matrices for rendering.
+	 * Non-copyable and non-movable.
+	 */
 	class Camera
 	{
 		public:
@@ -49,21 +59,21 @@ namespace newton::graphics
 
 			// Vectors
 			glm::vec3 m_camPosition;
-			[[maybe_unused]] glm::vec3 m_targetPos; // maybe_unused is temp and will be used
-			glm::vec3 m_worldUp;
+			[[maybe_unused]] glm::vec3 m_targetPos; ///< Initial direction comes from yaw and pitch.
+			glm::vec3 m_worldUp; ///< World up axis, used for vertical movement and to build the camera axes.
 
-			glm::vec3 m_camDirection;
-			glm::vec3 m_camRight;
-			glm::vec3 m_camUp;
+			glm::vec3 m_camDirection; ///< Normalized forward vector, derived from yaw and pitch.
+			glm::vec3 m_camRight;     ///< Normalized right vector, derived from yaw and pitch.
+			glm::vec3 m_camUp;        ///< Normalized up vector, derived from yaw and pitch.
 
 			// Matrices
-			glm::mat4 m_view;
-			glm::mat4 m_projection;
+			glm::mat4 m_view;       ///< Cached view matrix, refreshed in getCamView().
+			glm::mat4 m_projection; ///< Projection matrix, refreshed on zoom.
 
-			float m_yaw;
-			float m_pitch;
-			float m_speed;
-			float m_fov;
+			float m_yaw;   ///< Horizontal angle in degrees, -90 looks along -Z.
+			float m_pitch; ///< Vertical angle in degrees, clamped to [-89, 89].
+			float m_speed; ///< Movement speed in world units per second.
+			float m_fov;   ///< Vertical field of view in degrees.
 	};
 
 } // namespace newton::graphics
