@@ -96,10 +96,11 @@ namespace newton::graphics
 	 *
 	 * @param dir Direction of movement.
 	 * @param deltaTime Time since the last frame, in seconds.
+	 * @param multiplier Scales the base speed, 1 keeps it unchanged.
 	 */
-	void Camera::updateCameraPos(const CameraDirection dir, const double deltaTime)
+	void Camera::updateCameraPos(const CameraDirection dir, const double deltaTime, const float multiplier)
 	{
-		float velocity = static_cast<float>(deltaTime) * m_speed;
+		float velocity = static_cast<float>(deltaTime) * m_speed * multiplier;
 
 		switch (dir) {
 			case CameraDirection::FORWARD : m_camPosition += m_camDirection * velocity; break;

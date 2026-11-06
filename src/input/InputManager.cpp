@@ -16,6 +16,8 @@ namespace newton::input
 {
 	common::Logger &InputManager::m_logger = common::Logger::getInstance();
 
+	GLFWwindow *InputManager::m_window = nullptr;
+
 	InputManager::KeyStateArray InputManager::m_currentKey;
 	InputManager::KeyStateArray InputManager::m_previousKey;
 	InputManager::ButtonStateArray InputManager::m_currentButton;
@@ -29,24 +31,26 @@ namespace newton::input
 	double InputManager::m_scrollOffsetY;
 
 	/**
-	 * @brief Registers input callbacks on the window.
+	 * @brief Registers input callbacks on the window and stores it in @ref m_window.
 	 *
 	 * Call once, after the window is created and before the main loop.
 	 *
-	 * @param window Window to receive input from.
+	 * @param window Window to receive input from. Must outlive all input queries.
 	 */
 	void InputManager::init(GLFWwindow *window)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing input manager\n", cClassName);
 
+		m_window = window;
+
 		// Keyboard
-		glfwSetKeyCallback(window, keyCallback);
+		glfwSetKeyCallback(m_window, keyCallback);
 
 		// Mouse
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glfwSetMouseButtonCallback(window, mouseButtonCallback);
-		glfwSetCursorPosCallback(window, cursorPosCallback);
-		glfwSetScrollCallback(window, scrollCallback);
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
+		glfwSetCursorPosCallback(m_window, cursorPosCallback);
+		glfwSetScrollCallback(m_window, scrollCallback);
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Input manager initialized successfully\n", cClassName);
 	}
@@ -260,6 +264,27 @@ namespace newton::input
 	double InputManager::getScrollOffsetY()
 	{
 		return m_scrollOffsetY;
+	}
+
+	/**
+	 * @brief Hides and locks the cursor, or restores it.
+	 *
+	 * Sets @ref m_firstMouse, so the cursor jump caused by the mode change
+	 * is not counted as mouse movement.
+	 *
+	 * @param disabled True hides the cursor, false shows it again.
+	 */
+	void InputManager::setCursorDisabled(bool disabled)
+	{
+		if (disabled)
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		m_firstMouse = true;
+
+		const char *mode = disabled ? "DISABLED" : "NORMAL";
+		m_logger.printf(common::LogLevel::DEBUG, "[%s] Cursor mode changed to %s\n", cClassName, mode);
 	}
 
 	/**

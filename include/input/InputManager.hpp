@@ -51,10 +51,14 @@ namespace newton::input
 			static double getMouseOffsetY();
 			static double getScrollOffsetY();
 
+			// Mouse setters
+			static void setCursorDisabled(bool disabled);
+
 		private:
 			static void resetMouseOffsets();
 
 			static common::Logger &m_logger;
+			static GLFWwindow *m_window;
 
 			// Keyboard state
 			using KeyStateArray = std::array<bool, GLFW_KEY_LAST + 1>;
@@ -68,7 +72,7 @@ namespace newton::input
 
 			static double m_mouseLastX;    ///< Cursor X from the last cursor event.
 			static double m_mouseLastY;    ///< Cursor Y from the last cursor event.
-			static bool m_firstMouse;      ///< True until the first cursor event, prevents a jump from (0, 0).
+			static bool m_firstMouse;      ///< Skips the jump at start and after a cursor mode change.
 			static double m_mouseOffsetX;  ///< Cursor X movement accumulated since the last @ref update().
 			static double m_mouseOffsetY;  ///< Cursor Y movement accumulated since the last @ref update().
 			static double m_scrollOffsetY; ///< Vertical scroll accumulated since the last @ref update().

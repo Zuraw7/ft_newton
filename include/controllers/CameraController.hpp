@@ -10,10 +10,12 @@ namespace newton::controllers
 	 * @brief Translates keyboard and mouse input into movement of a bound camera.
 	 *
 	 * Controls:
-	 * - W / S / A / D - move forward / backward / left / right
-	 * - Space / Left Shift - move up / down
-	 * - Mouse movement - rotate
-	 * - Scroll - zoom (changes FOV)
+	 * - Right mouse button (hold) - enables movement and rotation, hides the cursor
+	 *   - W / S / A / D - move forward / backward / left / right
+	 *   - Space / Left Shift - move up / down
+	 *   - Ctrl - move faster
+	 *   - Mouse movement - rotate
+	 * - Scroll - zoom (changes FOV), always active
 	 *
 	 * The controller does not own the camera, it only stores a pointer to it.
 	 * The bound camera must outlive the controller: create it before the controller
@@ -30,6 +32,7 @@ namespace newton::controllers
 		private:
 			void moveCamera(double deltaTime);
 			void rotateCamera();
+			void zoomCamera();
 
 			graphics::Camera *m_camera; ///< Currently controlled camera. Never null, set only from references.
 			common::Logger &m_logger;

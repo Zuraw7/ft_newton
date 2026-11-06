@@ -46,7 +46,7 @@ namespace newton::graphics
 			const glm::vec3 &getPosition() const;
 
 			void updateCameraDirection(double dx, double dy);
-			void updateCameraPos(CameraDirection dir, double deltaTime);
+			void updateCameraPos(CameraDirection dir, double deltaTime, float multiplier);
 			void updateCameraZoom(double dy);
 			void updateCameraVectors();
 
