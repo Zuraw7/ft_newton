@@ -74,7 +74,8 @@ namespace newton::graphics
 
 		graphics::checkGLError("Shader::create");
 
-		m_logger.printf(common::LogLevel::INFO, "[%s] Shader program [%u] created from: %s, %s\n", cClassName, id, vertex.c_str(), fragment.c_str());
+		m_logger.printf(common::LogLevel::INFO, "[%s] Shader program [%u] created from: %s, %s\n", cClassName, id,
+		                vertex.c_str(), fragment.c_str());
 
 		return std::unique_ptr<Shader>(new Shader(id));
 	}
@@ -183,6 +184,7 @@ namespace newton::graphics
 			return 0;
 		}
 
+		m_logger.printf(common::LogLevel::DEBUG, "[%s] Shader [%u] compiled: %s\n", cClassName, shader, path.c_str());
 		return shader;
 	}
 
