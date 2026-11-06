@@ -19,11 +19,15 @@ include(cmake/Documentation.cmake)
 
 # Source files
 add_executable(ft_newton
-    src/controllers/CameraController.cpp
     src/common/Logger.cpp
+    src/controllers/CameraController.cpp
+    src/graphics/buffers/IndexBuffer.cpp
+    src/graphics/buffers/VertexArray.cpp
+    src/graphics/buffers/VertexBuffer.cpp
     src/graphics/Camera.cpp
     src/graphics/Context.cpp
     src/graphics/GLError.cpp
+    src/graphics/Mesh.cpp
     src/graphics/Renderer.cpp
     src/graphics/Shader.cpp
     src/input/InputManager.cpp
