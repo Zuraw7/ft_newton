@@ -7,10 +7,10 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "$PROJECT_ROOT"
 
-cmake -S . -B build -G "Unix Makefiles" \
+cmake -S . -B build/debug -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE=Debug
 
-cmake --build build --target docs -j"$(nproc)"
+cmake --build build/debug --target docs -j"$(nproc)"
 
 echo "Documentation generated successfully!"
 
