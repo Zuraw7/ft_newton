@@ -12,13 +12,26 @@
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Single vertex as stored in a @ref VertexBuffer.
+	 *
+	 * The layout must match the attribute setup in @ref Mesh and the shader inputs
+	 * (location 0 position, 1 normal, 2 texCoords).
+	 */
 	struct Vertex
 	{
-			glm::vec3 position;
-			glm::vec3 normal;
-			glm::vec2 texCoords;
+			glm::vec3 position;  ///< Position in model space.
+			glm::vec3 normal;    ///< Unit normal in model space.
+			glm::vec2 texCoords; ///< Texture coordinates.
 	};
 
+	/**
+	 * @brief Indexed triangle mesh uploaded to the GPU.
+	 *
+	 * Owns its @ref VertexArray, @ref VertexBuffer and @ref IndexBuffer. Vertex data is not kept on the CPU,
+	 * only the index count needed for drawing. Requires a current OpenGL context and must be destroyed
+	 * before it. Non-copyable, movable.
+	 */
 	class Mesh
 	{
 		public:
@@ -36,11 +49,11 @@ namespace newton::graphics
 		private:
 			void setupMesh();
 
-			VertexArray m_VAO;
-			VertexBuffer m_VBO;
-			IndexBuffer m_EBO;
+			VertexArray m_VAO;  ///< Attribute state. Declared first, so it is bound before the buffers are created.
+			VertexBuffer m_VBO; ///< Vertex data.
+			IndexBuffer m_EBO;  ///< Triangle indices.
 
-			int m_indexCount;
+			int m_indexCount; ///< Number of indices passed to glDrawElements.
 	};
 
 } // namespace newton::graphics

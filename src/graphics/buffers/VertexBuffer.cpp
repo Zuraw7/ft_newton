@@ -14,6 +14,14 @@ namespace
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Creates the buffer, binds it to GL_ARRAY_BUFFER and uploads the data.
+	 *
+	 * The buffer stays bound after construction.
+	 *
+	 * @param data Pointer to the vertex data.
+	 * @param bytes Size of the data in bytes.
+	 */
 	VertexBuffer::VertexBuffer(const void *data, std::size_t bytes)
 		: m_id(0)
 	{
@@ -51,11 +59,17 @@ namespace newton::graphics
 		return *this;
 	}
 
+	/**
+	 * @brief Binds the buffer to GL_ARRAY_BUFFER. Needed before glVertexAttribPointer, not for drawing.
+	 */
 	void VertexBuffer::bind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 	}
 
+	/**
+	 * @brief Unbinds any buffer from GL_ARRAY_BUFFER. Does not affect attributes already recorded in a VAO.
+	 */
 	void VertexBuffer::unbind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

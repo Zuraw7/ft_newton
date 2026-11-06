@@ -15,6 +15,14 @@ namespace
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Uploads the vertices and indices to the GPU and sets up the vertex attributes.
+	 *
+	 * The data is copied to the GPU, so the vectors can be discarded afterwards.
+	 *
+	 * @param vertices Vertex data.
+	 * @param indices Triangle indices into @p vertices, counter-clockwise for front faces.
+	 */
 	Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
 		: m_VAO()
 		, m_VBO(vertices)
@@ -37,6 +45,9 @@ namespace newton::graphics
 		              vertices.size(), m_indexCount);
 	}
 
+	/**
+	 * @brief Draws the mesh as triangles with the currently bound shader.
+	 */
 	void Mesh::draw() const
 	{
 		m_VAO.bind();
@@ -44,6 +55,12 @@ namespace newton::graphics
 		m_VAO.unbind();
 	}
 
+	/**
+	 * @brief Describes the @ref Vertex layout to OpenGL.
+	 *
+	 * Must be called with @ref m_VAO and @ref m_VBO bound, so the attributes are recorded in the VAO
+	 * and read from the VBO.
+	 */
 	void Mesh::setupMesh()
 	{
 		glEnableVertexAttribArray(0);

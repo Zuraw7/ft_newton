@@ -3,6 +3,13 @@
 
 namespace newton::graphics
 {
+	/**
+	 * @brief Owner of an OpenGL vertex array object (VAO).
+	 *
+	 * The VAO stores the vertex attribute layout, the buffer each attribute reads from and the index buffer
+	 * binding, so binding it alone is enough to draw. Requires a current OpenGL context.
+	 * Non-copyable, movable.
+	 */
 	class VertexArray
 	{
 		public:
@@ -19,7 +26,7 @@ namespace newton::graphics
 			void unbind() const;
 
 		private:
-			unsigned int m_id;
+			unsigned int m_id; ///< OpenGL vertex array name, 0 after being moved from.
 	};
 
 } // namespace newton::graphics

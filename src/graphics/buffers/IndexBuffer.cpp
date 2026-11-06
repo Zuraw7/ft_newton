@@ -14,6 +14,14 @@ namespace
 namespace newton::graphics
 {
 
+	/**
+	 * @brief Creates the buffer, binds it to GL_ELEMENT_ARRAY_BUFFER and uploads the indices.
+	 *
+	 * The buffer stays bound after construction, so it attaches to the currently bound VAO.
+	 *
+	 * @param indices Pointer to the indices.
+	 * @param count Number of indices, not bytes.
+	 */
 	IndexBuffer::IndexBuffer(const unsigned int *indices, std::size_t count)
 		: m_id(0)
 	{
@@ -28,6 +36,9 @@ namespace newton::graphics
 		logger.printf(common::LogLevel::DEBUG, "[%s] EBO [%u] created, size: %zu bytes\n", cClassName, m_id, bytes);
 	}
 
+	/**
+	 * @brief Same as the pointer version, for a vector of indices.
+	 */
 	IndexBuffer::IndexBuffer(const std::vector<unsigned int> &indices)
 		: IndexBuffer(indices.data(), indices.size())
 	{}
@@ -57,11 +68,20 @@ namespace newton::graphics
 		return *this;
 	}
 
+	/**
+	 * @brief Binds the buffer to GL_ELEMENT_ARRAY_BUFFER, attaching it to the currently bound VAO.
+	 */
 	void IndexBuffer::bind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 	}
 
+	/**
+	 * @brief Unbinds any buffer from GL_ELEMENT_ARRAY_BUFFER.
+	 *
+	 * @warning While a VAO is bound this detaches the index buffer from that VAO.
+	 * Unbind the VAO first.
+	 */
 	void IndexBuffer::unbind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

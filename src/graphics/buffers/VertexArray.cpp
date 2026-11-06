@@ -14,6 +14,9 @@ namespace
 namespace newton::graphics
 {
 
+	/**
+	 * @brief Creates the VAO and binds it.
+	 */
 	VertexArray::VertexArray()
 		: m_id(0)
 	{
@@ -50,11 +53,17 @@ namespace newton::graphics
 		return *this;
 	}
 
+	/**
+	 * @brief Makes this VAO the current one.
+	 */
 	void VertexArray::bind() const
 	{
 		glBindVertexArray(m_id);
 	}
 
+	/**
+	 * @brief Unbinds any VAO, not only this one.
+	 */
 	void VertexArray::unbind() const
 	{
 		glBindVertexArray(0);
