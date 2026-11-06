@@ -25,6 +25,7 @@ add_executable(ft_newton
     src/graphics/Context.cpp
     src/graphics/GLError.cpp
     src/graphics/Renderer.cpp
+    src/graphics/Shader.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp
     src/main.cpp
