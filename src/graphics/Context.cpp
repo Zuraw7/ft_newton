@@ -170,10 +170,9 @@ namespace newton::graphics
 
 		GLFWwindow *window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
-		if (glfwGetError(nullptr) == GLFW_VERSION_UNAVAILABLE)
-			 m_logger.printf(common::LogLevel::ERROR, "[%s] OpenGL 3.3 not supported by the driver\n", cClassName);
-
 		if (!window) {
+			if (glfwGetError(nullptr) == GLFW_VERSION_UNAVAILABLE)
+				m_logger.printf(common::LogLevel::ERROR, "[%s] OpenGL 3.3 not supported by the driver\n", cClassName);
 			glfwTerminate();
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to create GLFW window\n", cClassName);
 			return nullptr;
