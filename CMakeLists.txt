@@ -23,6 +23,7 @@ add_executable(ft_newton
     src/common/Logger.cpp
     src/graphics/Camera.cpp
     src/graphics/Context.cpp
+    src/graphics/GLError.cpp
     src/graphics/Renderer.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp

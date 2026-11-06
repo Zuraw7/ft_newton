@@ -4,6 +4,7 @@
 #include "controllers/CameraController.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Context.hpp"
+#include "graphics/GLError.hpp"
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
 #include "input/InputManager.hpp"
@@ -43,6 +44,9 @@ int main()
 		input::InputManager::update();
 
 		renderer.clear();
+
+		graphics::checkGLError("frame");
+
 		context->swapBuffers();
 	}
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "common/Logger.hpp"
+#include "graphics/GLError.hpp"
 
 namespace
 {
@@ -216,6 +217,8 @@ namespace newton::graphics
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
+
+		checkGLError("Context::setupGLAD");
 
 		return true;
 	}
