@@ -39,6 +39,7 @@ namespace newton::graphics
 		private:
 			explicit Context(GLFWwindow *window);
 
+			static void errorCallback(int code, const char *description);
 			static GLFWwindow *setupGLFW(int width, int height, const char *title);
 			static bool setupGLAD();
 			static void framebufferSizeCallback(GLFWwindow *window, const int width, const int height);

@@ -32,6 +32,8 @@ namespace newton::graphics
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing graphics context\n", cClassName);
 
+		glfwSetErrorCallback(errorCallback);
+
 		GLFWwindow *window = setupGLFW(width, height, title);
 		if (!window)
 			return nullptr;
@@ -139,6 +141,15 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @brief GLFW callback, logs every GLFW error. Registered before glfwInit, so it also catches init errors.
+	 */
+	void Context::errorCallback(const int code, const char *description)
+	{
+		m_logger.printf(common::LogLevel::ERROR, "[%s] GLFW error 0x%X: %s\n", cClassName,
+		                static_cast<unsigned int>(code), description);
+	}
+
+	/**
 	 * @brief Initializes GLFW and creates the window with its OpenGL context.
 	 *
 	 * Terminates GLFW itself if the window cannot be created.
@@ -158,6 +169,10 @@ namespace newton::graphics
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
 		GLFWwindow *window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+
+		if (glfwGetError(nullptr) == GLFW_VERSION_UNAVAILABLE)
+			 m_logger.printf(common::LogLevel::ERROR, "[%s] OpenGL 3.3 not supported by the driver\n", cClassName);
+
 		if (!window) {
 			glfwTerminate();
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to create GLFW window\n", cClassName);
