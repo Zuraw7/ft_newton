@@ -62,6 +62,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
+# Treat GLM headers as system headers
+get_target_property(GLM_INCLUDE_DIRS glm-header-only INTERFACE_INCLUDE_DIRECTORIES)
+set_target_properties(glm-header-only PROPERTIES
+    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${GLM_INCLUDE_DIRS}"
+)
+
 
 # ==========================================
 # Assimp
