@@ -84,7 +84,6 @@ External dependencies are managed automatically through CMake FetchContent.
 | GLFW 3 | Window management and input |
 | GLAD 2 | OpenGL function loading |
 | GLM | Mathematics |
-| Assimp | 3D model importing |
 | stb_image | Image loading |
 
 Dependencies are downloaded and built locally inside each build directory (`build/debug/dependencies`, `build/release/dependencies`).
