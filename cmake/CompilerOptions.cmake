@@ -10,6 +10,7 @@ function(set_project_warnings target)
             -Wsign-conversion
             -Wdouble-promotion
             -Wformat=2
+            -Wformat-signedness
             -Wundef
             -Wcast-align
         )
