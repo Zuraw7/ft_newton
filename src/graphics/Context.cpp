@@ -199,15 +199,20 @@ namespace newton::graphics
 	 */
 	bool Context::setupGLAD()
 	{
-		int version = gladLoadGL(glfwGetProcAddress);
-
-		if (version == 0) {
+		if (gladLoadGL(glfwGetProcAddress) == 0) {
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialize OpenGL context\n", cClassName);
 			return false;
 		}
 
-		m_logger.printf(common::LogLevel::INFO, "[%s] Loaded OpenGL %d.%d\n", cClassName, GLAD_VERSION_MAJOR(version),
-		                GLAD_VERSION_MINOR(version));
+		const char *vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+		const char *renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		const char *version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		const char *shadingLangVers = reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] OpenGL vendor: %s\n", cClassName, vendor);
+		m_logger.printf(common::LogLevel::INFO, "[%s] OpenGL renderer: %s\n", cClassName, renderer);
+		m_logger.printf(common::LogLevel::INFO, "[%s] OpenGL version: %s\n", cClassName, version);
+		m_logger.printf(common::LogLevel::INFO, "[%s] OpenGL GLSL: %s\n", cClassName, shadingLangVers);
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
