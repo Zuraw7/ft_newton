@@ -24,6 +24,16 @@ namespace newton::controllers
 	class CameraController
 	{
 		public:
+			/**
+			 * @brief Tunable movement parameters.
+			 */
+			struct Settings
+			{
+					float speed = 20.0f;         ///< Movement speed in world units per second.
+					float fastMultiplier = 2.0f; ///< Speed multiplier.
+					float sensitivity = 0.1f;    ///< Rotation in degrees per pixel of mouse movement.
+			};
+
 			explicit CameraController(graphics::Camera &camera);
 
 			void switchCamera(graphics::Camera &camera);
@@ -36,6 +46,8 @@ namespace newton::controllers
 
 			graphics::Camera *m_camera; ///< Currently controlled camera. Never null, set only from references.
 			common::Logger &m_logger;
+
+			Settings m_settings; ///< Movement parameters, defaults from @ref Settings.
 	};
 
 } // namespace newton::controllers

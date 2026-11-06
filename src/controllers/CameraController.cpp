@@ -2,6 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
+
 #include "common/Logger.hpp"
 #include "graphics/Camera.hpp"
 #include "input/InputManager.hpp"
@@ -21,6 +24,7 @@ namespace newton::controllers
 	CameraController::CameraController(graphics::Camera &camera)
 		: m_camera(&camera)
 		, m_logger(common::Logger::getInstance())
+		, m_settings()
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Camera controller initialized successfully\n", cClassName);
 	}
@@ -73,29 +77,37 @@ namespace newton::controllers
 	}
 
 	/**
-	 * @brief Moves the camera according to held movement keys. Ctrl doubles the speed.
+	 * @brief Moves the camera according to held movement keys.
+	 *
+	 * Directions are summed and normalized. Ctrl multiplies the speed by
+	 * @ref Settings::fastMultiplier.
 	 *
 	 * @param deltaTime Time since the last frame, in seconds. Keeps speed independent of FPS.
 	 */
 	void CameraController::moveCamera(double deltaTime)
 	{
-		float multiplier = input::InputManager::isKeyHeld(GLFW_KEY_LEFT_CONTROL) ||
-		                           input::InputManager::isKeyHeld(GLFW_KEY_RIGHT_CONTROL)
-		                       ? 2.0f
-		                       : 1.0f;
+		using input::InputManager;
 
-		if (input::InputManager::isKeyHeld(GLFW_KEY_W))
-			m_camera->updateCameraPos(graphics::CameraDirection::FORWARD, deltaTime, multiplier);
-		if (input::InputManager::isKeyHeld(GLFW_KEY_S))
-			m_camera->updateCameraPos(graphics::CameraDirection::BACKWARD, deltaTime, multiplier);
-		if (input::InputManager::isKeyHeld(GLFW_KEY_A))
-			m_camera->updateCameraPos(graphics::CameraDirection::LEFT, deltaTime, multiplier);
-		if (input::InputManager::isKeyHeld(GLFW_KEY_D))
-			m_camera->updateCameraPos(graphics::CameraDirection::RIGHT, deltaTime, multiplier);
-		if (input::InputManager::isKeyHeld(GLFW_KEY_SPACE))
-			m_camera->updateCameraPos(graphics::CameraDirection::UP, deltaTime, multiplier);
-		if (input::InputManager::isKeyHeld(GLFW_KEY_LEFT_SHIFT))
-			m_camera->updateCameraPos(graphics::CameraDirection::DOWN, deltaTime, multiplier);
+		bool fast = InputManager::isKeyHeld(GLFW_KEY_LEFT_CONTROL) || InputManager::isKeyHeld(GLFW_KEY_RIGHT_CONTROL);
+		float multiplier = fast ? m_settings.fastMultiplier : 1.0f;
+
+		glm::vec3 dir(0.0f);
+
+		if (InputManager::isKeyHeld(GLFW_KEY_W))
+			dir += m_camera->getForward();
+		if (InputManager::isKeyHeld(GLFW_KEY_S))
+			dir -= m_camera->getForward();
+		if (InputManager::isKeyHeld(GLFW_KEY_A))
+			dir -= m_camera->getRight();
+		if (InputManager::isKeyHeld(GLFW_KEY_D))
+			dir += m_camera->getRight();
+		if (InputManager::isKeyHeld(GLFW_KEY_SPACE))
+			dir += m_camera->getWorldUp();
+		if (InputManager::isKeyHeld(GLFW_KEY_LEFT_SHIFT))
+			dir -= m_camera->getWorldUp();
+
+		if (glm::length(dir) > 0.0f)
+			m_camera->move(glm::normalize(dir) * m_settings.speed * multiplier * static_cast<float>(deltaTime));
 	}
 
 	/**
@@ -106,10 +118,11 @@ namespace newton::controllers
 	 */
 	void CameraController::rotateCamera()
 	{
-		const double x = input::InputManager::getMouseOffsetX();
-		const double y = input::InputManager::getMouseOffsetY();
-		if (x != 0 || y != 0)
-			m_camera->updateCameraDirection(x, y);
+		const float dx = static_cast<float>(input::InputManager::getMouseOffsetX());
+		const float dy = static_cast<float>(input::InputManager::getMouseOffsetY());
+
+		if (dx != 0.0f || dy != 0.0f)
+			m_camera->rotate(dx * m_settings.sensitivity, -dy * m_settings.sensitivity);
 	}
 
 	/**
@@ -120,10 +133,10 @@ namespace newton::controllers
 	 */
 	void CameraController::zoomCamera()
 	{
-		double scrollOffsetY = input::InputManager::getScrollOffsetY();
+		const float scrollOffsetY = static_cast<float>(input::InputManager::getScrollOffsetY());
 
-		if (scrollOffsetY != 0)
-			m_camera->updateCameraZoom(scrollOffsetY);
+		if (scrollOffsetY != 0.0f)
+			m_camera->zoom(-scrollOffsetY);
 	}
 
 } // namespace newton::controllers
