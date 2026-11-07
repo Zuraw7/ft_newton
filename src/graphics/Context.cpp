@@ -53,6 +53,8 @@ namespace newton::graphics
 		auto context = std::unique_ptr<Context>(new Context(window));
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context initialized successfully\n", cClassName);
+		m_logger.printf(common::LogLevel::INFO, "[%s] VSync %s, FPS limit %d\n", cClassName,
+		                context->isVSync() ? "ON" : "OFF", context->frameLimit());
 
 		return context;
 	}
@@ -157,7 +159,15 @@ namespace newton::graphics
 	 */
 	void Context::setFrameLimit(int fps)
 	{
+		if (fps == m_frameLimit)
+			return;
+
 		m_frameLimit = fps;
+
+		if (m_frameLimit > 0)
+			m_logger.printf(common::LogLevel::INFO, "[%s] FPS limit set to %d\n", cClassName, m_frameLimit);
+		else
+			m_logger.printf(common::LogLevel::INFO, "[%s] FPS limit disabled\n", cClassName);
 	}
 
 	/**
@@ -184,6 +194,9 @@ namespace newton::graphics
 		glfwSwapInterval(enabled ? 1 : 0);
 
 		m_vsyncOn = enabled;
+
+		const char *mode = m_vsyncOn ? "ON" : "OFF";
+		m_logger.printf(common::LogLevel::INFO, "[%s] VSync is now %s\n", cClassName, mode);
 	}
 
 	/**
