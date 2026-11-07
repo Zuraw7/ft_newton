@@ -33,7 +33,7 @@ namespace newton::graphics
 			GLFWwindow *window();
 
 			double deltaTime();
-			[[deprecated("Use avgFPS() for more stable, smoothed value.")]] int FPS();
+			int FPS();
 			double avgFPS();
 
 		private:
