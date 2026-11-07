@@ -34,6 +34,7 @@ namespace newton::graphics
 
 			void setFrameLimit(int fps);
 			int frameLimit() const;
+			int monitorRefreshRate() const;
 
 			void setVSync(bool enabled);
 			bool isVSync() const;
@@ -57,6 +58,7 @@ namespace newton::graphics
 			static common::Logger &m_logger;
 
 			GLFWwindow *m_window;
+			int m_monitorRefreshRate; ///< Primary monitor refresh rate read at creation, in Hz. 0 if unknown.
 
 			double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
 			double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.

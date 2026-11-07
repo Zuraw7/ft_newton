@@ -15,7 +15,9 @@ namespace
 {
 	const char *cClassName = "Context";
 
-	constexpr int BASE_FRAME_LIMIT = 144;
+	int queryMonitorRefreshRate();
+
+	constexpr int FALLBACK_FRAME_LIMIT = 144;
 	constexpr bool DEFAULT_SYNC = false;
 
 } // unnamed namespace
@@ -64,16 +66,29 @@ namespace newton::graphics
 	 */
 	Context::Context(GLFWwindow *window)
 		: m_window(window)
+		, m_monitorRefreshRate(0)
 		, m_lastFrameTime(0.0)
 		, m_deltaTime(0.0)
-		, m_frameLimit(BASE_FRAME_LIMIT)
+		, m_frameLimit(0)
 		, m_nextFrameTime(0.0)
 		, m_vsyncOn(DEFAULT_SYNC)
 		, m_frameCount(0)
 		, m_fpsLastTime(0.0)
 		, m_currentFPS(0)
 		, m_avgFPS(0.0)
-	{}
+	{
+		m_monitorRefreshRate = queryMonitorRefreshRate();
+		m_frameLimit = m_monitorRefreshRate > 0 ? m_monitorRefreshRate : FALLBACK_FRAME_LIMIT;
+
+		if (m_monitorRefreshRate == 0) {
+			m_logger.printf(common::LogLevel::WARN,
+			                "[%s] Failed to get primary monitor refresh rate, using fallback value: %d\n", cClassName,
+			                FALLBACK_FRAME_LIMIT);
+		} else {
+			m_logger.printf(common::LogLevel::INFO, "[%s] Monitor refresh rate: %d Hz\n", cClassName,
+			                m_monitorRefreshRate);
+		}
+	}
 
 	/**
 	 * @brief Destroys the window and terminates GLFW.
@@ -176,6 +191,16 @@ namespace newton::graphics
 	int Context::frameLimit() const
 	{
 		return m_frameLimit;
+	}
+
+	/**
+	 * @brief Refresh rate of the primary monitor, read once when the context was created.
+	 *
+	 * @return Refresh rate in Hz, or 0 if it could not be read.
+	 */
+	int Context::monitorRefreshRate() const
+	{
+		return m_monitorRefreshRate;
 	}
 
 	/**
@@ -355,3 +380,24 @@ namespace newton::graphics
 	}
 
 } // namespace newton::graphics
+
+namespace
+{
+	/**
+	 * @brief Reads the refresh rate of the primary monitor's current video mode. Requires initialized GLFW.
+	 *
+	 * The value is an integer, so e.g. 59.94 Hz may be reported as 59 or 60.
+	 *
+	 * @return Refresh rate in Hz, or 0 if there is no monitor or its video mode is unavailable.
+	 */
+	int queryMonitorRefreshRate()
+	{
+		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+		if (!monitor)
+			return 0;
+
+		const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+		return mode ? mode->refreshRate : 0;
+	}
+
+} // unnamed namespace
