@@ -4,7 +4,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 
 #include "common/Logger.hpp"
 #include "graphics/GLError.hpp"
@@ -12,6 +14,8 @@
 namespace
 {
 	const char *cClassName = "Context";
+
+	constexpr int BASE_FRAME_LIMIT = 144;
 
 } // unnamed namespace
 
@@ -59,6 +63,8 @@ namespace newton::graphics
 		: m_window(window)
 		, m_lastFrameTime(0.0)
 		, m_deltaTime(0.0)
+		, m_frameLimit(BASE_FRAME_LIMIT)
+		, m_nextFrameTime(0.0)
 		, m_frameCount(0)
 		, m_fpsLastTime(0.0)
 		, m_currentFPS(0)
@@ -110,14 +116,54 @@ namespace newton::graphics
 		glfwPollEvents();
 	}
 
+	/**
+	 * @brief Shows the rendered frame, first waiting so that the frame rate does not exceed @ref frameLimit().
+	 *
+	 * Every frame is scheduled one budget (1 / limit) after the previous scheduled time, not after the
+	 * actual swap, so oversleeping in one frame shortens the wait in the next and the average hits the limit.
+	 * A frame that is already late is shown immediately and the schedule restarts from now, without catching up.
+	 * The wait blocks the calling thread, so it limits the whole main loop, not only drawing.
+	 */
 	void Context::swapBuffers()
 	{
+		if (m_frameLimit > 0) {
+			const double frameBudget = 1.0 / m_frameLimit;
+			m_nextFrameTime += frameBudget;
+
+			double now = glfwGetTime();
+			if (m_nextFrameTime < now)
+				m_nextFrameTime = now; // fell behind (slow frame, window drag), don't try to catch up
+			else
+				while (glfwGetTime() < m_nextFrameTime)
+					std::this_thread::sleep_for(std::chrono::microseconds(100));
+		}
+
 		glfwSwapBuffers(m_window);
 	}
 
 	GLFWwindow *Context::window()
 	{
 		return m_window;
+	}
+
+	/**
+	 * @brief Sets the maximum frame rate enforced by @ref swapBuffers(). Takes effect from the next swap.
+	 *
+	 * With vsync enabled the swap already waits for the monitor, so a limit above its refresh rate has no effect.
+	 *
+	 * @param fps Max frames per second, 0 or less disables the limit.
+	 */
+	void Context::setFrameLimit(int fps)
+	{
+		m_frameLimit = fps;
+	}
+
+	/**
+	 * @return Max frames per second, 0 or less means unlimited.
+	 */
+	int Context::frameLimit() const
+	{
+		return m_frameLimit;
 	}
 
 	/**
@@ -185,7 +231,7 @@ namespace newton::graphics
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		return window;
 	}

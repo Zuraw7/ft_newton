@@ -32,6 +32,9 @@ namespace newton::graphics
 			void swapBuffers();
 			GLFWwindow *window();
 
+			void setFrameLimit(int fps);
+			int frameLimit() const;
+
 			double deltaTime();
 			int FPS();
 			double avgFPS();
@@ -54,6 +57,9 @@ namespace newton::graphics
 
 			double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
 			double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
+
+			int m_frameLimit;       ///< Max frames per second, 0 or less means unlimited.
+			double m_nextFrameTime; ///< GLFW time the next buffer swap is scheduled for, in seconds.
 
 			int m_frameCount;     ///< Frames counted in the current one-second window.
 			double m_fpsLastTime; ///< GLFW time when the current one-second window started.
