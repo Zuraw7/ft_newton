@@ -26,6 +26,8 @@ namespace newton::ui
 
 			void beginFrame();
 			void endFrame();
+
+			bool wantsMouse() const;
 	};
 
 } // namespace newton::ui

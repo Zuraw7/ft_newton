@@ -72,7 +72,7 @@ int main()
 		handleGameInput(*context, *renderer);
 
 		context->update();
-		cameraController.update(context->deltaTime());
+		cameraController.update(context->deltaTime(), imguiLayer.wantsMouse());
 		input::InputManager::update();
 
 		imguiLayer.beginFrame();

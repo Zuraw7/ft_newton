@@ -80,4 +80,18 @@ namespace newton::ui
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
+	/**
+	 * @brief Tells whether ImGui uses the mouse: the cursor is over an ImGui window or a widget is being dragged.
+	 *
+	 * The value is updated by @ref beginFrame(). Read before it, it describes the previous frame, which is
+	 * accurate enough to decide whether game code should ignore mouse input.
+	 * Stays false while the cursor is disabled.
+	 *
+	 * @return True if mouse input should not be handled by the game this frame.
+	 */
+	bool ImGuiLayer::wantsMouse() const
+	{
+		return ImGui::GetIO().WantCaptureMouse;
+	}
+
 } // namespace newton::ui

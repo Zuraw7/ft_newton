@@ -37,7 +37,7 @@ namespace newton::controllers
 			explicit CameraController(graphics::Camera &camera);
 
 			void switchCamera(graphics::Camera &camera);
-			void update(double deltaTime);
+			void update(double deltaTime, bool mouseBlocked);
 
 		private:
 			void moveCamera(double deltaTime);
@@ -48,6 +48,8 @@ namespace newton::controllers
 			common::Logger &m_logger;
 
 			Settings m_settings; ///< Movement parameters, defaults from @ref Settings.
+
+			bool m_active; ///< True while the right mouse button drag controls the camera.
 	};
 
 } // namespace newton::controllers
