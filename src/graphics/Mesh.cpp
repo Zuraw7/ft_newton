@@ -3,7 +3,9 @@
 #include <glad/gl.h>
 
 #include <cstddef>
+
 #include "common/Logger.hpp"
+#include "geometry/MeshData.hpp"
 #include "graphics/GLError.hpp"
 
 namespace
@@ -23,7 +25,7 @@ namespace newton::graphics
 	 * @param vertices Vertex data.
 	 * @param indices Triangle indices into @p vertices, counter-clockwise for front faces.
 	 */
-	Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
+	Mesh::Mesh(const std::vector<geometry::Vertex> &vertices, const std::vector<unsigned int> &indices)
 		: m_VAO()
 		, m_VBO(vertices)
 		, m_EBO(indices)
@@ -46,6 +48,15 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @copybrief Mesh(const std::vector<geometry::Vertex> &, const std::vector<unsigned int> &)
+	 *
+	 * @param data Vertices and indices.
+	 */
+	Mesh::Mesh(const geometry::MeshData &data)
+		: Mesh(data.vertices, data.indices)
+	{}
+
+	/**
 	 * @brief Draws the mesh as triangles with the currently bound shader.
 	 */
 	void Mesh::draw() const
@@ -56,23 +67,27 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Describes the @ref Vertex layout to OpenGL.
+	 * @brief Describes the @ref geometry::Vertex layout to OpenGL.
 	 *
 	 * Must be called with @ref m_VAO and @ref m_VBO bound, so the attributes are recorded in the VAO
 	 * and read from the VBO.
 	 */
 	void Mesh::setupMesh()
 	{
+		// The attributes below assume vec3 position + vec3 normal + vec2 texCoords: 8 floats, no padding
+		static_assert(sizeof(geometry::Vertex) == 8 * sizeof(float), "Vertex must be tightly packed");
+
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, position)));
 
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-		                      reinterpret_cast<void *>(offsetof(Vertex, normal)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, normal)));
 
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-		                      reinterpret_cast<void *>(offsetof(Vertex, texCoords)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, texCoords)));
 	}
 
 } // namespace newton::graphics

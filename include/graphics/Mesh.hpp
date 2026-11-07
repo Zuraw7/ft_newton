@@ -1,30 +1,15 @@
 #ifndef GRAPHICS_MESH_HPP
 #define GRAPHICS_MESH_HPP
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-
 #include <vector>
 
+#include "geometry/MeshData.hpp"
 #include "graphics/buffers/IndexBuffer.hpp"
 #include "graphics/buffers/VertexArray.hpp"
 #include "graphics/buffers/VertexBuffer.hpp"
 
 namespace newton::graphics
 {
-	/**
-	 * @brief Single vertex as stored in a @ref VertexBuffer.
-	 *
-	 * The layout must match the attribute setup in @ref Mesh and the shader inputs
-	 * (location 0 position, 1 normal, 2 texCoords).
-	 */
-	struct Vertex
-	{
-			glm::vec3 position;  ///< Position in model space.
-			glm::vec3 normal;    ///< Unit normal in model space.
-			glm::vec2 texCoords; ///< Texture coordinates.
-	};
-
 	/**
 	 * @brief Indexed triangle mesh uploaded to the GPU.
 	 *
@@ -35,8 +20,8 @@ namespace newton::graphics
 	class Mesh
 	{
 		public:
-			// TODO: Create geometry::MeshData object and pass it to constructor
-			explicit Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
+			explicit Mesh(const std::vector<geometry::Vertex> &vertices, const std::vector<unsigned int> &indices);
+			explicit Mesh(const geometry::MeshData &data);
 			Mesh(Mesh &&other) noexcept = default;
 			Mesh &operator=(Mesh &&other) noexcept = default;
 			~Mesh() = default;
