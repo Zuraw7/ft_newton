@@ -30,6 +30,7 @@ add_executable(ft_newton
     src/graphics/Mesh.cpp
     src/graphics/Renderer.cpp
     src/graphics/Shader.cpp
+    src/geometry/Primitives.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp
     src/main.cpp
