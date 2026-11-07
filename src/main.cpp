@@ -2,11 +2,14 @@
 
 #include "common/Logger.hpp"
 #include "controllers/CameraController.hpp"
+#include "geometry/Primitives.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
+#include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
+#include "graphics/Shader.hpp"
 #include "input/InputManager.hpp"
 
 using namespace newton;
@@ -31,6 +34,11 @@ int main()
 	controllers::CameraController cameraController(mainCamera);
 
 	renderer.setBackgroundColor(0.07f, 0.11f, 0.18f, 1.0f);
+
+	auto program = graphics::Shader::create("assets/shaders/basic.vert", "assets/shaders/basic.frag");
+
+	graphics::Mesh object(geometry::makeCube());
+
 	// Game loop
 	while (context->shouldClose() == false) {
 		context->pollEvents();
@@ -38,12 +46,18 @@ int main()
 		handleGameInput(*context, renderer);
 
 		context->update();
-
 		cameraController.update(context->deltaTime());
-
 		input::InputManager::update();
 
 		renderer.clear();
+
+		program->bind();
+		program->setMat4("uModel", glm::mat4(1.0f));
+		program->setMat4("uView", mainCamera.getView());
+		program->setMat4("uProjection", mainCamera.getProjection());
+		program->setVec3("uColor", glm::vec3(0.3f, 0.12f, 0.44f));
+		object.draw();
+		program->unbind();
 
 		graphics::checkGLError("frame");
 
