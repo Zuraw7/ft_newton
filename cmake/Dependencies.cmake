@@ -67,3 +67,36 @@ get_target_property(GLM_INCLUDE_DIRS glm-header-only INTERFACE_INCLUDE_DIRECTORI
 set_target_properties(glm-header-only PROPERTIES
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${GLM_INCLUDE_DIRS}"
 )
+
+# ==========================================
+# Dear ImGui
+# ==========================================
+
+# ImGui has no CMakeLists.txt, so it is built here as a static library
+# together with the GLFW and OpenGL 3 backends.
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.9b
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(imgui)
+
+add_library(imgui STATIC
+    "${imgui_SOURCE_DIR}/imgui.cpp"
+    "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+)
+
+# SYSTEM: project warnings (-Werror) do not apply to ImGui headers
+target_include_directories(imgui SYSTEM PUBLIC
+    "${imgui_SOURCE_DIR}"
+    "${imgui_SOURCE_DIR}/backends"
+)
+
+target_link_libraries(imgui PUBLIC glfw)

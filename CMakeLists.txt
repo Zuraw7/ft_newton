@@ -53,4 +53,5 @@ target_link_libraries(ft_newton PRIVATE
     glad
     glfw
     glm::glm
+    imgui
 )
