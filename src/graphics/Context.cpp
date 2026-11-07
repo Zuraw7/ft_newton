@@ -16,6 +16,7 @@ namespace
 	const char *cClassName = "Context";
 
 	constexpr int BASE_FRAME_LIMIT = 144;
+	constexpr bool DEFAULT_SYNC = false;
 
 } // unnamed namespace
 
@@ -65,6 +66,7 @@ namespace newton::graphics
 		, m_deltaTime(0.0)
 		, m_frameLimit(BASE_FRAME_LIMIT)
 		, m_nextFrameTime(0.0)
+		, m_vsyncOn(DEFAULT_SYNC)
 		, m_frameCount(0)
 		, m_fpsLastTime(0.0)
 		, m_currentFPS(0)
@@ -167,6 +169,32 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @brief Enables or disables waiting for the monitor refresh on buffer swap. Off by default.
+	 *
+	 * Applies to the current OpenGL context, which is this window's context. The frame limit from
+	 * @ref setFrameLimit() still applies on top, but a limit above the refresh rate then has no effect.
+	 *
+	 * @param enabled True to sync swaps to the monitor refresh.
+	 */
+	void Context::setVSync(bool enabled)
+	{
+		if (enabled == m_vsyncOn)
+			return;
+
+		glfwSwapInterval(enabled ? 1 : 0);
+
+		m_vsyncOn = enabled;
+	}
+
+	/**
+	 * @return True if buffer swaps wait for the monitor refresh.
+	 */
+	bool Context::isVSync() const
+	{
+		return m_vsyncOn;
+	}
+
+	/**
 	 * @return Time between the last two @ref update() calls, in seconds.
 	 */
 	double Context::deltaTime()
@@ -231,7 +259,7 @@ namespace newton::graphics
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
-		glfwSwapInterval(0);
+		glfwSwapInterval(DEFAULT_SYNC ? 1 : 0);
 
 		return window;
 	}

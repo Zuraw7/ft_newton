@@ -35,6 +35,9 @@ namespace newton::graphics
 			void setFrameLimit(int fps);
 			int frameLimit() const;
 
+			void setVSync(bool enabled);
+			bool isVSync() const;
+
 			double deltaTime();
 			int FPS();
 			double avgFPS();
@@ -60,6 +63,8 @@ namespace newton::graphics
 
 			int m_frameLimit;       ///< Max frames per second, 0 or less means unlimited.
 			double m_nextFrameTime; ///< GLFW time the next buffer swap is scheduled for, in seconds.
+
+			bool m_vsyncOn; ///< True if buffer swaps wait for the monitor refresh.
 
 			int m_frameCount;     ///< Frames counted in the current one-second window.
 			double m_fpsLastTime; ///< GLFW time when the current one-second window started.
