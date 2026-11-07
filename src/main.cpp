@@ -1,10 +1,16 @@
 #include <GLFW/glfw3.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <memory>
+
 #include "common/Logger.hpp"
 #include "controllers/CameraController.hpp"
+#include "geometry/Primitives.hpp"
 #include "graphics/Camera.hpp"
+#include "graphics/Color.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
+#include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
 #include "input/InputManager.hpp"
@@ -19,31 +25,55 @@ int main()
 	common::Logger &logger = common::Logger::getInstance();
 	logger.setLogLevel(common::LogLevel::DEBUG);
 
-	// Setup
+	// Context setup
 	graphics::Resolution res = graphics::FHD;
 
 	auto context = graphics::Context::create(res.width, res.height, "ft_newton");
 	if (!context)
 		return -1;
 	input::InputManager::init(context->window());
-	graphics::Renderer renderer;
+
+	// Renderer creation
+	std::unique_ptr<graphics::Renderer> renderer =
+		graphics::Renderer::create("assets/shaders/basic.vert", "assets/shaders/basic.frag");
+	if (!renderer)
+		return -1;
+	renderer->setBackgroundColor(graphics::rgb(77, 189, 255));
+
+	// Camera creation
 	graphics::Camera mainCamera({0, 0, 3}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
 
-	renderer.setBackgroundColor(0.07f, 0.11f, 0.18f, 1.0f);
+	// Objects creation
+	graphics::Mesh cubeMesh(geometry::makeCube());
+	glm::mat4 cubeModel(1.0f);
+
+	graphics::Mesh planeMesh(geometry::makePlane());
+	glm::mat4 planeModel(1.0f);
+	planeModel = glm::translate(planeModel, glm::vec3(0.0f, -0.5f, 0.0f));
+	planeModel = glm::scale(planeModel, glm::vec3(10.0f, 1.0f, 10.0f));
+
+	graphics::Mesh sphereMesh(geometry::makeSphere());
+	glm::mat4 sphereModel(1.0f);
+	sphereModel = glm::translate(sphereModel, glm::vec3(1.0f, 0.0f, 1.0f));
+
+	glm::vec3 gray(graphics::rgb(154, 150, 159));
+	glm::vec3 turquoise(graphics::rgb(0x4dbd00));
+	
 	// Game loop
 	while (context->shouldClose() == false) {
 		context->pollEvents();
 
-		handleGameInput(*context, renderer);
+		handleGameInput(*context, *renderer);
 
 		context->update();
-
 		cameraController.update(context->deltaTime());
-
 		input::InputManager::update();
 
-		renderer.clear();
+		renderer->beginFrame(mainCamera);
+		renderer->draw(cubeMesh, cubeModel, gray);
+		renderer->draw(sphereMesh, sphereModel, gray);
+		renderer->draw(planeMesh, planeModel, turquoise);
 
 		graphics::checkGLError("frame");
 
