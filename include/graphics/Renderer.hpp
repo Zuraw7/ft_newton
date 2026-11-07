@@ -30,7 +30,7 @@ namespace newton::graphics
 			void beginFrame(Camera &camera);
 			void draw(const Mesh &mesh, const glm::mat4 &model, const glm::vec3 &color);
 
-			void setBackgroundColor(float red, float green, float blue, float alpha);
+			void setBackgroundColor(const glm::vec3 &color);
 			void togglePolygonMode();
 
 		private:

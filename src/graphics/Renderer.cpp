@@ -85,9 +85,9 @@ namespace newton::graphics
 	/**
 	 * @brief Sets the color used by @ref clear(). Components are in the [0, 1] range.
 	 */
-	void Renderer::setBackgroundColor(const float red, const float green, const float blue, const float alpha)
+	void Renderer::setBackgroundColor(const glm::vec3 &color)
 	{
-		glClearColor(red, green, blue, alpha);
+		glClearColor(color.r, color.g, color.b, 1.0f);
 	}
 
 	/**
