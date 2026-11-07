@@ -7,6 +7,7 @@
 #include "controllers/CameraController.hpp"
 #include "geometry/Primitives.hpp"
 #include "graphics/Camera.hpp"
+#include "graphics/Color.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
 #include "graphics/Mesh.hpp"
@@ -37,7 +38,7 @@ int main()
 		graphics::Renderer::create("assets/shaders/basic.vert", "assets/shaders/basic.frag");
 	if (!renderer)
 		return -1;
-	renderer->setBackgroundColor(0.07f, 0.11f, 0.18f, 1.0f);
+	renderer->setBackgroundColor(graphics::rgb(77, 189, 255));
 
 	// Camera creation
 	graphics::Camera mainCamera({0, 0, 3}, {0, 0, 0}, {0, 1, 0});
@@ -46,19 +47,19 @@ int main()
 	// Objects creation
 	graphics::Mesh cubeMesh(geometry::makeCube());
 	glm::mat4 cubeModel(1.0f);
-	glm::vec3 cubeColor(0.3f, 0.12f, 0.44f);
 
 	graphics::Mesh planeMesh(geometry::makePlane());
 	glm::mat4 planeModel(1.0f);
 	planeModel = glm::translate(planeModel, glm::vec3(0.0f, -0.5f, 0.0f));
 	planeModel = glm::scale(planeModel, glm::vec3(10.0f, 1.0f, 10.0f));
-	glm::vec3 planeColor(0.8f, 0.1f, 0.74f);
 
 	graphics::Mesh sphereMesh(geometry::makeSphere());
 	glm::mat4 sphereModel(1.0f);
 	sphereModel = glm::translate(sphereModel, glm::vec3(1.0f, 0.0f, 1.0f));
-	glm::vec3 sphereColor(0.5f, 0.5f, 0.5f);
 
+	glm::vec3 gray(graphics::rgb(154, 150, 159));
+	glm::vec3 turquoise(graphics::rgb(0x4dbd00));
+	
 	// Game loop
 	while (context->shouldClose() == false) {
 		context->pollEvents();
@@ -70,9 +71,9 @@ int main()
 		input::InputManager::update();
 
 		renderer->beginFrame(mainCamera);
-		renderer->draw(cubeMesh, cubeModel, cubeColor);
-		renderer->draw(sphereMesh, sphereModel, sphereColor);
-		renderer->draw(planeMesh, planeModel, planeColor);
+		renderer->draw(cubeMesh, cubeModel, gray);
+		renderer->draw(sphereMesh, sphereModel, gray);
+		renderer->draw(planeMesh, planeModel, turquoise);
 
 		graphics::checkGLError("frame");
 
