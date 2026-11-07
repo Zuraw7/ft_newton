@@ -4,6 +4,11 @@
 
 namespace newton::ui
 {
+	/**
+	 * @brief Draws the stats as plain text in the top-left corner, without a window background.
+	 *
+	 * @param fps Frames per second to show, also converted to the average frame time in ms.
+	 */
 	void drawStatsOverlay(int fps)
 	{
 		ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);

@@ -15,6 +15,15 @@ namespace
 
 namespace newton::ui
 {
+	/**
+	 * @brief Creates the ImGui context and initializes the GLFW and OpenGL 3 backends.
+	 *
+	 * Requires a current OpenGL 3.3 context. Create after @ref input::InputManager::init(): the GLFW backend
+	 * installs its own callbacks and chains the ones already set, callbacks set later would replace it.
+	 * Backend failures are logged, not reported to the caller.
+	 *
+	 * @param window Window ImGui reads input from. Must outlive this object.
+	 */
 	ImGuiLayer::ImGuiLayer(GLFWwindow *window)
 	{
 		IMGUI_CHECKVERSION();
@@ -46,6 +55,12 @@ namespace newton::ui
 		ImGui::DestroyContext();
 	}
 
+	/**
+	 * @brief Starts a new ImGui frame.
+	 *
+	 * Call once per frame, after events are polled and before any ImGui window is drawn.
+	 * Every call must be followed by @ref endFrame() in the same frame.
+	 */
 	void ImGuiLayer::beginFrame()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
@@ -53,6 +68,12 @@ namespace newton::ui
 		ImGui::NewFrame();
 	}
 
+	/**
+	 * @brief Finishes the ImGui frame and draws it into the current framebuffer.
+	 *
+	 * Call after the scene is drawn and before swapping buffers, so ImGui windows end up on top.
+	 * The OpenGL state changed while drawing (shader, VAO, blending, polygon mode, ...) is restored afterwards.
+	 */
 	void ImGuiLayer::endFrame()
 	{
 		ImGui::Render();
