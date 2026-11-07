@@ -33,6 +33,8 @@ add_executable(ft_newton
     src/geometry/Primitives.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp
+    src/ui/ImGuiLayer.cpp
+    src/ui/StatsOverlay.cpp
     src/main.cpp
 )
 
