@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "ui/Layout.hpp"
+
 namespace newton::ui
 {
 	/**
@@ -11,7 +13,7 @@ namespace newton::ui
 	 */
 	void drawStatsOverlay(int fps)
 	{
-		ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
+		ImGui::SetNextWindowPos({cScreenMargin, cScreenMargin}, ImGuiCond_Always, {0.0f, 0.0f});
 		ImGui::Begin("Stats", nullptr,
 		             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs |
 		                 ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |

@@ -14,6 +14,7 @@
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
 #include "input/InputManager.hpp"
+#include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
 #include "ui/StatsOverlay.hpp"
 
@@ -25,7 +26,7 @@ int main()
 {
 	// Global logger configuration
 	common::Logger &logger = common::Logger::getInstance();
-	logger.setLogLevel(common::LogLevel::DEBUG);
+	logger.setLogLevel(common::LogLevel::INFO);
 
 	// Context setup
 	graphics::Resolution res = graphics::FHD;
@@ -76,6 +77,7 @@ int main()
 
 		imguiLayer.beginFrame();
 		ui::drawStatsOverlay(context->FPS());
+		ui::drawDisplayPanel(*context);
 
 		renderer->beginFrame(mainCamera);
 		renderer->draw(cubeMesh, cubeModel, gray);
