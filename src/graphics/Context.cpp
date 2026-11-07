@@ -185,7 +185,7 @@ namespace newton::graphics
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 
 		return window;
 	}
