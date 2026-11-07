@@ -97,8 +97,8 @@ namespace newton::graphics
 	 */
 	void Renderer::togglePolygonMode()
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode ? GL_LINE : GL_FILL);
 		m_polygonMode = !m_polygonMode;
+		glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode ? GL_LINE : GL_FILL);
 	}
 
 	/**
