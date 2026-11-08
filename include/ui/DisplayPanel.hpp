@@ -10,7 +10,7 @@ namespace newton::graphics
 
 namespace newton::ui
 {
-	void drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer);
+	float drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer, float top);
 
 } // namespace newton::ui
 

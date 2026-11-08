@@ -14,6 +14,7 @@
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "input/InputManager.hpp"
+#include "ui/CameraPanel.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
 #include "ui/StatsOverlay.hpp"
@@ -75,8 +76,12 @@ int main()
 		input::InputManager::update();
 
 		imguiLayer.beginFrame();
+
 		ui::drawStatsOverlay(context->FPS());
-		ui::drawDisplayPanel(*context, *gridRenderer);
+
+		float panelTop = 0;
+		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
+		ui::drawCameraPanel(cameraController, panelTop);
 
 		renderer->beginFrame(mainCamera);
 		renderer->draw(cubeMesh, cubeModel, gray);
