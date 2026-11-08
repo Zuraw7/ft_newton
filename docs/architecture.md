@@ -61,7 +61,7 @@ leaves their destructors calling OpenGL without a context.
 ## Frame pacing
 
 - VSync is off by default. Frame rate is capped by the limiter in @ref newton::graphics::Context::swapBuffers "Context::swapBuffers()", set by default
-  to the primary monitor refresh rate (@ref newton::graphics::Context::monitorRefreshRate "Context::monitorRefreshRate()", fallback 144 FPS).
+  to the primary monitor refresh rate (@ref newton::graphics::Context::monitorRefreshRate "Context::monitorRefreshRate()", fallback 60 FPS).
 - The limiter schedules each frame one budget after the previous scheduled time, so oversleeping is compensated
   and the average matches the limit.
 - ImGui is not allowed to change the OS cursor (`ImGuiConfigFlags_NoMouseCursorChange`).

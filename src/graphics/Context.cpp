@@ -18,7 +18,7 @@ namespace
 
 	const GLFWvidmode *queryVideoMode();
 
-	constexpr int FALLBACK_FRAME_LIMIT = 144;
+	constexpr int FALLBACK_FRAME_LIMIT = 60;
 	constexpr float FALLBACK_ASPECT_RATIO = 16.0f / 9.0f;
 	constexpr bool DEFAULT_SYNC = false;
 
