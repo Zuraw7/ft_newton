@@ -28,6 +28,7 @@ add_executable(ft_newton
     src/graphics/Camera.cpp
     src/graphics/Context.cpp
     src/graphics/GLError.cpp
+    src/graphics/GridRenderer.cpp
     src/graphics/Mesh.cpp
     src/graphics/Renderer.cpp
     src/graphics/Shader.cpp

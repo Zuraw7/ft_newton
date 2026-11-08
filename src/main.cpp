@@ -10,6 +10,7 @@
 #include "graphics/Color.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
+#include "graphics/GridRenderer.hpp"
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
@@ -45,6 +46,11 @@ int main()
 		return -1;
 	renderer->setBackgroundColor(graphics::rgb(77, 189, 255));
 
+	std::unique_ptr<graphics::GridRenderer> gridRenderer =
+		graphics::GridRenderer::create("assets/shaders/grid.vert", "assets/shaders/grid.frag");
+	if (!gridRenderer)
+		return -1;
+
 	// Camera creation
 	graphics::Camera mainCamera({0, 4, 10}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
@@ -52,18 +58,13 @@ int main()
 	// Objects creation
 	graphics::Mesh cubeMesh(geometry::makeCube());
 	glm::mat4 cubeModel(1.0f);
-
-	graphics::Mesh planeMesh(geometry::makePlane());
-	glm::mat4 planeModel(1.0f);
-	planeModel = glm::translate(planeModel, glm::vec3(0.0f, -0.5f, 0.0f));
-	planeModel = glm::scale(planeModel, glm::vec3(10.0f, 1.0f, 10.0f));
+	cubeModel = glm::translate(cubeModel, glm::vec3(0.0f, 0.5f, 0.0f));
 
 	graphics::Mesh sphereMesh(geometry::makeSphere());
 	glm::mat4 sphereModel(1.0f);
-	sphereModel = glm::translate(sphereModel, glm::vec3(1.0f, 0.0f, 1.0f));
+	sphereModel = glm::translate(sphereModel, glm::vec3(1.0f, 0.5f, 1.0f));
 
 	glm::vec3 gray(graphics::rgb(154, 150, 159));
-	glm::vec3 turquoise(graphics::rgb(0x4dbd00));
 
 	// Game loop
 	while (context->shouldClose() == false) {
@@ -77,12 +78,13 @@ int main()
 
 		imguiLayer.beginFrame();
 		ui::drawStatsOverlay(context->FPS());
-		ui::drawDisplayPanel(*context);
+		ui::drawDisplayPanel(*context, *gridRenderer);
 
 		renderer->beginFrame(mainCamera);
 		renderer->draw(cubeMesh, cubeModel, gray);
 		renderer->draw(sphereMesh, sphereModel, gray);
-		renderer->draw(planeMesh, planeModel, turquoise);
+
+		gridRenderer->draw(mainCamera);
 
 		imguiLayer.endFrame();
 

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "graphics/Context.hpp"
+#include "graphics/GridRenderer.hpp"
 #include "ui/Layout.hpp"
 
 namespace
@@ -22,6 +23,7 @@ namespace
 	                                     {180, "180"}, {240, "240"}, {500, "500"}, {0, "Unlimited"}};
 
 	void drawVSyncCheckbox(newton::graphics::Context &context);
+	void drawGridCheckbox(newton::graphics::GridRenderer &gridRenderer);
 	void drawFrameLimitCombo(newton::graphics::Context &context);
 
 } // unnamed namespace
@@ -29,21 +31,23 @@ namespace
 namespace newton::ui
 {
 	/**
-	 * @brief Draws the "Display" window with the VSync checkbox and the FPS limit combo.
+	 * @brief Draws the "Display" window with the VSync and grid checkboxes and the FPS limit combo.
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
-	 * to the context immediately. The window starts in the top-right corner and can be moved freely,
+	 * immediately. The window starts in the top-right corner and can be moved freely,
 	 * it does not follow the corner when the main window is resized.
 	 *
 	 * @param context Context whose settings are shown and changed.
+	 * @param gridRenderer Grid whose visibility is shown and changed.
 	 */
-	void drawDisplayPanel(graphics::Context &context)
+	void drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer)
 	{
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
 		ImGui::SetNextWindowPos({display.x - cScreenMargin, cScreenMargin}, ImGuiCond_FirstUseEver, {1.0f, 0.0f});
 
 		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			drawVSyncCheckbox(context);
+			drawGridCheckbox(gridRenderer);
 			drawFrameLimitCombo(context);
 		}
 
@@ -62,6 +66,16 @@ namespace
 		bool vsync = context.isVSync();
 		if (ImGui::Checkbox("VSync", &vsync))
 			context.setVSync(vsync);
+	}
+
+	/**
+	 * @brief Draws the grid checkbox, showing and changing the grid's visibility.
+	 */
+	void drawGridCheckbox(newton::graphics::GridRenderer &gridRenderer)
+	{
+		bool grid = gridRenderer.isVisible();
+		if (ImGui::Checkbox("Grid", &grid))
+			gridRenderer.visible(grid);
 	}
 
 	/**
