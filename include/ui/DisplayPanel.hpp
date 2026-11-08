@@ -4,12 +4,13 @@
 namespace newton::graphics
 {
 	class Context;
+	class GridRenderer;
 
 } // namespace newton::graphics
 
 namespace newton::ui
 {
-	void drawDisplayPanel(graphics::Context &context);
+	void drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer);
 
 } // namespace newton::ui
 

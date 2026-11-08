@@ -50,6 +50,7 @@ ui ──> graphics
 | @ref newton::input::InputManager::init "input::InputManager::init()" | Installs GLFW input callbacks |
 | @ref newton::ui::ImGuiLayer "ui::ImGuiLayer" | Must come after `InputManager::init()`: the ImGui GLFW backend chains the callbacks already set, callbacks set later would replace its own |
 | @ref newton::graphics::Renderer::create "graphics::Renderer::create()" | Compiles the shader, needs the context |
+| @ref newton::graphics::GridRenderer::create "graphics::GridRenderer::create()" | Compiles the grid shader, needs the context |
 | Camera, controller, meshes | Meshes upload data to the GPU, need the context |
 
 Everything that owns OpenGL objects (meshes, buffers, shaders, the renderer, the ImGui layer) needs a current

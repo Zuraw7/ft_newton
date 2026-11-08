@@ -11,6 +11,7 @@ or behaves wrong.
 - Positions and sizes are in world units. Physics will treat 1 unit as 1 meter.
 - Time is in seconds, stored as `double` (delta time, frame budget, GLFW time).
 - Angles exposed by the project are in **degrees** (camera FOV, rotation sensitivity per pixel).
+- The world grid lies on y = 0, with lines every 1 and every 10 units. The X axis is red, the Z axis is blue.
 
 ## Geometry
 
