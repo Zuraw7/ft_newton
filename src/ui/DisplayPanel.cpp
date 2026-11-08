@@ -52,6 +52,7 @@ namespace
 
 	void drawVSyncCheckbox(newton::graphics::Context &context);
 	void drawGridCheckbox(newton::graphics::GridRenderer &gridRenderer);
+	void drawFullscreenCheckbox(newton::graphics::Context &context);
 	void drawFrameLimitCombo(newton::graphics::Context &context);
 	void drawResolutionCombo(newton::graphics::Context &context);
 
@@ -60,11 +61,12 @@ namespace
 namespace newton::ui
 {
 	/**
-	 * @brief Draws the "Display" window with the VSync and grid checkboxes and the FPS limit and resolution combos.
+	 * @brief Draws the "Display" window with the VSync, grid and fullscreen checkboxes and the FPS limit
+	 *        and resolution combos.
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
 	 * immediately. The window stays in the top-right corner, also when the main window is resized,
-	 * and cannot be moved.
+	 * and cannot be moved. The resolution combo is disabled while fullscreen.
 	 *
 	 * @param context Context whose settings are shown and changed.
 	 * @param gridRenderer Grid whose visibility is shown and changed.
@@ -77,8 +79,11 @@ namespace newton::ui
 		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
 			drawVSyncCheckbox(context);
 			drawGridCheckbox(gridRenderer);
+			drawFullscreenCheckbox(context);
 			drawFrameLimitCombo(context);
+			ImGui::BeginDisabled(context.isFullscreen());
 			drawResolutionCombo(context);
+			ImGui::EndDisabled();
 		}
 
 		ImGui::End();
@@ -106,6 +111,16 @@ namespace
 		bool grid = gridRenderer.isVisible();
 		if (ImGui::Checkbox("Grid", &grid))
 			gridRenderer.visible(grid);
+	}
+
+	/**
+	 * @brief Draws the fullscreen checkbox, showing and changing the context's fullscreen state.
+	 */
+	void drawFullscreenCheckbox(newton::graphics::Context &context)
+	{
+		bool fullscreen = context.isFullscreen();
+		if (ImGui::Checkbox("Fullscreen", &fullscreen))
+			context.setFullscreen(fullscreen);
 	}
 
 	/**

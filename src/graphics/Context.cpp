@@ -83,6 +83,10 @@ namespace newton::graphics
 		: m_window(window)
 		, m_monitorRefreshRate(0)
 		, m_monitorResolution(0, 0)
+		, m_windowedResolution(0, 0)
+		, m_windowedX(0)
+		, m_windowedY(0)
+		, m_windowedMaximized(false)
 		, m_lastFrameTime(0.0)
 		, m_deltaTime(0.0)
 		, m_frameLimit(0)
@@ -262,6 +266,55 @@ namespace newton::graphics
 	void Context::setResolution(Resolution resolution)
 	{
 		glfwSetWindowSize(m_window, resolution.width, resolution.height);
+	}
+
+	/**
+	 * @brief Switches between fullscreen on the primary monitor and a regular window.
+	 *
+	 * Fullscreen uses the current video mode of the monitor, so its resolution and refresh rate do not change.
+	 * Entering stores the window size, maximized state and position, leaving restores them. Wayland does not
+	 * expose the window position, so there the system places the window. Does nothing if the state is already
+	 * set. Without a monitor it logs a warning and stays windowed. The viewport follows through the framebuffer
+	 * callback, the aspect ratio changes too, see @ref aspectRatio().
+	 *
+	 * @param enabled True enters fullscreen, false returns to the window.
+	 */
+	void Context::setFullscreen(bool enabled)
+	{
+		if (enabled == isFullscreen())
+			return;
+
+		if (enabled) {
+			GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode *mode = queryVideoMode();
+			if (!monitor || !mode) {
+				m_logger.printf(common::LogLevel::WARN, "[%s] Cannot enter fullscreen: no monitor\n", cClassName);
+				return;
+			}
+
+			m_windowedMaximized = glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED) != 0;
+			m_windowedResolution = resolution();
+
+			if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND)
+				glfwGetWindowPos(m_window, &m_windowedX, &m_windowedY);
+
+			glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		} else {
+			glfwSetWindowMonitor(m_window, nullptr, m_windowedX, m_windowedY, m_windowedResolution.width,
+			                     m_windowedResolution.height, GLFW_DONT_CARE);
+			if (m_windowedMaximized)
+				glfwMaximizeWindow(m_window);
+		}
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] Fullscreen %s\n", cClassName, enabled ? "ON" : "OFF");
+	}
+
+	/**
+	 * @return True if the window is currently fullscreen.
+	 */
+	bool Context::isFullscreen() const
+	{
+		return glfwGetWindowMonitor(m_window) != nullptr;
 	}
 
 	/**

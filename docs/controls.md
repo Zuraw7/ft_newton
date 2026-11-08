@@ -25,6 +25,7 @@ over a window.
 | Input | Action |
 | --- | --- |
 | `P` | Toggle wireframe |
+| `F11` | Toggle fullscreen |
 | `Esc` | Quit |
 
 ## UI
@@ -32,6 +33,6 @@ over a window.
 | Window | Contents |
 | --- | --- |
 | Stats (top left, no background) | Frames per second and average frame time |
-| Display (top right) | VSync toggle, grid toggle, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (monitor size or presets that fit on it) |
+| Display (top right) | VSync, grid and fullscreen toggles, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (monitor size or presets that fit on it, disabled while fullscreen) |
 
 Both windows stay in their corners, also when the main window is resized, and cannot be moved.

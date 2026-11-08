@@ -101,4 +101,7 @@ void handleGameInput(graphics::Context &context, graphics::Renderer &renderer)
 
 	if (input::InputManager::isKeyPressed(GLFW_KEY_P))
 		renderer.togglePolygonMode();
+
+	if (input::InputManager::isKeyPressed(GLFW_KEY_F11))
+		context.setFullscreen(!context.isFullscreen());
 }
