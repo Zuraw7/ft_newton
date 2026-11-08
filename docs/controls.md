@@ -34,6 +34,6 @@ over a window.
 | --- | --- |
 | Stats (top left, no background) | Frames per second and average frame time |
 | Display (top right) | VSync, grid and fullscreen toggles, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (presets smaller than the monitor, disabled while fullscreen) |
-| Camera (right, under Display) | Current field of view, sliders for speed, fast multiplier, sensitivity and zoom sensitivity, reset to defaults |
+| Camera (right, under Display) | Current position and field of view, sliders for speed, fast multiplier, sensitivity and zoom sensitivity, buttons resetting the settings to defaults and the camera to its starting position, direction and field of view |
 
 All windows keep their places, also when the main window is resized, and cannot be moved.

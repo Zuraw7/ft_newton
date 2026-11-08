@@ -112,11 +112,19 @@ namespace newton::controllers
 	}
 
 	/**
-	 * @return Vertical field of view of the bound camera, in degrees.
+	 * @return Currently bound camera, read-only.
 	 */
-	float CameraController::fov() const
+	const graphics::Camera &CameraController::camera() const
 	{
-		return m_camera->getFOV();
+		return *m_camera;
+	}
+
+	/**
+	 * @brief Returns the bound camera to its starting state, see @ref graphics::Camera::reset().
+	 */
+	void CameraController::resetCamera()
+	{
+		m_camera->reset();
 	}
 
 	/**

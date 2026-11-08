@@ -46,7 +46,8 @@ namespace newton::controllers
 			void setSettings(const Settings &settings);
 			const Settings &settings() const;
 
-			float fov() const;
+			const graphics::Camera &camera() const;
+			void resetCamera();
 
 		private:
 			void moveCamera(double deltaTime);
