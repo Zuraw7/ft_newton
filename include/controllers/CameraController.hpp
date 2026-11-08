@@ -15,7 +15,10 @@ namespace newton::controllers
 	 *   - Space / Left Shift - move up / down
 	 *   - Ctrl - move faster
 	 *   - Mouse movement - rotate
-	 * - Scroll - zoom (changes FOV), always active
+	 * - Scroll - zoom (changes FOV)
+	 *
+	 * While the mouse is blocked (see @ref update()), e.g. over a UI window, the right button does not start
+	 * movement and scrolling does not zoom. Movement already started continues until the button is released.
 	 *
 	 * The controller does not own the camera, it only stores a pointer to it.
 	 * The bound camera must outlive the controller: create it before the controller
