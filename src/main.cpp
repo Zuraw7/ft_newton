@@ -1,6 +1,5 @@
 #include <GLFW/glfw3.h>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 
 #include "common/Logger.hpp"
@@ -14,6 +13,8 @@
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "input/InputManager.hpp"
+#include "scene/Scene.hpp"
+#include "scene/SceneObject.hpp"
 #include "ui/CameraPanel.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
@@ -53,16 +54,38 @@ int main()
 	graphics::Camera mainCamera({0, 4, 10}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
 
-	// Objects creation
+	// Mesh creation
 	graphics::Mesh cubeMesh(geometry::makeCube());
-	glm::mat4 cubeModel(1.0f);
-	cubeModel = glm::translate(cubeModel, glm::vec3(0.0f, 0.5f, 0.0f));
-
 	graphics::Mesh sphereMesh(geometry::makeSphere());
-	glm::mat4 sphereModel(1.0f);
-	sphereModel = glm::translate(sphereModel, glm::vec3(1.0f, 0.5f, 1.0f));
+	graphics::Mesh planeMesh(geometry::makePlane());
 
-	glm::vec3 gray(graphics::rgb(154, 150, 159));
+	// Scene creation
+	scene::Scene scene;
+
+	scene::SceneObject floor;
+	floor.transform.position = {0.0f, 0.01f, 0.0f};
+	floor.transform.scale = {20.0f, 1.0f, 20.0f};
+	floor.mesh = &planeMesh;
+	floor.color = graphics::rgb(223, 99, 46);
+	scene.add(floor);
+
+	scene::SceneObject redCube;
+	redCube.transform.position = {1.0f, 0.5f, 1.0f};
+	redCube.mesh = &cubeMesh;
+	redCube.color = graphics::rgb(255, 0, 0);
+	scene.add(redCube);
+
+	scene::SceneObject blueCube;
+	blueCube.transform.position = {-1.0f, 0.5f, -1.0f};
+	blueCube.mesh = &cubeMesh;
+	blueCube.color = graphics::rgb(0, 0, 255);
+	scene.add(blueCube);
+
+	scene::SceneObject greenSphere;
+	greenSphere.transform.position = {0.0f, 0.5f, 0.0f};
+	greenSphere.mesh = &sphereMesh;
+	greenSphere.color = graphics::rgb(0, 255, 0);
+	scene.add(greenSphere);
 
 	// Game loop
 	while (context->shouldClose() == false) {
@@ -77,15 +100,16 @@ int main()
 
 		imguiLayer.beginFrame();
 
-		ui::drawStatsOverlay(context->FPS());
+		ui::drawStatsOverlay(context->FPS(), scene.size());
 
 		float panelTop = 0;
 		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
 		ui::drawCameraPanel(cameraController, panelTop);
 
 		renderer->beginFrame(mainCamera);
-		renderer->draw(cubeMesh, cubeModel, gray);
-		renderer->draw(sphereMesh, sphereModel, gray);
+
+		for (const scene::SceneObject &object : scene.objects())
+			renderer->draw(*object.mesh, object.transform.matrix(), object.color);
 
 		gridRenderer->draw(mainCamera);
 
