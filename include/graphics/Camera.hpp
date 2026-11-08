@@ -48,6 +48,7 @@ namespace newton::graphics
 			void move(const glm::vec3 &offset);
 			void rotate(float yawDegrees, float pitchDegrees);
 			void zoom(float fovDelta);
+			void reset();
 
 		private:
 			glm::mat4 calculateView() const;
@@ -59,6 +60,9 @@ namespace newton::graphics
 			float m_aspect; ///< Width divided by height, used by the projection.
 
 			// Vectors
+			glm::vec3 m_startingPos;    ///< Position from the constructor, restored by @ref reset().
+			glm::vec3 m_startingTarget; ///< Target from the constructor, restored by @ref reset().
+
 			glm::vec3 m_position; ///< Position in world space.
 			glm::vec3 m_worldUp; ///< Normalized world up axis, used for vertical movement and to build the camera axes.
 

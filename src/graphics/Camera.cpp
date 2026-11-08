@@ -16,6 +16,7 @@ namespace
 	constexpr float NEAR = 0.1f;
 	constexpr float FAR = 450.0f;
 	constexpr float MAX_PITCH = 89.0f;
+	constexpr float DEFAULT_FOV = 60.0f;
 	constexpr float MAX_FOV = 90.0f;
 	constexpr float MIN_FOV = 10.0f;
 
@@ -33,11 +34,13 @@ namespace newton::graphics
 	Camera::Camera(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &worldUp)
 		: m_logger(common::Logger::getInstance())
 		, m_aspect(16.0f / 9.0f)
+		, m_startingPos(position)
+		, m_startingTarget(target)
 		, m_position(position)
 		, m_worldUp(glm::normalize(worldUp))
 		, m_yaw(-90.0f)
 		, m_pitch(0.0f)
-		, m_fov(60.0f)
+		, m_fov(DEFAULT_FOV)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Initializing camera\n", cClassName);
 
@@ -169,6 +172,21 @@ namespace newton::graphics
 		m_fov += fovDelta;
 		m_fov = std::clamp(m_fov, MIN_FOV, MAX_FOV);
 
+		updateProjection();
+	}
+
+	/**
+	 * @brief Restores the position and direction from the constructor and the default FOV.
+	 *
+	 * The aspect ratio stays as it is, because it follows the window size. If the starting target equals
+	 * the starting position, the direction does not change (see @ref lookAt()).
+	 */
+	void Camera::reset()
+	{
+		m_position = m_startingPos;
+		lookAt(m_startingTarget);
+
+		m_fov = DEFAULT_FOV;
 		updateProjection();
 	}
 
