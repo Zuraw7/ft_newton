@@ -16,6 +16,7 @@ Each directory in `include/` and `src/` is one module with its own namespace `ne
 | `graphics` | Window and OpenGL context (@ref newton::graphics::Context "Context"), frame timing, shaders (@ref newton::graphics::Shader "Shader"), GPU buffers, meshes (@ref newton::graphics::Mesh "Mesh"), camera (@ref newton::graphics::Camera "Camera"), renderer (@ref newton::graphics::Renderer "Renderer") |
 | `input` | Keyboard and mouse state collected from GLFW callbacks (@ref newton::input::InputManager "InputManager") |
 | `controllers` | Turn input into actions, e.g. @ref newton::controllers::CameraController "CameraController" moves the camera |
+| `scene` | Objects in the world: @ref newton::scene::Scene "Scene", @ref newton::scene::SceneObject "SceneObject", @ref newton::scene::Transform "Transform" |
 | `ui` | Dear ImGui lifetime (@ref newton::ui::ImGuiLayer "ImGuiLayer") and the windows drawn with it |
 
 `main.cpp` creates the objects and connects them, the modules do not create each other.
@@ -27,22 +28,11 @@ and data crosses module boundaries as plain values or references passed in from 
 modules reaching into each other. This keeps changes local and lets modules be reused or replaced
 without touching the rest.
 
-Allowed directions (every module may also use `common`):
-
-```bash
-controllers ──> graphics ──> geometry
-     │
-     └───────> input
-
-ui ──> graphics
- │
- └───> controllers
-```
-
 - `geometry` has no OpenGL dependency. It produces plain data, uploading it to the GPU is the job of @ref newton::graphics::Mesh "graphics::Mesh".
 - `ui` panels receive the object whose settings they show (e.g. @ref newton::ui::drawDisplayPanel "drawDisplayPanel(Context&)") or plain values
-  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps)"). One panel per module.
+  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps, std::size_t objectCount)"). One panel per module.
 - `controllers` know nothing about the UI. Whether the mouse belongs to an ImGui window is passed in as a plain `bool`.
+- `scene` only stores objects, `main.cpp` passes them to the renderer. Objects point to meshes they do not own.
 
 ## Startup and shutdown order
 
@@ -54,6 +44,7 @@ ui ──> graphics
 | @ref newton::graphics::Renderer::create "graphics::Renderer::create()" | Compiles the shader, needs the context |
 | @ref newton::graphics::GridRenderer::create "graphics::GridRenderer::create()" | Compiles the grid shader, needs the context |
 | Camera, controller, meshes | Meshes upload data to the GPU, need the context |
+| @ref newton::scene::Scene "scene::Scene" | Its objects point to meshes, which must outlive it |
 
 Everything that owns OpenGL objects (meshes, buffers, shaders, the renderer, the ImGui layer) needs a current
 OpenGL context for its whole lifetime: it creates GPU objects when constructed and deletes them when destroyed.
