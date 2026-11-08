@@ -32,7 +32,7 @@ namespace
 			const char *name;                        ///< Name shown in the combo, before the size.
 	};
 
-	/// Window sizes offered in the combo, besides the detected monitor size.
+	/// Window sizes offered in the combo.
 	constexpr ResolutionPreset cResolutionPresets[] = {
 		{newton::graphics::XGA, "XGA 4:3"},       {newton::graphics::qHD, "qHD 16:9"},
 		{newton::graphics::HD, "HD 16:9"},        {newton::graphics::HDP, "HD+ 16:9"},
@@ -136,7 +136,7 @@ namespace
 		const bool hasMonitorHz = monitorHz > 0;
 		const bool monitorSelected = hasMonitorHz && limit == monitorHz;
 
-		const std::string monitorLabel = "Monitor(" + std::to_string(monitorHz) + " Hz)";
+		const std::string monitorLabel = "Monitor (" + std::to_string(monitorHz) + " Hz)";
 
 		const char *preview = "Custom";
 		if (monitorSelected)
@@ -166,11 +166,11 @@ namespace
 	}
 
 	/**
-	 * @brief Draws the resolution combo: the monitor size (if detected) followed by @ref cResolutionPresets.
+	 * @brief Draws the resolution combo with @ref cResolutionPresets.
 	 *
-	 * Presets larger than the monitor are skipped, all of them are listed if its size is unknown. When the window
-	 * has the monitor size, only the "Monitor" entry is shown as selected, even if a preset has the same value.
-	 * Any other size, e.g. after resizing the window by hand or when maximized, is shown as "Custom" with its value.
+	 * Lists only presets smaller than the monitor, so the window fits on it, or all of them if its size is unknown.
+	 * A size matching no preset, e.g. after resizing the window by hand or when maximized, is shown as "Custom"
+	 * with its value.
 	 */
 	void drawResolutionCombo(newton::graphics::Context &context)
 	{
@@ -179,31 +179,18 @@ namespace
 		const Resolution res = context.resolution();
 		const Resolution monitorRes = context.monitorResolution();
 		const bool hasSize = monitorRes.width > 0 && monitorRes.height > 0;
-		const bool monitorResSelected = hasSize && res == monitorRes;
-
-		const std::string monitorLabel = "Monitor(" + monitorRes.toString() + ")";
 
 		std::string preview = "Custom (" + res.toString() + ")";
-		if (monitorResSelected)
-			preview = monitorLabel;
-		else
-			for (const ResolutionPreset &preset : cResolutionPresets)
-				if (preset.resolution == res)
-					preview = presetLabel(preset);
+		for (const ResolutionPreset &preset : cResolutionPresets)
+			if (preset.resolution == res)
+				preview = presetLabel(preset);
 
 		if (ImGui::BeginCombo("Resolution", preview.c_str())) {
-			if (hasSize) {
-				if (ImGui::Selectable(monitorLabel.c_str(), monitorResSelected))
-					context.setResolution(monitorRes);
-				if (monitorResSelected)
-					ImGui::SetItemDefaultFocus();
-			}
-
 			for (const ResolutionPreset &preset : cResolutionPresets) {
-				if (hasSize && !preset.resolution.fitsIn(monitorRes))
+				if (hasSize && !preset.resolution.isSmallerThan(monitorRes))
 					continue;
 
-				const bool selected = !monitorResSelected && preset.resolution == res;
+				const bool selected = preset.resolution == res;
 				if (ImGui::Selectable(presetLabel(preset).c_str(), selected))
 					context.setResolution(preset.resolution);
 				if (selected)

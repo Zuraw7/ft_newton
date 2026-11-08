@@ -31,13 +31,16 @@ namespace newton::graphics
 			}
 
 			/**
-			 * @brief Checks that both dimensions are at most those of the other size.
-			 * @param other Size to fit in, e.g. the monitor.
-			 * @return True if this size fits, equal sizes included.
+			 * @brief Checks that both dimensions are smaller than those of the other size.
+			 *
+			 * A window this small leaves room for its title bar and desktop panels on a monitor of the other size.
+			 *
+			 * @param other Size to compare with, e.g. the monitor.
+			 * @return True if this size is smaller in both dimensions.
 			 */
-			constexpr bool fitsIn(const Resolution &other) const
+			constexpr bool isSmallerThan(const Resolution &other) const
 			{
-				return width <= other.width && height <= other.height;
+				return width < other.width && height < other.height;
 			}
 
 			/**

@@ -22,6 +22,14 @@ namespace
 	constexpr float FALLBACK_ASPECT_RATIO = 16.0f / 9.0f;
 	constexpr bool DEFAULT_SYNC = false;
 
+	using newton::graphics::Resolution;
+
+	/// Window sizes to start with when none is given, from the largest.
+	constexpr Resolution cStartupResolutions[] = {newton::graphics::UHD, newton::graphics::QHD, newton::graphics::FHD,
+	                                              newton::graphics::HDP, newton::graphics::HD};
+
+	Resolution startupResolution(const GLFWvidmode *mode);
+
 } // unnamed namespace
 
 namespace newton::graphics
@@ -33,8 +41,10 @@ namespace newton::graphics
 	 *
 	 * On failure everything created so far is released.
 	 *
-	 * @param width Window width in screen coordinates. With 0 or less the size is taken from the primary monitor.
-	 * @param height Window height in screen coordinates. With 0 or less the size is taken from the primary monitor.
+	 * @param width Window width in screen coordinates. With 0 or less the size is chosen as in @ref create(const char
+	 * *).
+	 * @param height Window height in screen coordinates. With 0 or less the size is chosen as in @ref create(const char
+	 * *).
 	 * @param title Window title.
 	 * @return The context, or nullptr on failure.
 	 */
@@ -64,9 +74,10 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Creates the window with the size of the primary monitor, or 960 x 540 if it cannot be read.
+	 * @brief Creates the window with the largest 16:9 preset smaller than the primary monitor in both dimensions.
 	 *
-	 * This is a regular window, not fullscreen, so its title bar and desktop panels may not fit on the screen.
+	 * The window leaves room for its title bar and desktop panels, e.g. 1920 x 1080 on a 2560 x 1440 monitor.
+	 * If the monitor cannot be read or all presets are too large, the size is 960 x 540.
 	 *
 	 * @param title Window title.
 	 * @return The context, or nullptr on failure.
@@ -405,11 +416,11 @@ namespace newton::graphics
 			return nullptr;
 		}
 
-		// No size given: use the primary monitor
+		// No size given: choose it from the primary monitor
 		if (width <= 0 || height <= 0) {
-			const GLFWvidmode *mode = queryVideoMode();
-			width = mode ? mode->width : qHD.width;
-			height = mode ? mode->height : qHD.height;
+			const Resolution startup = startupResolution(queryVideoMode());
+			width = startup.width;
+			height = startup.height;
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -530,6 +541,25 @@ namespace
 	{
 		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 		return monitor ? glfwGetVideoMode(monitor) : nullptr;
+	}
+
+	/**
+	 * @brief Chooses the window size used when none is given.
+	 *
+	 * @param mode Video mode of the monitor, may be nullptr.
+	 * @return The first of @ref cStartupResolutions smaller than the monitor, or qHD if there is none.
+	 */
+	Resolution startupResolution(const GLFWvidmode *mode)
+	{
+		if (!mode)
+			return newton::graphics::qHD;
+
+		const Resolution monitor(mode->width, mode->height);
+		for (const Resolution &resolution : cStartupResolutions)
+			if (resolution.isSmallerThan(monitor))
+				return resolution;
+
+		return newton::graphics::qHD;
 	}
 
 } // unnamed namespace
