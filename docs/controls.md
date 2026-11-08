@@ -14,7 +14,7 @@ on release.
 | Right mouse button (hold) + `A` / `D` | Move left / right |
 | Right mouse button (hold) + `Space` / `Left Shift` | Move up / down |
 | Right mouse button (hold) + `Ctrl` | Move faster |
-| Scroll | Zoom (changes the field of view, 20° to 90°) |
+| Scroll | Zoom (changes the field of view, 10° to 90°) |
 
 Over a UI window the mouse controls the window instead: pressing the right button there does not start camera
 movement, and scrolling does not zoom. Movement started over the scene keeps going even if the cursor passes
@@ -34,5 +34,6 @@ over a window.
 | --- | --- |
 | Stats (top left, no background) | Frames per second and average frame time |
 | Display (top right) | VSync, grid and fullscreen toggles, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (presets smaller than the monitor, disabled while fullscreen) |
+| Camera (right, under Display) | Current position and field of view, sliders for speed, fast multiplier, sensitivity and zoom sensitivity, buttons resetting the settings to defaults and the camera to its starting position, direction and field of view |
 
-Both windows stay in their corners, also when the main window is resized, and cannot be moved.
+All windows keep their places, also when the main window is resized, and cannot be moved.

@@ -65,28 +65,38 @@ namespace newton::ui
 	 *        and resolution combos.
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
-	 * immediately. The window stays in the top-right corner, also when the main window is resized,
+	 * immediately. The window stays at the right edge of the screen, also when the main window is resized,
 	 * and cannot be moved. The resolution combo is disabled while fullscreen.
 	 *
 	 * @param context Context whose settings are shown and changed.
 	 * @param gridRenderer Grid whose visibility is shown and changed.
+	 * @param top Position to place the window below, in pixels: the value returned by the previous panel, 0 for the
+	 *            first one. @ref cMargin is added to it.
+	 * @return Bottom edge of this window, in pixels, for placing the next one.
 	 */
-	void drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer)
+	float drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer, float top)
 	{
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
-		ImGui::SetNextWindowPos({display.x - cScreenMargin, cScreenMargin}, ImGuiCond_Always, {1.0f, 0.0f});
+		ImGui::SetNextWindowPos({display.x - cMargin, top + cMargin}, ImGuiCond_Always, {1.0f, 0.0f});
 
+		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-			drawVSyncCheckbox(context);
-			drawGridCheckbox(gridRenderer);
-			drawFullscreenCheckbox(context);
 			drawFrameLimitCombo(context);
 			ImGui::BeginDisabled(context.isFullscreen());
 			drawResolutionCombo(context);
 			ImGui::EndDisabled();
+
+			drawVSyncCheckbox(context);
+			ImGui::SameLine();
+			drawGridCheckbox(gridRenderer);
+			ImGui::SameLine();
+			drawFullscreenCheckbox(context);
 		}
 
+		const float bottom = ImGui::GetWindowPos().y + ImGui::GetWindowHeight();
 		ImGui::End();
+
+		return bottom;
 	}
 
 } // namespace newton::ui

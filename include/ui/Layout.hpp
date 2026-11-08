@@ -3,7 +3,8 @@
 
 namespace newton::ui
 {
-	constexpr float cScreenMargin = 10.0f;
+	constexpr float cMargin = 10.0f; ///< Distance of UI windows from the screen edges and from each other, in pixels.
+	constexpr float cPanelWidth = 380.0f;
 
 } // namespace newton::ui
 

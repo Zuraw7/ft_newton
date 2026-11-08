@@ -35,11 +35,13 @@ controllers ──> graphics ──> geometry
      └───────> input
 
 ui ──> graphics
+ │
+ └───> controllers
 ```
 
 - `geometry` has no OpenGL dependency. It produces plain data, uploading it to the GPU is the job of @ref newton::graphics::Mesh "graphics::Mesh".
 - `ui` panels receive the object whose settings they show (e.g. @ref newton::ui::drawDisplayPanel "drawDisplayPanel(Context&)") or plain values
-  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps)"). One panel per module, the UI never reaches into controllers.
+  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps)"). One panel per module.
 - `controllers` know nothing about the UI. Whether the mouse belongs to an ImGui window is passed in as a plain `bool`.
 
 ## Startup and shutdown order
@@ -61,7 +63,7 @@ leaves their destructors calling OpenGL without a context.
 ## Frame pacing
 
 - VSync is off by default. Frame rate is capped by the limiter in @ref newton::graphics::Context::swapBuffers "Context::swapBuffers()", set by default
-  to the primary monitor refresh rate (@ref newton::graphics::Context::monitorRefreshRate "Context::monitorRefreshRate()", fallback 144 FPS).
+  to the primary monitor refresh rate (@ref newton::graphics::Context::monitorRefreshRate "Context::monitorRefreshRate()", fallback 60 FPS).
 - The limiter schedules each frame one budget after the previous scheduled time, so oversleeping is compensated
   and the average matches the limit.
 - ImGui is not allowed to change the OS cursor (`ImGuiConfigFlags_NoMouseCursorChange`).

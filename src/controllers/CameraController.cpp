@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <algorithm>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
 
@@ -12,6 +13,10 @@
 namespace
 {
 	const char *cClassName = "CameraController";
+	constexpr float MIN_SPEED = 1.0f;
+	constexpr float MIN_FAST_MULTIPLIER = 1.0f;
+	constexpr float MIN_SENSITIVITY = 0.01f;
+	constexpr float MIN_ZOOM_SENSITIVITY = 0.1f;
 
 } // unnamed namespace
 
@@ -86,6 +91,43 @@ namespace newton::controllers
 	}
 
 	/**
+	 * @brief Replaces the movement parameters. They take effect on the next @ref update().
+	 *
+	 * Values below the minimums are raised to them, so movement, rotation and zoom cannot stop or get reversed:
+	 * speed 1, fast multiplier 1, sensitivity 0.01, zoom sensitivity 0.1.
+	 *
+	 * @param settings New parameters, `{}` restores the defaults.
+	 */
+	void CameraController::setSettings(const CameraController::Settings &settings)
+	{
+		m_settings.speed = std::max(settings.speed, MIN_SPEED);
+		m_settings.fastMultiplier = std::max(settings.fastMultiplier, MIN_FAST_MULTIPLIER);
+		m_settings.sensitivity = std::max(settings.sensitivity, MIN_SENSITIVITY);
+		m_settings.zoomSensitivity = std::max(settings.zoomSensitivity, MIN_ZOOM_SENSITIVITY);
+	}
+
+	const CameraController::Settings &CameraController::settings() const
+	{
+		return m_settings;
+	}
+
+	/**
+	 * @return Currently bound camera, read-only.
+	 */
+	const graphics::Camera &CameraController::camera() const
+	{
+		return *m_camera;
+	}
+
+	/**
+	 * @brief Returns the bound camera to its starting state, see @ref graphics::Camera::reset().
+	 */
+	void CameraController::resetCamera()
+	{
+		m_camera->reset();
+	}
+
+	/**
 	 * @brief Moves the camera according to held movement keys.
 	 *
 	 * Directions are summed and normalized. Ctrl multiplies the speed by
@@ -145,7 +187,7 @@ namespace newton::controllers
 		const float scrollOffsetY = static_cast<float>(input::InputManager::getScrollOffsetY());
 
 		if (scrollOffsetY != 0.0f)
-			m_camera->zoom(-scrollOffsetY);
+			m_camera->zoom(-scrollOffsetY * m_settings.zoomSensitivity);
 	}
 
 } // namespace newton::controllers
