@@ -272,11 +272,16 @@ namespace newton::graphics
 	 * The window system may apply it later or limit it, so @ref resolution() may not return this value
 	 * right away. The OpenGL viewport follows the size through the framebuffer callback.
 	 *
-	 * @param resolution New window size in screen coordinates.
+	 * @param res New window size in screen coordinates.
 	 */
-	void Context::setResolution(Resolution resolution)
+	void Context::setResolution(Resolution res)
 	{
-		glfwSetWindowSize(m_window, resolution.width, resolution.height);
+		if (res == resolution())
+			return;
+
+		glfwSetWindowSize(m_window, res.width, res.height);
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] Window size set to %s\n", cClassName, res.toString().c_str());
 	}
 
 	/**

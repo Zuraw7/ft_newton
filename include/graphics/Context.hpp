@@ -41,7 +41,7 @@ namespace newton::graphics
 			void setVSync(bool enabled);
 			bool isVSync() const;
 
-			void setResolution(Resolution resolution);
+			void setResolution(Resolution res);
 			Resolution resolution() const;
 			Resolution monitorResolution() const;
 			float aspectRatio() const;
