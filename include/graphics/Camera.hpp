@@ -41,6 +41,8 @@ namespace newton::graphics
 			const glm::vec3 &getRight() const;
 			const glm::vec3 &getWorldUp() const;
 
+			void setAspectRatio(float aspect);
+
 			void setPosition(const glm::vec3 &position);
 			void move(const glm::vec3 &offset);
 			void rotate(float yawDegrees, float pitchDegrees);
@@ -49,8 +51,11 @@ namespace newton::graphics
 		private:
 			glm::mat4 calculateView() const;
 			void updateVectors();
+			void updateProjection();
 
 			common::Logger &m_logger;
+
+			float m_aspect; ///< Width divided by height, used by the projection.
 
 			// Vectors
 			glm::vec3 m_position; ///< Position in world space.
@@ -62,7 +67,7 @@ namespace newton::graphics
 
 			// Matrices
 			glm::mat4 m_view;       ///< Cached view matrix, refreshed in @ref getView().
-			glm::mat4 m_projection; ///< Projection matrix, refreshed on zoom.
+			glm::mat4 m_projection; ///< Projection matrix, refreshed when the FOV or the aspect ratio changes.
 
 			float m_yaw;   ///< Horizontal angle in degrees, -90 looks along -Z.
 			float m_pitch; ///< Vertical angle in degrees, clamped to [-89, 89].

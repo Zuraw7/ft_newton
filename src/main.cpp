@@ -13,7 +13,6 @@
 #include "graphics/GridRenderer.hpp"
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
-#include "graphics/Resolution.hpp"
 #include "input/InputManager.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
@@ -30,9 +29,7 @@ int main()
 	logger.setLogLevel(common::LogLevel::INFO);
 
 	// Context setup
-	graphics::Resolution res = graphics::FHD;
-
-	auto context = graphics::Context::create(res.width, res.height, "ft_newton");
+	auto context = graphics::Context::create("ft_newton");
 	if (!context)
 		return -1;
 	input::InputManager::init(context->window());
@@ -73,6 +70,7 @@ int main()
 		handleGameInput(*context, *renderer);
 
 		context->update();
+		mainCamera.setAspectRatio(context->aspectRatio());
 		cameraController.update(context->deltaTime(), imguiLayer.wantsMouse());
 		input::InputManager::update();
 
