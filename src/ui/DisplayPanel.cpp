@@ -81,13 +81,16 @@ namespace newton::ui
 
 		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-			drawVSyncCheckbox(context);
-			drawGridCheckbox(gridRenderer);
-			drawFullscreenCheckbox(context);
 			drawFrameLimitCombo(context);
 			ImGui::BeginDisabled(context.isFullscreen());
 			drawResolutionCombo(context);
 			ImGui::EndDisabled();
+
+			drawVSyncCheckbox(context);
+			ImGui::SameLine();
+			drawGridCheckbox(gridRenderer);
+			ImGui::SameLine();
+			drawFullscreenCheckbox(context);
 		}
 
 		const float bottom = ImGui::GetWindowPos().y + ImGui::GetWindowHeight();
