@@ -14,6 +14,9 @@
 #include "graphics/Renderer.hpp"
 #include "graphics/Resolution.hpp"
 #include "input/InputManager.hpp"
+#include "ui/DisplayPanel.hpp"
+#include "ui/ImGuiLayer.hpp"
+#include "ui/StatsOverlay.hpp"
 
 using namespace newton;
 
@@ -23,7 +26,7 @@ int main()
 {
 	// Global logger configuration
 	common::Logger &logger = common::Logger::getInstance();
-	logger.setLogLevel(common::LogLevel::DEBUG);
+	logger.setLogLevel(common::LogLevel::INFO);
 
 	// Context setup
 	graphics::Resolution res = graphics::FHD;
@@ -33,6 +36,8 @@ int main()
 		return -1;
 	input::InputManager::init(context->window());
 
+	ui::ImGuiLayer imguiLayer(context->window());
+
 	// Renderer creation
 	std::unique_ptr<graphics::Renderer> renderer =
 		graphics::Renderer::create("assets/shaders/basic.vert", "assets/shaders/basic.frag");
@@ -41,7 +46,7 @@ int main()
 	renderer->setBackgroundColor(graphics::rgb(77, 189, 255));
 
 	// Camera creation
-	graphics::Camera mainCamera({0, 0, 3}, {0, 0, 0}, {0, 1, 0});
+	graphics::Camera mainCamera({0, 4, 10}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
 
 	// Objects creation
@@ -59,7 +64,7 @@ int main()
 
 	glm::vec3 gray(graphics::rgb(154, 150, 159));
 	glm::vec3 turquoise(graphics::rgb(0x4dbd00));
-	
+
 	// Game loop
 	while (context->shouldClose() == false) {
 		context->pollEvents();
@@ -67,13 +72,19 @@ int main()
 		handleGameInput(*context, *renderer);
 
 		context->update();
-		cameraController.update(context->deltaTime());
+		cameraController.update(context->deltaTime(), imguiLayer.wantsMouse());
 		input::InputManager::update();
+
+		imguiLayer.beginFrame();
+		ui::drawStatsOverlay(context->FPS());
+		ui::drawDisplayPanel(*context);
 
 		renderer->beginFrame(mainCamera);
 		renderer->draw(cubeMesh, cubeModel, gray);
 		renderer->draw(sphereMesh, sphereModel, gray);
 		renderer->draw(planeMesh, planeModel, turquoise);
+
+		imguiLayer.endFrame();
 
 		graphics::checkGLError("frame");
 

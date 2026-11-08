@@ -21,6 +21,7 @@ include(cmake/Documentation.cmake)
 add_executable(ft_newton
     src/common/Logger.cpp
     src/controllers/CameraController.cpp
+    src/geometry/Primitives.cpp
     src/graphics/buffers/IndexBuffer.cpp
     src/graphics/buffers/VertexArray.cpp
     src/graphics/buffers/VertexBuffer.cpp
@@ -30,10 +31,12 @@ add_executable(ft_newton
     src/graphics/Mesh.cpp
     src/graphics/Renderer.cpp
     src/graphics/Shader.cpp
-    src/geometry/Primitives.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp
     src/main.cpp
+    src/ui/DisplayPanel.cpp
+    src/ui/ImGuiLayer.cpp
+    src/ui/StatsOverlay.cpp
 )
 
 # CMake functions

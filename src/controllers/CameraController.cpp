@@ -25,6 +25,7 @@ namespace newton::controllers
 		: m_camera(&camera)
 		, m_logger(common::Logger::getInstance())
 		, m_settings()
+		, m_active(false)
 	{
 		m_logger.printf(common::LogLevel::INFO, "[%s] Camera controller initialized successfully\n", cClassName);
 	}
@@ -49,31 +50,39 @@ namespace newton::controllers
 	/**
 	 * @brief Applies this frame's input to the bound camera.
 	 *
-	 * Movement and rotation work only while the right mouse button is held.
-	 * The cursor is disabled on press and restored on release. Zoom is always active.
+	 * Movement and rotation work during a right mouse button drag. The drag
+	 * starts only when the button is pressed while the mouse is not blocked,
+	 * and then lasts until release. The cursor is disabled for the drag and
+	 * restored on release. Zoom works whenever the mouse is not blocked.
 	 *
 	 * Must be called after events are polled and before @ref input::InputManager::update(),
 	 * which resets the per-frame input state (mouse offsets, pressed keys).
 	 *
 	 * @param deltaTime Time since the last frame, in seconds. Scales movement only;
 	 *                  rotation and zoom use raw mouse offsets.
+	 * @param mouseBlocked True if the mouse is used by something else this frame, e.g. hovering a UI window
+	 *                     (@ref ui::ImGuiLayer::wantsMouse()).
 	 */
-	void CameraController::update(const double deltaTime)
+	void CameraController::update(double deltaTime, bool mouseBlocked)
 	{
 		using input::InputManager;
 		constexpr int RMB = GLFW_MOUSE_BUTTON_RIGHT;
 
-		if (InputManager::isButtonPressed(RMB))
+		if (InputManager::isButtonPressed(RMB) && !mouseBlocked) {
+			m_active = true;
 			InputManager::setCursorDisabled(true);
-		else if (InputManager::isButtonReleased(RMB))
+		} else if (InputManager::isButtonReleased(RMB) && m_active) {
+			m_active = false;
 			InputManager::setCursorDisabled(false);
+		}
 
-		if (InputManager::isButtonHeld(RMB)) {
+		if (m_active) {
 			moveCamera(deltaTime);
 			rotateCamera();
 		}
 
-		zoomCamera();
+		if (!mouseBlocked)
+			zoomCamera();
 	}
 
 	/**

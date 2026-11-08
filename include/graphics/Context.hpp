@@ -32,8 +32,15 @@ namespace newton::graphics
 			void swapBuffers();
 			GLFWwindow *window();
 
+			void setFrameLimit(int fps);
+			int frameLimit() const;
+			int monitorRefreshRate() const;
+
+			void setVSync(bool enabled);
+			bool isVSync() const;
+
 			double deltaTime();
-			[[deprecated("Use avgFPS() for more stable, smoothed value.")]] int FPS();
+			int FPS();
 			double avgFPS();
 
 		private:
@@ -51,9 +58,15 @@ namespace newton::graphics
 			static common::Logger &m_logger;
 
 			GLFWwindow *m_window;
+			int m_monitorRefreshRate; ///< Primary monitor refresh rate read at creation, in Hz. 0 if unknown.
 
 			double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
 			double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
+
+			int m_frameLimit;       ///< Max frames per second, 0 or less means unlimited.
+			double m_nextFrameTime; ///< GLFW time the next buffer swap is scheduled for, in seconds.
+
+			bool m_vsyncOn; ///< True if buffer swaps wait for the monitor refresh.
 
 			int m_frameCount;     ///< Frames counted in the current one-second window.
 			double m_fpsLastTime; ///< GLFW time when the current one-second window started.

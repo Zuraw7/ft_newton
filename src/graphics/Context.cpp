@@ -4,7 +4,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 
 #include "common/Logger.hpp"
 #include "graphics/GLError.hpp"
@@ -12,6 +14,11 @@
 namespace
 {
 	const char *cClassName = "Context";
+
+	int queryMonitorRefreshRate();
+
+	constexpr int FALLBACK_FRAME_LIMIT = 144;
+	constexpr bool DEFAULT_SYNC = false;
 
 } // unnamed namespace
 
@@ -48,6 +55,8 @@ namespace newton::graphics
 		auto context = std::unique_ptr<Context>(new Context(window));
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context initialized successfully\n", cClassName);
+		m_logger.printf(common::LogLevel::INFO, "[%s] VSync %s, FPS limit %d\n", cClassName,
+		                context->isVSync() ? "ON" : "OFF", context->frameLimit());
 
 		return context;
 	}
@@ -57,13 +66,29 @@ namespace newton::graphics
 	 */
 	Context::Context(GLFWwindow *window)
 		: m_window(window)
+		, m_monitorRefreshRate(0)
 		, m_lastFrameTime(0.0)
 		, m_deltaTime(0.0)
+		, m_frameLimit(0)
+		, m_nextFrameTime(0.0)
+		, m_vsyncOn(DEFAULT_SYNC)
 		, m_frameCount(0)
 		, m_fpsLastTime(0.0)
 		, m_currentFPS(0)
 		, m_avgFPS(0.0)
-	{}
+	{
+		m_monitorRefreshRate = queryMonitorRefreshRate();
+		m_frameLimit = m_monitorRefreshRate > 0 ? m_monitorRefreshRate : FALLBACK_FRAME_LIMIT;
+
+		if (m_monitorRefreshRate == 0) {
+			m_logger.printf(common::LogLevel::WARN,
+			                "[%s] Failed to get primary monitor refresh rate, using fallback value: %d\n", cClassName,
+			                FALLBACK_FRAME_LIMIT);
+		} else {
+			m_logger.printf(common::LogLevel::INFO, "[%s] Monitor refresh rate: %d Hz\n", cClassName,
+			                m_monitorRefreshRate);
+		}
+	}
 
 	/**
 	 * @brief Destroys the window and terminates GLFW.
@@ -110,14 +135,101 @@ namespace newton::graphics
 		glfwPollEvents();
 	}
 
+	/**
+	 * @brief Shows the rendered frame, first waiting so that the frame rate does not exceed @ref frameLimit().
+	 *
+	 * Every frame is scheduled one budget (1 / limit) after the previous scheduled time, not after the
+	 * actual swap, so oversleeping in one frame shortens the wait in the next and the average hits the limit.
+	 * A frame that is already late is shown immediately and the schedule restarts from now, without catching up.
+	 * The wait blocks the calling thread, so it limits the whole main loop, not only drawing.
+	 */
 	void Context::swapBuffers()
 	{
+		if (m_frameLimit > 0) {
+			const double frameBudget = 1.0 / m_frameLimit;
+			m_nextFrameTime += frameBudget;
+
+			double now = glfwGetTime();
+			if (m_nextFrameTime < now)
+				m_nextFrameTime = now; // fell behind (slow frame, window drag), don't try to catch up
+			else
+				while (glfwGetTime() < m_nextFrameTime)
+					std::this_thread::sleep_for(std::chrono::microseconds(100));
+		}
+
 		glfwSwapBuffers(m_window);
 	}
 
 	GLFWwindow *Context::window()
 	{
 		return m_window;
+	}
+
+	/**
+	 * @brief Sets the maximum frame rate enforced by @ref swapBuffers(). Takes effect from the next swap.
+	 *
+	 * With vsync enabled the swap already waits for the monitor, so a limit above its refresh rate has no effect.
+	 *
+	 * @param fps Max frames per second, 0 or less disables the limit.
+	 */
+	void Context::setFrameLimit(int fps)
+	{
+		if (fps == m_frameLimit)
+			return;
+
+		m_frameLimit = fps;
+
+		if (m_frameLimit > 0)
+			m_logger.printf(common::LogLevel::INFO, "[%s] FPS limit set to %d\n", cClassName, m_frameLimit);
+		else
+			m_logger.printf(common::LogLevel::INFO, "[%s] FPS limit disabled\n", cClassName);
+	}
+
+	/**
+	 * @return Max frames per second, 0 or less means unlimited.
+	 */
+	int Context::frameLimit() const
+	{
+		return m_frameLimit;
+	}
+
+	/**
+	 * @brief Refresh rate of the primary monitor, read once when the context was created.
+	 *
+	 * @return Refresh rate in Hz, or 0 if it could not be read.
+	 */
+	int Context::monitorRefreshRate() const
+	{
+		return m_monitorRefreshRate;
+	}
+
+	/**
+	 * @brief Enables or disables waiting for the monitor refresh on buffer swap. Off by default.
+	 *
+	 * Applies to the current OpenGL context, which is this window's context. The frame limit from
+	 * @ref setFrameLimit() still applies on top, but a limit above the refresh rate then has no effect.
+	 *
+	 * @param enabled True to sync swaps to the monitor refresh.
+	 */
+	void Context::setVSync(bool enabled)
+	{
+		if (enabled == m_vsyncOn)
+			return;
+
+		glfwSwapInterval(enabled ? 1 : 0);
+
+		m_vsyncOn = enabled;
+
+		const char *mode = m_vsyncOn ? "ON" : "OFF";
+		m_logger.printf(common::LogLevel::INFO, "[%s] VSync is now %s\n", cClassName, mode);
+	}
+
+	/**
+	 * @return True if buffer swaps wait for the monitor refresh.
+	 */
+	bool Context::isVSync() const
+	{
+		return m_vsyncOn;
 	}
 
 	/**
@@ -185,7 +297,7 @@ namespace newton::graphics
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
-		glfwSwapInterval(1);
+		glfwSwapInterval(DEFAULT_SYNC ? 1 : 0);
 
 		return window;
 	}
@@ -268,3 +380,24 @@ namespace newton::graphics
 	}
 
 } // namespace newton::graphics
+
+namespace
+{
+	/**
+	 * @brief Reads the refresh rate of the primary monitor's current video mode. Requires initialized GLFW.
+	 *
+	 * The value is an integer, so e.g. 59.94 Hz may be reported as 59 or 60.
+	 *
+	 * @return Refresh rate in Hz, or 0 if there is no monitor or its video mode is unavailable.
+	 */
+	int queryMonitorRefreshRate()
+	{
+		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+		if (!monitor)
+			return 0;
+
+		const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+		return mode ? mode->refreshRate : 0;
+	}
+
+} // unnamed namespace
