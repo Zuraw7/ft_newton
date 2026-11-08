@@ -28,20 +28,6 @@ and data crosses module boundaries as plain values or references passed in from 
 modules reaching into each other. This keeps changes local and lets modules be reused or replaced
 without touching the rest.
 
-Allowed directions (every module may also use `common`):
-
-```bash
-controllers ──> graphics ──> geometry
-     │
-     └───────> input
-
-scene ──> graphics
-
-ui ──> graphics
- │
- └───> controllers
-```
-
 - `geometry` has no OpenGL dependency. It produces plain data, uploading it to the GPU is the job of @ref newton::graphics::Mesh "graphics::Mesh".
 - `ui` panels receive the object whose settings they show (e.g. @ref newton::ui::drawDisplayPanel "drawDisplayPanel(Context&)") or plain values
   (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps, std::size_t objectCount)"). One panel per module.
