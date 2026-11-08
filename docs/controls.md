@@ -14,7 +14,7 @@ on release.
 | Right mouse button (hold) + `A` / `D` | Move left / right |
 | Right mouse button (hold) + `Space` / `Left Shift` | Move up / down |
 | Right mouse button (hold) + `Ctrl` | Move faster |
-| Scroll | Zoom (changes the field of view, 20° to 90°) |
+| Scroll | Zoom (changes the field of view, 10° to 90°) |
 
 Over a UI window the mouse controls the window instead: pressing the right button there does not start camera
 movement, and scrolling does not zoom. Movement started over the scene keeps going even if the cursor passes

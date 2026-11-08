@@ -40,6 +40,7 @@ namespace newton::graphics
 			const glm::vec3 &getForward() const;
 			const glm::vec3 &getRight() const;
 			const glm::vec3 &getWorldUp() const;
+			float getFOV() const;
 
 			void setAspectRatio(float aspect);
 

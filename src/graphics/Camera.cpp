@@ -17,7 +17,7 @@ namespace
 	constexpr float FAR = 450.0f;
 	constexpr float MAX_PITCH = 89.0f;
 	constexpr float MAX_FOV = 90.0f;
-	constexpr float MIN_FOV = 20.0f;
+	constexpr float MIN_FOV = 10.0f;
 
 } // unnamed namespace
 
@@ -110,6 +110,14 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @return Vertical field of view in degrees.
+	 */
+	float Camera::getFOV() const
+	{
+		return m_fov;
+	}
+
+	/**
 	 * @brief Sets the aspect ratio of the projection. Starts as 16:9.
 	 *
 	 * Without it the image stretches when the window size changes.
@@ -153,7 +161,7 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Zooms by changing the vertical FOV, clamped to [20, 90] degrees.
+	 * @brief Zooms by changing the vertical FOV, clamped to [10, 90] degrees.
 	 * @param fovDelta Change of FOV in degrees, negative zooms in.
 	 */
 	void Camera::zoom(float fovDelta)
