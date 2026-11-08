@@ -32,15 +32,21 @@ namespace newton::controllers
 			 */
 			struct Settings
 			{
-					float speed = 20.0f;         ///< Movement speed in world units per second.
-					float fastMultiplier = 2.0f; ///< Speed multiplier.
-					float sensitivity = 0.1f;    ///< Rotation in degrees per pixel of mouse movement.
+					float speed = 20.0f;          ///< Movement speed in world units per second.
+					float fastMultiplier = 2.0f;  ///< Speed multiplier.
+					float sensitivity = 0.1f;     ///< Rotation in degrees per pixel of mouse movement.
+					float zoomSensitivity = 1.0f; ///< Change of FOV in degrees per scroll step.
 			};
 
 			explicit CameraController(graphics::Camera &camera);
 
 			void switchCamera(graphics::Camera &camera);
 			void update(double deltaTime, bool mouseBlocked);
+
+			void setSettings(const Settings &settings);
+			const Settings &settings() const;
+
+			float fov() const;
 
 		private:
 			void moveCamera(double deltaTime);
