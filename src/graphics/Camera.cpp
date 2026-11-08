@@ -9,7 +9,6 @@
 #include <glm/trigonometric.hpp>
 
 #include "common/Logger.hpp"
-#include "graphics/Resolution.hpp"
 
 namespace
 {
@@ -33,6 +32,7 @@ namespace newton::graphics
 	 */
 	Camera::Camera(const glm::vec3 &position, const glm::vec3 &target, const glm::vec3 &worldUp)
 		: m_logger(common::Logger::getInstance())
+		, m_aspect(16.0f / 9.0f)
 		, m_position(position)
 		, m_worldUp(glm::normalize(worldUp))
 		, m_yaw(-90.0f)
@@ -45,7 +45,7 @@ namespace newton::graphics
 		lookAt(target);
 
 		m_view = calculateView();
-		m_projection = glm::perspective(glm::radians(m_fov), Resolution::aspect, NEAR, FAR);
+		updateProjection();
 
 		m_logger.printf(common::LogLevel::INFO, "[%s] Camera initialized successfully\n", cClassName);
 	}
@@ -82,7 +82,7 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @return Perspective projection with a fixed aspect ratio.
+	 * @return Perspective projection for the current FOV and aspect ratio.
 	 */
 	const glm::mat4 &Camera::getProjection() const
 	{
@@ -107,6 +107,22 @@ namespace newton::graphics
 	const glm::vec3 &Camera::getWorldUp() const
 	{
 		return m_worldUp;
+	}
+
+	/**
+	 * @brief Sets the aspect ratio of the projection. Starts as 16:9.
+	 *
+	 * Without it the image stretches when the window size changes.
+	 *
+	 * @param aspect Width divided by height, must be greater than 0.
+	 */
+	void Camera::setAspectRatio(float aspect)
+	{
+		if (m_aspect == aspect)
+			return;
+
+		m_aspect = aspect;
+		updateProjection();
 	}
 
 	void Camera::setPosition(const glm::vec3 &position)
@@ -145,7 +161,7 @@ namespace newton::graphics
 		m_fov += fovDelta;
 		m_fov = std::clamp(m_fov, MIN_FOV, MAX_FOV);
 
-		m_projection = glm::perspective(glm::radians(m_fov), Resolution::aspect, NEAR, FAR);
+		updateProjection();
 	}
 
 	/**
@@ -169,6 +185,14 @@ namespace newton::graphics
 		m_direction = glm::normalize(direction);
 		m_right = glm::normalize(glm::cross(m_direction, m_worldUp));
 		m_up = glm::normalize(glm::cross(m_right, m_direction));
+	}
+
+	/**
+	 * @brief Recalculates @ref m_projection from @ref m_fov and @ref m_aspect.
+	 */
+	void Camera::updateProjection()
+	{
+		m_projection = glm::perspective(glm::radians(m_fov), m_aspect, NEAR, FAR);
 	}
 
 } // namespace newton::graphics

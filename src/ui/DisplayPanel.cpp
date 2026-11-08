@@ -5,6 +5,7 @@
 
 #include "graphics/Context.hpp"
 #include "graphics/GridRenderer.hpp"
+#include "graphics/Resolution.hpp"
 #include "ui/Layout.hpp"
 
 namespace
@@ -22,20 +23,50 @@ namespace
 	constexpr FpsPreset cFpsPresets[] = {{30, "30"},   {60, "60"},   {120, "120"}, {144, "144"},    {165, "165"},
 	                                     {180, "180"}, {240, "240"}, {500, "500"}, {0, "Unlimited"}};
 
+	/**
+	 * @brief Entry of the resolution combo.
+	 */
+	struct ResolutionPreset
+	{
+			newton::graphics::Resolution resolution; ///< Value passed to Context::setResolution().
+			const char *name;                        ///< Name shown in the combo, before the size.
+	};
+
+	/// Window sizes offered in the combo.
+	constexpr ResolutionPreset cResolutionPresets[] = {
+		{newton::graphics::XGA, "XGA 4:3"},       {newton::graphics::qHD, "qHD 16:9"},
+		{newton::graphics::HD, "HD 16:9"},        {newton::graphics::HDP, "HD+ 16:9"},
+		{newton::graphics::FHD, "FHD 16:9"},      {newton::graphics::QHD, "QHD 16:9"},
+		{newton::graphics::UHD, "UHD 16:9"},      {newton::graphics::WXGA, "WXGA 16:10"},
+		{newton::graphics::WUXGA, "WUXGA 16:10"}, {newton::graphics::WQXGA, "WQXGA 16:10"},
+		{newton::graphics::UWFHD, "UWFHD 21:9"},  {newton::graphics::UWQHD, "UWQHD 21:9"},
+	};
+
+	/**
+	 * @return Text of a resolution combo entry, e.g. "FHD 16:9 (1920x1080)".
+	 */
+	std::string presetLabel(const ResolutionPreset &preset)
+	{
+		return std::string(preset.name) + " (" + preset.resolution.toString() + ")";
+	}
+
 	void drawVSyncCheckbox(newton::graphics::Context &context);
 	void drawGridCheckbox(newton::graphics::GridRenderer &gridRenderer);
+	void drawFullscreenCheckbox(newton::graphics::Context &context);
 	void drawFrameLimitCombo(newton::graphics::Context &context);
+	void drawResolutionCombo(newton::graphics::Context &context);
 
 } // unnamed namespace
 
 namespace newton::ui
 {
 	/**
-	 * @brief Draws the "Display" window with the VSync and grid checkboxes and the FPS limit combo.
+	 * @brief Draws the "Display" window with the VSync, grid and fullscreen checkboxes and the FPS limit
+	 *        and resolution combos.
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
-	 * immediately. The window starts in the top-right corner and can be moved freely,
-	 * it does not follow the corner when the main window is resized.
+	 * immediately. The window stays in the top-right corner, also when the main window is resized,
+	 * and cannot be moved. The resolution combo is disabled while fullscreen.
 	 *
 	 * @param context Context whose settings are shown and changed.
 	 * @param gridRenderer Grid whose visibility is shown and changed.
@@ -43,12 +74,16 @@ namespace newton::ui
 	void drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer)
 	{
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
-		ImGui::SetNextWindowPos({display.x - cScreenMargin, cScreenMargin}, ImGuiCond_FirstUseEver, {1.0f, 0.0f});
+		ImGui::SetNextWindowPos({display.x - cScreenMargin, cScreenMargin}, ImGuiCond_Always, {1.0f, 0.0f});
 
-		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
 			drawVSyncCheckbox(context);
 			drawGridCheckbox(gridRenderer);
+			drawFullscreenCheckbox(context);
 			drawFrameLimitCombo(context);
+			ImGui::BeginDisabled(context.isFullscreen());
+			drawResolutionCombo(context);
+			ImGui::EndDisabled();
 		}
 
 		ImGui::End();
@@ -79,6 +114,16 @@ namespace
 	}
 
 	/**
+	 * @brief Draws the fullscreen checkbox, showing and changing the context's fullscreen state.
+	 */
+	void drawFullscreenCheckbox(newton::graphics::Context &context)
+	{
+		bool fullscreen = context.isFullscreen();
+		if (ImGui::Checkbox("Fullscreen", &fullscreen))
+			context.setFullscreen(fullscreen);
+	}
+
+	/**
 	 * @brief Draws the FPS limit combo: the monitor refresh rate (if detected) followed by @ref cFpsPresets.
 	 *
 	 * When the limit equals the monitor rate, only the "Monitor" entry is shown as selected, even if
@@ -91,7 +136,7 @@ namespace
 		const bool hasMonitorHz = monitorHz > 0;
 		const bool monitorSelected = hasMonitorHz && limit == monitorHz;
 
-		const std::string monitorLabel = "Monitor(" + std::to_string(monitorHz) + " Hz)";
+		const std::string monitorLabel = "Monitor (" + std::to_string(monitorHz) + " Hz)";
 
 		const char *preview = "Custom";
 		if (monitorSelected)
@@ -113,6 +158,41 @@ namespace
 				const bool selected = !monitorSelected && preset.limit == limit;
 				if (ImGui::Selectable(preset.label, selected))
 					context.setFrameLimit(preset.limit);
+				if (selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	/**
+	 * @brief Draws the resolution combo with @ref cResolutionPresets.
+	 *
+	 * Lists only presets smaller than the monitor, so the window fits on it, or all of them if its size is unknown.
+	 * A size matching no preset, e.g. after resizing the window by hand or when maximized, is shown as "Custom"
+	 * with its value.
+	 */
+	void drawResolutionCombo(newton::graphics::Context &context)
+	{
+		using namespace newton::graphics;
+
+		const Resolution res = context.resolution();
+		const Resolution monitorRes = context.monitorResolution();
+		const bool hasSize = monitorRes.width > 0 && monitorRes.height > 0;
+
+		std::string preview = "Custom (" + res.toString() + ")";
+		for (const ResolutionPreset &preset : cResolutionPresets)
+			if (preset.resolution == res)
+				preview = presetLabel(preset);
+
+		if (ImGui::BeginCombo("Resolution", preview.c_str())) {
+			for (const ResolutionPreset &preset : cResolutionPresets) {
+				if (hasSize && !preset.resolution.isSmallerThan(monitorRes))
+					continue;
+
+				const bool selected = preset.resolution == res;
+				if (ImGui::Selectable(presetLabel(preset).c_str(), selected))
+					context.setResolution(preset.resolution);
 				if (selected)
 					ImGui::SetItemDefaultFocus();
 			}

@@ -10,15 +10,25 @@
 
 #include "common/Logger.hpp"
 #include "graphics/GLError.hpp"
+#include "graphics/Resolution.hpp"
 
 namespace
 {
 	const char *cClassName = "Context";
 
-	int queryMonitorRefreshRate();
+	const GLFWvidmode *queryVideoMode();
 
 	constexpr int FALLBACK_FRAME_LIMIT = 144;
+	constexpr float FALLBACK_ASPECT_RATIO = 16.0f / 9.0f;
 	constexpr bool DEFAULT_SYNC = false;
+
+	using newton::graphics::Resolution;
+
+	/// Window sizes to start with when none is given, from the largest.
+	constexpr Resolution cStartupResolutions[] = {newton::graphics::UHD, newton::graphics::QHD, newton::graphics::FHD,
+	                                              newton::graphics::HDP, newton::graphics::HD};
+
+	Resolution startupResolution(const GLFWvidmode *mode);
 
 } // unnamed namespace
 
@@ -31,8 +41,10 @@ namespace newton::graphics
 	 *
 	 * On failure everything created so far is released.
 	 *
-	 * @param width Window width in screen coordinates.
-	 * @param height Window height in screen coordinates.
+	 * @param width Window width in screen coordinates. With 0 or less the size is chosen as in @ref create(const char
+	 * *).
+	 * @param height Window height in screen coordinates. With 0 or less the size is chosen as in @ref create(const char
+	 * *).
 	 * @param title Window title.
 	 * @return The context, or nullptr on failure.
 	 */
@@ -62,11 +74,30 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @brief Creates the window with the largest 16:9 preset smaller than the primary monitor in both dimensions.
+	 *
+	 * The window leaves room for its title bar and desktop panels, e.g. 1920 x 1080 on a 2560 x 1440 monitor.
+	 * If the monitor cannot be read or all presets are too large, the size is 960 x 540.
+	 *
+	 * @param title Window title.
+	 * @return The context, or nullptr on failure.
+	 */
+	std::unique_ptr<Context> Context::create(const char *title)
+	{
+		return create(0, 0, title);
+	}
+
+	/**
 	 * @brief Takes ownership of an already created window. Called by @ref create().
 	 */
 	Context::Context(GLFWwindow *window)
 		: m_window(window)
 		, m_monitorRefreshRate(0)
+		, m_monitorResolution(0, 0)
+		, m_windowedResolution(0, 0)
+		, m_windowedX(0)
+		, m_windowedY(0)
+		, m_windowedMaximized(false)
 		, m_lastFrameTime(0.0)
 		, m_deltaTime(0.0)
 		, m_frameLimit(0)
@@ -77,16 +108,19 @@ namespace newton::graphics
 		, m_currentFPS(0)
 		, m_avgFPS(0.0)
 	{
-		m_monitorRefreshRate = queryMonitorRefreshRate();
-		m_frameLimit = m_monitorRefreshRate > 0 ? m_monitorRefreshRate : FALLBACK_FRAME_LIMIT;
+		const GLFWvidmode *mode = queryVideoMode();
 
-		if (m_monitorRefreshRate == 0) {
-			m_logger.printf(common::LogLevel::WARN,
-			                "[%s] Failed to get primary monitor refresh rate, using fallback value: %d\n", cClassName,
-			                FALLBACK_FRAME_LIMIT);
+		if (mode) {
+			m_monitorRefreshRate = mode->refreshRate;
+			m_monitorResolution = Resolution(mode->width, mode->height);
+			m_frameLimit = m_monitorRefreshRate > 0 ? m_monitorRefreshRate : FALLBACK_FRAME_LIMIT;
+
+			m_logger.printf(common::LogLevel::INFO, "[%s] Primary monitor: %dx%d, %d Hz\n", cClassName, mode->width,
+			                mode->height, mode->refreshRate);
 		} else {
-			m_logger.printf(common::LogLevel::INFO, "[%s] Monitor refresh rate: %d Hz\n", cClassName,
-			                m_monitorRefreshRate);
+			m_frameLimit = FALLBACK_FRAME_LIMIT;
+			m_logger.printf(common::LogLevel::WARN, "[%s] Failed to read primary monitor, using frame limit %d\n",
+			                cClassName, FALLBACK_FRAME_LIMIT);
 		}
 	}
 
@@ -233,6 +267,112 @@ namespace newton::graphics
 	}
 
 	/**
+	 * @brief Requests a new window size.
+	 *
+	 * The window system may apply it later or limit it, so @ref resolution() may not return this value
+	 * right away. The OpenGL viewport follows the size through the framebuffer callback.
+	 *
+	 * @param resolution New window size in screen coordinates.
+	 */
+	void Context::setResolution(Resolution resolution)
+	{
+		glfwSetWindowSize(m_window, resolution.width, resolution.height);
+	}
+
+	/**
+	 * @brief Switches between fullscreen on the primary monitor and a regular window.
+	 *
+	 * Fullscreen uses the current video mode of the monitor, so its resolution and refresh rate do not change.
+	 * Entering stores the window size, maximized state and position, leaving restores them. Wayland does not
+	 * expose the window position, so there the system places the window. Does nothing if the state is already
+	 * set. Without a monitor it logs a warning and stays windowed. The viewport follows through the framebuffer
+	 * callback, the aspect ratio changes too, see @ref aspectRatio().
+	 *
+	 * @param enabled True enters fullscreen, false returns to the window.
+	 */
+	void Context::setFullscreen(bool enabled)
+	{
+		if (enabled == isFullscreen())
+			return;
+
+		if (enabled) {
+			GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode *mode = queryVideoMode();
+			if (!monitor || !mode) {
+				m_logger.printf(common::LogLevel::WARN, "[%s] Cannot enter fullscreen: no monitor\n", cClassName);
+				return;
+			}
+
+			m_windowedMaximized = glfwGetWindowAttrib(m_window, GLFW_MAXIMIZED) != 0;
+			m_windowedResolution = resolution();
+
+			if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND)
+				glfwGetWindowPos(m_window, &m_windowedX, &m_windowedY);
+
+			glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		} else {
+			glfwSetWindowMonitor(m_window, nullptr, m_windowedX, m_windowedY, m_windowedResolution.width,
+			                     m_windowedResolution.height, GLFW_DONT_CARE);
+			if (m_windowedMaximized)
+				glfwMaximizeWindow(m_window);
+		}
+
+		m_logger.printf(common::LogLevel::INFO, "[%s] Fullscreen %s\n", cClassName, enabled ? "ON" : "OFF");
+	}
+
+	/**
+	 * @return True if the window is currently fullscreen.
+	 */
+	bool Context::isFullscreen() const
+	{
+		return glfwGetWindowMonitor(m_window) != nullptr;
+	}
+
+	/**
+	 * @return Current window size in screen coordinates.
+	 */
+	Resolution Context::resolution() const
+	{
+		int width = 0;
+		int height = 0;
+		glfwGetWindowSize(m_window, &width, &height);
+
+		return {width, height};
+	}
+
+	/**
+	 * @brief Size of the primary monitor, read once when the context was created.
+	 *
+	 * With several monitors the window may be on another one, its size is not detected.
+	 *
+	 * @return Monitor size, or 0 x 0 if it could not be read.
+	 */
+	Resolution Context::monitorResolution() const
+	{
+		return m_monitorResolution;
+	}
+
+	/**
+	 * @brief Width divided by height of the framebuffer, the value a camera projection needs.
+	 *
+	 * Reads the current size on every call, so it follows window resizing. Pass it to
+	 * @ref Camera::setAspectRatio() once per frame.
+	 *
+	 * @return The aspect ratio, or 16:9 if the framebuffer has no area, e.g. in a minimized window.
+	 */
+	float Context::aspectRatio() const
+	{
+		int width = 0;
+		int height = 0;
+		glfwGetFramebufferSize(m_window, &width, &height);
+
+		if (width == 0 || height == 0)
+			return FALLBACK_ASPECT_RATIO;
+
+		return static_cast<float>(width) / static_cast<float>(height);
+	}
+
+	/**
 	 * @return Time between the last two @ref update() calls, in seconds.
 	 */
 	double Context::deltaTime()
@@ -269,11 +409,18 @@ namespace newton::graphics
 	 *
 	 * @return The created window, or nullptr on failure.
 	 */
-	GLFWwindow *Context::setupGLFW(const int width, const int height, const char *title)
+	GLFWwindow *Context::setupGLFW(int width, int height, const char *title)
 	{
 		if (!glfwInit()) {
 			m_logger.printf(common::LogLevel::ERROR, "[%s] Failed to initialize GLFW\n", cClassName);
 			return nullptr;
+		}
+
+		// No size given: choose it from the primary monitor
+		if (width <= 0 || height <= 0) {
+			const Resolution startup = startupResolution(queryVideoMode());
+			width = startup.width;
+			height = startup.height;
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -294,8 +441,6 @@ namespace newton::graphics
 		glfwMakeContextCurrent(window);
 
 		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
-		glfwSetWindowAspectRatio(window, 16, 9);
 
 		glfwSwapInterval(DEFAULT_SYNC ? 1 : 0);
 
@@ -384,20 +529,37 @@ namespace newton::graphics
 namespace
 {
 	/**
-	 * @brief Reads the refresh rate of the primary monitor's current video mode. Requires initialized GLFW.
+	 * @brief Reads the current video mode of the primary monitor: size and refresh rate. Requires initialized GLFW.
 	 *
-	 * The value is an integer, so e.g. 59.94 Hz may be reported as 59 or 60.
+	 * The refresh rate is an integer, so e.g. 59.94 Hz may be reported as 59 or 60.
+	 * The result is owned by GLFW and may become invalid, e.g. when the monitor is disconnected,
+	 * so copy the values instead of storing the pointer.
 	 *
-	 * @return Refresh rate in Hz, or 0 if there is no monitor or its video mode is unavailable.
+	 * @return The video mode, or nullptr if there is no monitor or its video mode is unavailable.
 	 */
-	int queryMonitorRefreshRate()
+	const GLFWvidmode *queryVideoMode()
 	{
 		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-		if (!monitor)
-			return 0;
+		return monitor ? glfwGetVideoMode(monitor) : nullptr;
+	}
 
-		const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-		return mode ? mode->refreshRate : 0;
+	/**
+	 * @brief Chooses the window size used when none is given.
+	 *
+	 * @param mode Video mode of the monitor, may be nullptr.
+	 * @return The first of @ref cStartupResolutions smaller than the monitor, or qHD if there is none.
+	 */
+	Resolution startupResolution(const GLFWvidmode *mode)
+	{
+		if (!mode)
+			return newton::graphics::qHD;
+
+		const Resolution monitor(mode->width, mode->height);
+		for (const Resolution &resolution : cStartupResolutions)
+			if (resolution.isSmallerThan(monitor))
+				return resolution;
+
+		return newton::graphics::qHD;
 	}
 
 } // unnamed namespace

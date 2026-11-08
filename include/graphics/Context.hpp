@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "common/Logger.hpp"
+#include "graphics/Resolution.hpp"
 
 namespace newton::graphics
 {
@@ -14,12 +15,13 @@ namespace newton::graphics
 	 *
 	 * Created only through @ref create(), so an existing object always has a valid window.
 	 * Only one instance may exist at a time, because the destructor terminates GLFW.
-	 * The window keeps a 16:9 aspect ratio.
+	 * The window can have any size and aspect ratio, see @ref aspectRatio().
 	 */
 	class Context
 	{
 		public:
 			static std::unique_ptr<Context> create(int width, int height, const char *title);
+			static std::unique_ptr<Context> create(const char *title);
 			~Context();
 
 			Context(const Context &) = delete;
@@ -38,6 +40,13 @@ namespace newton::graphics
 
 			void setVSync(bool enabled);
 			bool isVSync() const;
+
+			void setResolution(Resolution resolution);
+			Resolution resolution() const;
+			Resolution monitorResolution() const;
+			float aspectRatio() const;
+			void setFullscreen(bool enabled);
+			bool isFullscreen() const;
 
 			double deltaTime();
 			int FPS();
@@ -58,7 +67,12 @@ namespace newton::graphics
 			static common::Logger &m_logger;
 
 			GLFWwindow *m_window;
-			int m_monitorRefreshRate; ///< Primary monitor refresh rate read at creation, in Hz. 0 if unknown.
+			int m_monitorRefreshRate;        ///< Primary monitor refresh rate read at creation, in Hz. 0 if unknown.
+			Resolution m_monitorResolution;  ///< Primary monitor size read at creation. 0 x 0 if unknown.
+			Resolution m_windowedResolution; ///< Window size to restore when leaving fullscreen.
+			int m_windowedX;                 ///< Window X position to restore. Unused on Wayland.
+			int m_windowedY;                 ///< Window Y position to restore. Unused on Wayland.
+			bool m_windowedMaximized;        ///< True if the window was maximized when entering fullscreen.
 
 			double m_lastFrameTime; ///< GLFW time of the previous @ref update(), in seconds.
 			double m_deltaTime;     ///< Time between the last two @ref update() calls, in seconds.
