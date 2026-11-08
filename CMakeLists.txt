@@ -35,6 +35,8 @@ add_executable(ft_newton
     src/input/InputManager.cpp
     src/input/utils.cpp
     src/main.cpp
+    src/scene/Scene.cpp
+    src/scene/Transform.cpp
     src/ui/CameraPanel.cpp
     src/ui/DisplayPanel.cpp
     src/ui/ImGuiLayer.cpp
