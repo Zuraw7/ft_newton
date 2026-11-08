@@ -1,6 +1,8 @@
 #ifndef GRAPHICS_RESOLUTION_HPP
 #define GRAPHICS_RESOLUTION_HPP
 
+#include <string>
+
 namespace newton::graphics
 {
 	/**
@@ -28,9 +30,22 @@ namespace newton::graphics
 				return !(*this == other);
 			}
 
+			/**
+			 * @brief Checks that both dimensions are at most those of the other size.
+			 * @param other Size to fit in, e.g. the monitor.
+			 * @return True if this size fits, equal sizes included.
+			 */
 			constexpr bool fitsIn(const Resolution &other) const
 			{
 				return width <= other.width && height <= other.height;
+			}
+
+			/**
+			 * @return The size as text, e.g. "1920x1080".
+			 */
+			inline std::string toString() const
+			{
+				return std::to_string(width) + "x" + std::to_string(height);
 			}
 	};
 

@@ -32,6 +32,6 @@ over a window.
 | Window | Contents |
 | --- | --- |
 | Stats (top left, no background) | Frames per second and average frame time |
-| Display (top right) | VSync toggle, grid toggle, FPS limit (detected monitor refresh rate, presets or unlimited) |
+| Display (top right) | VSync toggle, grid toggle, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (monitor size or presets that fit on it) |
 
-Windows can be moved by dragging their title bar. Their layout is not saved between runs.
+Both windows stay in their corners, also when the main window is resized, and cannot be moved.
