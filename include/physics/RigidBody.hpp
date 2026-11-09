@@ -1,6 +1,7 @@
 #ifndef PHYSICS_RIGIDBODY_HPP
 #define PHYSICS_RIGIDBODY_HPP
 
+#include <glm/ext/vector_float3.hpp>
 #include <glm/vec3.hpp>
 
 namespace newton::physics
@@ -12,6 +13,8 @@ namespace newton::physics
 	{
 			glm::vec3 position{0.0f}; ///< Center of the body in world space.
 			glm::vec3 velocity{0.0f}; ///< Linear velocity in units per second.
+			glm::vec3 force{0.0f}; ///< Sum of forces applied since the last step, in newtons. Cleared after each step.
+
 			float inverseMass = 1.0f; ///< 1 / mass in kg, 0 for a static body (infinite mass) that never moves.
 	};
 

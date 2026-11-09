@@ -1,6 +1,7 @@
 #include "physics/PhysicsWorld.hpp"
 
 #include <algorithm>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/vec3.hpp>
 
 #include <cstddef>
@@ -54,8 +55,11 @@ namespace newton::physics
 		for (RigidBody &body : m_bodies) {
 			if (body.inverseMass == 0.0f)
 				continue;
-			body.velocity += m_gravity * dt;
+
+			const glm::vec3 acceleration = m_gravity + body.force * body.inverseMass;
+			body.velocity += acceleration * dt;
 			body.position += body.velocity * dt;
+			body.force = glm::vec3(0.0f);
 		}
 	}
 
@@ -148,6 +152,33 @@ namespace newton::physics
 	float PhysicsWorld::timeScale() const
 	{
 		return m_timeScale;
+	}
+
+	/**
+	 * @brief Adds a force acting on the body during the next step. Static bodies are ignored.
+	 *
+	 * @param index Index returned by @ref add().
+	 * @param force Force in newtons.
+	 */
+	void PhysicsWorld::applyForce(std::size_t index, const glm::vec3 &force)
+	{
+		RigidBody &body = m_bodies.at(index);
+		if (body.inverseMass == 0.0f)
+			return;
+
+		body.force += force;
+	}
+
+	/**
+	 * @brief Changes the velocity of the body immediately by impulse / mass.
+	 *
+	 * @param index Index returned by @ref add().
+	 * @param impulse Impulse in newton-seconds (kg·m/s).
+	 */
+	void PhysicsWorld::applyImpulse(std::size_t index, const glm::vec3 &impulse)
+	{
+		RigidBody &body = m_bodies.at(index);
+		body.velocity += impulse * body.inverseMass;
 	}
 
 } // namespace newton::physics

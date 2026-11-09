@@ -39,6 +39,9 @@ namespace newton::physics
 			void setTimeScale(float scale);
 			float timeScale() const;
 
+			void applyForce(std::size_t index, const glm::vec3 &force);
+			void applyImpulse(std::size_t index, const glm::vec3 &impulse);
+
 		private:
 			std::vector<RigidBody> m_bodies;       ///< Bodies in the order they were added.
 			glm::vec3 m_gravity = DEFAULT_GRAVITY; ///< Acceleration applied to every dynamic body, in units/s^2.
