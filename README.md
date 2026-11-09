@@ -24,3 +24,4 @@ Run the executable from the repository root, assets are loaded with relative pat
 - @subpage controls - camera, keyboard shortcuts, UI windows
 - @subpage architecture - modules, rules between them, creation and destruction order
 - @subpage conventions - coordinate system, units, winding, model matrix, shaders
+- @subpage physics - fixed time step, integration, mass and gravity, sources

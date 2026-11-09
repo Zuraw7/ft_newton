@@ -29,10 +29,6 @@ namespace newton::physics
 	 */
 	void PhysicsWorld::update(double frameTime)
 	{
-		/*
-		 * TODO: md file for physics with links
-		 * https://gafferongames.com/post/fix_your_timestep/
-		 */
 		if (m_paused)
 			return;
 
@@ -52,12 +48,6 @@ namespace newton::physics
 	 */
 	void PhysicsWorld::step()
 	{
-		/*
-		 * TODO: md file for physics with links
-		 * https://gafferongames.com/post/integration_basics/
-		 * https://en.wikipedia.org/wiki/Semi-implicit_Euler_method
-		 */
-
 		// Semi-implicit Euler
 		const float dt = static_cast<float>(FIXED_STEP);
 
