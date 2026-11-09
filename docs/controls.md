@@ -33,9 +33,9 @@ over a window.
 | Window | Contents |
 | --- | --- |
 | Stats (top left, no background) | Frames per second, average frame time and number of objects in the scene |
-| Display (top right) | VSync, grid and fullscreen toggles, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (presets smaller than the monitor, disabled while fullscreen) |
-| Camera (right, under Display) | Current position and field of view, sliders for speed, fast multiplier, sensitivity and zoom sensitivity, buttons resetting the settings to defaults and the camera to its starting position, direction and field of view |
-| Object (right, under Camera) | Form creating a new object: shape, position, rotation in degrees, scale and color |
+| Display | VSync, grid and fullscreen toggles, FPS limit (detected monitor refresh rate, presets or unlimited), window resolution (presets smaller than the monitor, disabled while fullscreen) |
+| Camera | Current position and field of view, sliders for speed, fast multiplier, sensitivity and zoom sensitivity, buttons resetting the settings to defaults and the camera to its starting position, direction and field of view |
+| Object | Form creating a new object: shape, position, rotation in degrees, scale, color and rigid body (physics on or off, static, mass, starting velocity) |
 
 All windows keep their places, also when the main window is resized, and cannot be moved.
 
