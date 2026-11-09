@@ -44,6 +44,7 @@ namespace newton::ui
 		}
 
 		ImGui::StyleColorsDark();
+		ImGui::GetStyle().SeparatorTextAlign = {0.5f, 0.5f};
 
 		logger.printf(common::LogLevel::INFO, "[%s] ImGui initialized successfully\n", cClassName);
 	}
