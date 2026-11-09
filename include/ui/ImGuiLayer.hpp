@@ -28,6 +28,7 @@ namespace newton::ui
 			void endFrame();
 
 			bool wantsMouse() const;
+			bool wantsKeyboard() const;
 	};
 
 } // namespace newton::ui

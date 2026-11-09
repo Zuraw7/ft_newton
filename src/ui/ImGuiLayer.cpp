@@ -94,4 +94,16 @@ namespace newton::ui
 		return ImGui::GetIO().WantCaptureMouse;
 	}
 
+	/**
+	 * @brief Tells whether ImGui uses the keyboard, e.g. a value is being typed into a field.
+	 *
+	 * Like @ref wantsMouse(), read before @ref beginFrame() it describes the previous frame.
+	 *
+	 * @return True if keyboard input should not be handled by the game this frame.
+	 */
+	bool ImGuiLayer::wantsKeyboard() const
+	{
+		return ImGui::GetIO().WantCaptureKeyboard;
+	}
+
 } // namespace newton::ui
