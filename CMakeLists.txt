@@ -40,6 +40,7 @@ add_executable(ft_newton
     src/ui/CameraPanel.cpp
     src/ui/DisplayPanel.cpp
     src/ui/ImGuiLayer.cpp
+    src/ui/ObjectCreatorPanel.cpp
     src/ui/StatsOverlay.cpp
 )
 

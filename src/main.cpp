@@ -18,6 +18,7 @@
 #include "ui/CameraPanel.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
+#include "ui/ObjectCreatorPanel.hpp"
 #include "ui/StatsOverlay.hpp"
 
 using namespace newton;
@@ -62,36 +63,15 @@ int main()
 	// Scene creation
 	scene::Scene scene;
 
-	scene::SceneObject floor;
-	floor.transform.position = {0.0f, 0.01f, 0.0f};
-	floor.transform.scale = {20.0f, 1.0f, 20.0f};
-	floor.mesh = &planeMesh;
-	floor.color = graphics::rgb(223, 99, 46);
-	scene.add(floor);
-
-	scene::SceneObject redCube;
-	redCube.transform.position = {1.0f, 0.5f, 1.0f};
-	redCube.mesh = &cubeMesh;
-	redCube.color = graphics::rgb(255, 0, 0);
-	scene.add(redCube);
-
-	scene::SceneObject blueCube;
-	blueCube.transform.position = {-1.0f, 0.5f, -1.0f};
-	blueCube.mesh = &cubeMesh;
-	blueCube.color = graphics::rgb(0, 0, 255);
-	scene.add(blueCube);
-
-	scene::SceneObject greenSphere;
-	greenSphere.transform.position = {0.0f, 0.5f, 0.0f};
-	greenSphere.mesh = &sphereMesh;
-	greenSphere.color = graphics::rgb(0, 255, 0);
-	scene.add(greenSphere);
+	// Create object creator panel
+	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh}, {"Sphere", &sphereMesh}, {"Plane", &planeMesh}});
 
 	// Game loop
 	while (context->shouldClose() == false) {
 		context->pollEvents();
 
-		handleGameInput(*context, *renderer);
+		if (!imguiLayer.wantsKeyboard())
+			handleGameInput(*context, *renderer);
 
 		context->update();
 		mainCamera.setAspectRatio(context->aspectRatio());
@@ -104,7 +84,8 @@ int main()
 
 		float panelTop = 0;
 		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
-		ui::drawCameraPanel(cameraController, panelTop);
+		panelTop = ui::drawCameraPanel(cameraController, panelTop);
+		objectCreatorPanel.draw(scene, panelTop);
 
 		renderer->beginFrame(mainCamera);
 
