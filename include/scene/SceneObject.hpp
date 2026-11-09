@@ -1,6 +1,9 @@
 #ifndef SCENE_SCENEOBJECT_HPP
 #define SCENE_SCENEOBJECT_HPP
 
+#include <cstddef>
+#include <optional>
+
 #include <glm/vec3.hpp>
 
 #include "scene/Transform.hpp"
@@ -21,6 +24,7 @@ namespace newton::scene
 			const graphics::Mesh *mesh = nullptr; ///< Shape to draw, not owned. Many objects can share one mesh.
 			Transform transform;                  ///< Position, rotation and scale in the world.
 			glm::vec3 color{1.0f};                ///< Color with components in the [0, 1] range.
+			std::optional<std::size_t> bodyIndex; ///< Body in physics::PhysicsWorld, empty without physics.
 	};
 
 } // namespace newton::scene
