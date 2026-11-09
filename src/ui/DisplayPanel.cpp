@@ -66,7 +66,7 @@ namespace newton::ui
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
 	 * immediately. The window stays at the right edge of the screen, also when the main window is resized,
-	 * and cannot be moved. The resolution combo is disabled while fullscreen.
+	 * and cannot be moved. It starts collapsed. The resolution combo is disabled while fullscreen.
 	 *
 	 * @param context Context whose settings are shown and changed.
 	 * @param gridRenderer Grid whose visibility is shown and changed.
@@ -79,6 +79,7 @@ namespace newton::ui
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
 		ImGui::SetNextWindowPos({display.x - cMargin, top + cMargin}, ImGuiCond_Always, {1.0f, 0.0f});
 
+		ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
 		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 		if (ImGui::Begin("Display", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
 			drawFrameLimitCombo(context);
