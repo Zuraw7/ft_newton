@@ -33,8 +33,10 @@ namespace newton::physics
 		 * TODO: md file for physics with links
 		 * https://gafferongames.com/post/fix_your_timestep/
 		 */
+		if (m_paused)
+			return;
 
-		m_accumulator += std::min(frameTime, MAX_FRAME_TIME);
+		m_accumulator += std::min(frameTime, MAX_FRAME_TIME) * static_cast<double>(m_timeScale);
 
 		while (m_accumulator >= FIXED_STEP) {
 			step();
@@ -121,6 +123,41 @@ namespace newton::physics
 	std::size_t PhysicsWorld::size() const
 	{
 		return m_bodies.size();
+	}
+
+	/**
+	 * @brief Stops or resumes @ref update(). Not paused by default.
+	 *
+	 * While paused, the simulation can still be advanced with @ref step(). The time left in the accumulator
+	 * is kept and used after resuming.
+	 *
+	 * @param paused True to stop the simulation.
+	 */
+	void PhysicsWorld::setPaused(bool paused)
+	{
+		m_paused = paused;
+	}
+
+	bool PhysicsWorld::isPaused() const
+	{
+		return m_paused;
+	}
+
+	/**
+	 * @brief Sets how fast simulated time passes compared to real time. Starts as 1.
+	 *
+	 * Scales the frame time added to the accumulator. Values above 1 run more steps per frame.
+	 *
+	 * @param scale Multiplier, e.g. 0.5 for half speed. Must be greater than 0.
+	 */
+	void PhysicsWorld::setTimeScale(float scale)
+	{
+		m_timeScale = scale;
+	}
+
+	float PhysicsWorld::timeScale() const
+	{
+		return m_timeScale;
 	}
 
 } // namespace newton::physics

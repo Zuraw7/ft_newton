@@ -19,6 +19,8 @@ namespace newton::physics
 	class PhysicsWorld
 	{
 		public:
+			static constexpr glm::vec3 DEFAULT_GRAVITY{0.0f, -9.81f, 0.0f}; ///< Earth gravity along -Y, in units/s^2.
+
 			void update(double frameTime);
 			void step();
 
@@ -32,10 +34,18 @@ namespace newton::physics
 
 			std::size_t size() const;
 
+			void setPaused(bool paused);
+			bool isPaused() const;
+			void setTimeScale(float scale);
+			float timeScale() const;
+
 		private:
-			std::vector<RigidBody> m_bodies;         ///< Bodies in the order they were added.
-			glm::vec3 m_gravity{0.0f, -9.81f, 0.0f}; ///< Acceleration applied to every dynamic body, in units/s^2.
-			double m_accumulator = 0.0;              ///< Unsimulated time left from previous frames, in seconds.
+			std::vector<RigidBody> m_bodies;       ///< Bodies in the order they were added.
+			glm::vec3 m_gravity = DEFAULT_GRAVITY; ///< Acceleration applied to every dynamic body, in units/s^2.
+			double m_accumulator = 0.0;            ///< Unsimulated time left from previous frames, in seconds.
+
+			bool m_paused = false;    ///< While true, @ref update() does not advance the simulation.
+			float m_timeScale = 1.0f; ///< Multiplier of the simulated time, 1 is real time.
 	};
 
 } // namespace newton::physics
