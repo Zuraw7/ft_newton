@@ -21,6 +21,7 @@
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
 #include "ui/ObjectCreatorPanel.hpp"
+#include "ui/PhysicsPanel.hpp"
 #include "ui/StatsOverlay.hpp"
 
 using namespace newton;
@@ -88,11 +89,12 @@ int main()
 
 		imguiLayer.beginFrame();
 
-		ui::drawStatsOverlay(context->FPS(), scene.size());
+		ui::drawStatsOverlay(context->FPS(), scene.size(), world.size());
 
 		float panelTop = 0;
 		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
 		panelTop = ui::drawCameraPanel(cameraController, panelTop);
+		panelTop = ui::drawPhysicsPanel(world, panelTop);
 		objectCreatorPanel.draw(scene, world, panelTop);
 
 		renderer->beginFrame(mainCamera);
