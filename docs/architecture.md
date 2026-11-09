@@ -30,7 +30,8 @@ without touching the rest.
 
 - `geometry` has no OpenGL dependency. It produces plain data, uploading it to the GPU is the job of @ref newton::graphics::Mesh "graphics::Mesh".
 - `ui` panels receive the object whose settings they show (e.g. @ref newton::ui::drawDisplayPanel "drawDisplayPanel(Context&)") or plain values
-  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps, std::size_t objectCount)"). One panel per module.
+  (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps, std::size_t objectCount)"). One panel per module. A panel is a free function, unless it keeps
+  state between frames, like @ref newton::ui::ObjectCreatorPanel "ObjectCreatorPanel".
 - `controllers` know nothing about the UI. Whether the mouse belongs to an ImGui window is passed in as a plain `bool`.
 - `scene` only stores objects, `main.cpp` passes them to the renderer. Objects point to meshes they do not own.
 
