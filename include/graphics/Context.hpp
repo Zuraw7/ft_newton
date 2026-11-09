@@ -27,7 +27,7 @@ namespace newton::graphics
 			Context(const Context &) = delete;
 			Context &operator=(const Context &) = delete;
 
-			bool shouldClose();
+			bool shouldClose() const;
 			void requestClose();
 			void update();
 			void pollEvents();
@@ -48,9 +48,9 @@ namespace newton::graphics
 			void setFullscreen(bool enabled);
 			bool isFullscreen() const;
 
-			double deltaTime();
-			int FPS();
-			double avgFPS();
+			double deltaTime() const;
+			int FPS() const;
+			double avgFPS() const;
 
 		private:
 			explicit Context(GLFWwindow *window);

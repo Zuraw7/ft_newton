@@ -13,12 +13,15 @@
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "input/InputManager.hpp"
+#include "physics/PhysicsWorld.hpp"
+#include "physics/RigidBody.hpp"
 #include "scene/Scene.hpp"
 #include "scene/SceneObject.hpp"
 #include "ui/CameraPanel.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
 #include "ui/ObjectCreatorPanel.hpp"
+#include "ui/PhysicsPanel.hpp"
 #include "ui/StatsOverlay.hpp"
 
 using namespace newton;
@@ -62,6 +65,7 @@ int main()
 
 	// Scene creation
 	scene::Scene scene;
+	physics::PhysicsWorld world;
 
 	// Create object creator panel
 	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh}, {"Sphere", &sphereMesh}, {"Plane", &planeMesh}});
@@ -78,14 +82,20 @@ int main()
 		cameraController.update(context->deltaTime(), imguiLayer.wantsMouse());
 		input::InputManager::update();
 
+		world.update(context->deltaTime());
+		for (scene::SceneObject &object : scene.objects())
+			if (object.bodyIndex)
+				object.transform.position = world.body(*object.bodyIndex).position;
+
 		imguiLayer.beginFrame();
 
-		ui::drawStatsOverlay(context->FPS(), scene.size());
+		ui::drawStatsOverlay(context->FPS(), scene.size(), world.size());
 
 		float panelTop = 0;
 		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
 		panelTop = ui::drawCameraPanel(cameraController, panelTop);
-		objectCreatorPanel.draw(scene, panelTop);
+		panelTop = ui::drawPhysicsPanel(world, panelTop);
+		objectCreatorPanel.draw(scene, world, panelTop);
 
 		renderer->beginFrame(mainCamera);
 

@@ -19,6 +19,7 @@ namespace newton::scene
 		public:
 			std::optional<std::size_t> add(const SceneObject &object);
 			const std::vector<SceneObject> &objects() const;
+			std::vector<SceneObject> &objects();
 			std::size_t size() const;
 
 		private:

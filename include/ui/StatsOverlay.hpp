@@ -5,7 +5,7 @@
 
 namespace newton::ui
 {
-	void drawStatsOverlay(int fps, std::size_t objectCount);
+	void drawStatsOverlay(int fps, std::size_t objectCount, std::size_t physicsObjects);
 
 } // namespace newton::ui
 

@@ -137,7 +137,7 @@ namespace newton::graphics
 		m_logger.printf(common::LogLevel::INFO, "[%s] Graphics context cleaned up successfully\n", cClassName);
 	}
 
-	bool Context::shouldClose()
+	bool Context::shouldClose() const
 	{
 		return glfwWindowShouldClose(m_window);
 	}
@@ -380,7 +380,7 @@ namespace newton::graphics
 	/**
 	 * @return Time between the last two @ref update() calls, in seconds.
 	 */
-	double Context::deltaTime()
+	double Context::deltaTime() const
 	{
 		return m_deltaTime;
 	}
@@ -388,12 +388,12 @@ namespace newton::graphics
 	/**
 	 * @return Frames counted in the last full second, refreshed once per second.
 	 */
-	int Context::FPS()
+	int Context::FPS() const
 	{
 		return m_currentFPS;
 	}
 
-	double Context::avgFPS()
+	double Context::avgFPS() const
 	{
 		return m_avgFPS;
 	}

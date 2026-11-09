@@ -40,6 +40,16 @@ namespace newton::scene
 		return m_objects;
 	}
 
+	/**
+	 * @brief Gives write access to the objects, e.g. to copy body positions after the physics update.
+	 *
+	 * @note Change the objects only, add them with @ref add().
+	 */
+	std::vector<SceneObject> &Scene::objects()
+	{
+		return m_objects;
+	}
+
 	std::size_t Scene::size() const
 	{
 		return m_objects.size();

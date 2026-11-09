@@ -16,6 +16,7 @@ Each directory in `include/` and `src/` is one module with its own namespace `ne
 | `graphics` | Window and OpenGL context (@ref newton::graphics::Context "Context"), frame timing, shaders (@ref newton::graphics::Shader "Shader"), GPU buffers, meshes (@ref newton::graphics::Mesh "Mesh"), camera (@ref newton::graphics::Camera "Camera"), renderer (@ref newton::graphics::Renderer "Renderer") |
 | `input` | Keyboard and mouse state collected from GLFW callbacks (@ref newton::input::InputManager "InputManager") |
 | `controllers` | Turn input into actions, e.g. @ref newton::controllers::CameraController "CameraController" moves the camera |
+| `physics` | Rigid body simulation: @ref newton::physics::PhysicsWorld "PhysicsWorld", @ref newton::physics::RigidBody "RigidBody" |
 | `scene` | Objects in the world: @ref newton::scene::Scene "Scene", @ref newton::scene::SceneObject "SceneObject", @ref newton::scene::Transform "Transform" |
 | `ui` | Dear ImGui lifetime (@ref newton::ui::ImGuiLayer "ImGuiLayer") and the windows drawn with it |
 
@@ -33,7 +34,10 @@ without touching the rest.
   (@ref newton::ui::drawStatsOverlay "drawStatsOverlay(int fps, std::size_t objectCount)"). One panel per module. A panel is a free function, unless it keeps
   state between frames, like @ref newton::ui::ObjectCreatorPanel "ObjectCreatorPanel".
 - `controllers` know nothing about the UI. Whether the mouse belongs to an ImGui window is passed in as a plain `bool`.
-- `scene` only stores objects, `main.cpp` passes them to the renderer. Objects point to meshes they do not own.
+- `scene` only stores objects, they must be passed to the renderer from outside. Objects point to meshes they do not own.
+- `physics` knows neither the scene nor graphics. A scene object only stores the index of its body, so the body
+  positions must be copied into the objects' transforms after every
+  @ref newton::physics::PhysicsWorld::update "PhysicsWorld::update()" and before drawing.
 
 ## Startup and shutdown order
 
