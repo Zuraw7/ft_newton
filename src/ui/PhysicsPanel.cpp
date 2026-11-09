@@ -1,6 +1,7 @@
 #include "ui/PhysicsPanel.hpp"
 
 #include <imgui.h>
+#include <cstddef>
 #include <glm/vec3.hpp>
 
 #include "physics/PhysicsWorld.hpp"
@@ -52,6 +53,10 @@ namespace newton::ui
 				world.setGravity(physics::PhysicsWorld::DEFAULT_GRAVITY);
 				world.setTimeScale(1.0f);
 			}
+
+			if (ImGui::Button("Impulse up"))
+				for (std::size_t i = 0; i < world.size(); i++)
+					world.applyImpulse(i, {0.0f, 5.0f, 0.0f});
 		}
 
 		const float bottom = ImGui::GetWindowPos().y + ImGui::GetWindowHeight();
