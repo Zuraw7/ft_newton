@@ -1,6 +1,7 @@
 #include "physics/Collision.hpp"
 
 #include <cmath>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
 #include <optional>
@@ -19,6 +20,8 @@ namespace
 
 	std::optional<Contact> sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA,
 	                                        const glm::vec3 &posB, const Collider::Sphere &sphereB);
+	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
+	                                       const glm::vec3 &planePos, const Collider::Plane &planeCol);
 
 	/**
 	 * @brief Calls the test matching the shapes of two bodies, for `std::visit` over both colliders.
@@ -33,6 +36,20 @@ namespace
 			std::optional<Contact> operator()(const Collider::Sphere &sphereA, const Collider::Sphere &sphereB) const
 			{
 				return sphereSphereTest(a.position, sphereA, b.position, sphereB);
+			}
+
+			std::optional<Contact> operator()(const Collider::Sphere &sphere, const Collider::Plane &plane) const
+			{
+				return spherePlaneTest(a.position, sphere, b.position, plane);
+			}
+
+			// Reversed pair: the sphere is body b, so positions are swapped with the shapes and the normal flipped
+			std::optional<Contact> operator()(const Collider::Plane &plane, const Collider::Sphere &sphere) const
+			{
+				std::optional<Contact> contact = spherePlaneTest(b.position, sphere, a.position, plane);
+				if (contact)
+					contact->normal = -contact->normal;
+				return contact;
 			}
 
 			template <typename ShapeA, typename ShapeB>
@@ -84,6 +101,30 @@ namespace
 		Contact contact;
 		contact.normal = distance > cEpsilon ? aToB / distance : glm::vec3(0.0f, 1.0f, 0.0f);
 		contact.penetration = radiusSum - distance;
+		return contact;
+	}
+
+	/**
+	 * @brief Tests a sphere against an infinite plane.
+	 *
+	 * The plane has one side: a sphere whose center is behind it still collides, with a penetration greater than
+	 * its radius, so it is pushed back to the side the normal points to.
+	 *
+	 * @param planePos Any point on the plane.
+	 * @return Contact with the normal from the sphere to the plane (the plane normal reversed), or empty if they do
+	 *         not overlap. Body indices are not set.
+	 */
+	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
+	                                       const glm::vec3 &planePos, const Collider::Plane &planeCol)
+	{
+		const glm::vec3 planeToSphere = spherePos - planePos;
+		const float signedDistance = glm::dot(planeCol.normal, planeToSphere);
+		if (signedDistance > sphereCol.radius)
+			return std::nullopt;
+
+		Contact contact;
+		contact.normal = -planeCol.normal;
+		contact.penetration = sphereCol.radius - signedDistance;
 		return contact;
 	}
 
