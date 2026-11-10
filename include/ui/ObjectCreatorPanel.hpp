@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "graphics/Mesh.hpp"
+#include "physics/Collider.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "scene/Scene.hpp"
 
@@ -29,6 +30,7 @@ namespace newton::ui
 			{
 					const char *name;           ///< Text shown in the combo. Must stay valid, e.g. a string literal.
 					const graphics::Mesh *mesh; ///< Shape given to created objects, not owned.
+					physics::Collider collider; ///< Collider of the mesh at scale 1, fitted to each created object.
 			};
 
 			explicit ObjectCreatorPanel(std::vector<MeshOption> meshes);

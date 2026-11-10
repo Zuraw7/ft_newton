@@ -6,12 +6,13 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include "physics/Collision.hpp"
 #include "physics/RigidBody.hpp"
 
 namespace newton::physics
 {
 	/**
-	 * @brief Owns the rigid bodies and moves them with a fixed time step.
+	 * @brief Owns the rigid bodies, moves them with a fixed time step and resolves their collisions.
 	 *
 	 * Bodies are referred to by the index returned from @ref add(). Bodies are never removed,
 	 * so the indices stay valid.
@@ -43,6 +44,10 @@ namespace newton::physics
 			void applyImpulse(std::size_t index, const glm::vec3 &impulse);
 
 		private:
+			void integrate();
+			std::vector<Contact> detectCollisions() const;
+			void resolveContacts(const std::vector<Contact> &contacts);
+
 			std::vector<RigidBody> m_bodies;       ///< Bodies in the order they were added.
 			glm::vec3 m_gravity = DEFAULT_GRAVITY; ///< Acceleration applied to every dynamic body, in units/s^2.
 			double m_accumulator = 0.0;            ///< Unsimulated time left from previous frames, in seconds.
