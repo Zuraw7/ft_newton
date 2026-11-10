@@ -14,7 +14,7 @@ namespace newton::ui
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
 	 * immediately. The window stays at the right edge of the screen, also when the main window is resized,
-	 * and cannot be moved. It starts collapsed. The step button works only while paused, and the reset button
+	 * and cannot be moved. The step button works only while paused, and the reset button
 	 * restores gravity and time scale but does not change the pause.
 	 *
 	 * @param world Physics world whose settings are shown and changed.
@@ -26,7 +26,6 @@ namespace newton::ui
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
 		ImGui::SetNextWindowPos({display.x - cMargin, top + cMargin}, ImGuiCond_Always, {1.0f, 0.0f});
 
-		ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
 		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 
 		if (ImGui::Begin("Physics", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
