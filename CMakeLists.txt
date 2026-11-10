@@ -26,6 +26,7 @@ add_executable(ft_newton
     src/graphics/buffers/VertexArray.cpp
     src/graphics/buffers/VertexBuffer.cpp
     src/graphics/Camera.cpp
+    src/graphics/ColliderRenderer.cpp
     src/graphics/Context.cpp
     src/graphics/GLError.cpp
     src/graphics/GridRenderer.cpp
