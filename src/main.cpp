@@ -1,11 +1,13 @@
 #include <GLFW/glfw3.h>
 
 #include <memory>
+#include <variant>
 
 #include "common/Logger.hpp"
 #include "controllers/CameraController.hpp"
 #include "geometry/Primitives.hpp"
 #include "graphics/Camera.hpp"
+#include "graphics/ColliderRenderer.hpp"
 #include "graphics/Color.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
@@ -28,6 +30,34 @@
 using namespace newton;
 
 static void handleGameInput(graphics::Context &context, graphics::Renderer &renderer);
+
+namespace
+{
+	/**
+	 * @brief Draws one collider with the matching graphics::ColliderRenderer method.
+	 */
+	struct ColliderDrawer
+	{
+			newton::graphics::ColliderRenderer &renderer;
+			const glm::vec3 &position;
+
+			void operator()(const newton::physics::Collider::Sphere &sphere) const
+			{
+				renderer.drawSphere(position, sphere.radius);
+			}
+
+			void operator()(const newton::physics::Collider::Box &box) const
+			{
+				renderer.drawBox(position, box.halfExtents);
+			}
+
+			void operator()(const newton::physics::Collider::Plane &plane) const
+			{
+				renderer.drawPlane(position, plane.normal);
+			}
+	};
+
+} // unnamed namespace
 
 int main()
 {
@@ -53,6 +83,11 @@ int main()
 	std::unique_ptr<graphics::GridRenderer> gridRenderer =
 		graphics::GridRenderer::create("assets/shaders/grid.vert", "assets/shaders/grid.frag");
 	if (!gridRenderer)
+		return -1;
+
+	std::unique_ptr<graphics::ColliderRenderer> colliderRenderer =
+		graphics::ColliderRenderer::create("assets/shaders/line.vert", "assets/shaders/line.frag");
+	if (!colliderRenderer)
 		return -1;
 
 	// Camera creation
@@ -95,7 +130,7 @@ int main()
 		ui::drawStatsOverlay(context->FPS(), scene.size(), world.size());
 
 		float panelTop = 0;
-		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
+		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, *colliderRenderer, panelTop);
 		panelTop = ui::drawCameraPanel(cameraController, panelTop);
 		panelTop = ui::drawPhysicsPanel(world, panelTop);
 		objectCreatorPanel.draw(scene, world, panelTop);
@@ -106,6 +141,10 @@ int main()
 			renderer->draw(*object.mesh, object.transform.matrix(), object.color);
 
 		gridRenderer->draw(mainCamera);
+
+		colliderRenderer->beginFrame(mainCamera);
+		for (const physics::RigidBody &body : world.bodies())
+			std::visit(ColliderDrawer{*colliderRenderer, body.position}, body.collider.shape);
 
 		imguiLayer.endFrame();
 

@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <string>
 
+#include "graphics/ColliderRenderer.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GridRenderer.hpp"
 #include "graphics/Resolution.hpp"
@@ -52,6 +53,7 @@ namespace
 
 	void drawVSyncCheckbox(newton::graphics::Context &context);
 	void drawGridCheckbox(newton::graphics::GridRenderer &gridRenderer);
+	void drawCollidersCheckbox(newton::graphics::ColliderRenderer &colliderRenderer);
 	void drawFullscreenCheckbox(newton::graphics::Context &context);
 	void drawFrameLimitCombo(newton::graphics::Context &context);
 	void drawResolutionCombo(newton::graphics::Context &context);
@@ -61,8 +63,8 @@ namespace
 namespace newton::ui
 {
 	/**
-	 * @brief Draws the "Display" window with the VSync, grid and fullscreen checkboxes and the FPS limit
-	 *        and resolution combos.
+	 * @brief Draws the "Display" window with the VSync, grid, collider wireframe and fullscreen checkboxes and
+	 *        the FPS limit and resolution combos.
 	 *
 	 * Call between @ref ImGuiLayer::beginFrame() and @ref ImGuiLayer::endFrame(). Changes are applied
 	 * immediately. The window stays at the right edge of the screen, also when the main window is resized,
@@ -70,11 +72,13 @@ namespace newton::ui
 	 *
 	 * @param context Context whose settings are shown and changed.
 	 * @param gridRenderer Grid whose visibility is shown and changed.
+	 * @param colliderRenderer Collider wireframe whose visibility is shown and changed.
 	 * @param top Position to place the window below, in pixels: the value returned by the previous panel, 0 for the
 	 *            first one. @ref cMargin is added to it.
 	 * @return Bottom edge of this window, in pixels, for placing the next one.
 	 */
-	float drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer, float top)
+	float drawDisplayPanel(graphics::Context &context, graphics::GridRenderer &gridRenderer,
+	                       graphics::ColliderRenderer &colliderRenderer, float top)
 	{
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
 		ImGui::SetNextWindowPos({display.x - cMargin, top + cMargin}, ImGuiCond_Always, {1.0f, 0.0f});
@@ -90,6 +94,8 @@ namespace newton::ui
 			drawVSyncCheckbox(context);
 			ImGui::SameLine();
 			drawGridCheckbox(gridRenderer);
+			ImGui::SameLine();
+			drawCollidersCheckbox(colliderRenderer);
 			ImGui::SameLine();
 			drawFullscreenCheckbox(context);
 		}
@@ -122,6 +128,16 @@ namespace
 		bool grid = gridRenderer.isVisible();
 		if (ImGui::Checkbox("Grid", &grid))
 			gridRenderer.visible(grid);
+	}
+
+	/**
+	 * @brief Draws the wireframe checkbox, showing and changing the visibility of the collider wireframe.
+	 */
+	void drawCollidersCheckbox(newton::graphics::ColliderRenderer &colliderRenderer)
+	{
+		bool colliders = colliderRenderer.isVisible();
+		if (ImGui::Checkbox("Colliders", &colliders))
+			colliderRenderer.visible(colliders);
 	}
 
 	/**
