@@ -13,6 +13,7 @@
 #include "graphics/Mesh.hpp"
 #include "graphics/Renderer.hpp"
 #include "input/InputManager.hpp"
+#include "physics/Collider.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/RigidBody.hpp"
 #include "scene/Scene.hpp"
@@ -68,7 +69,9 @@ int main()
 	physics::PhysicsWorld world;
 
 	// Create object creator panel
-	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh}, {"Sphere", &sphereMesh}, {"Plane", &planeMesh}});
+	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh, {physics::Collider::Box{}}},
+	                                           {"Sphere", &sphereMesh, {physics::Collider::Sphere{}}},
+	                                           {"Plane", &planeMesh, {physics::Collider::Plane{}}}});
 
 	// Game loop
 	while (context->shouldClose() == false) {

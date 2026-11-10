@@ -35,6 +35,8 @@ add_executable(ft_newton
     src/input/InputManager.cpp
     src/input/utils.cpp
     src/main.cpp
+    src/physics/Collider.cpp
+    src/physics/Collision.cpp
     src/physics/PhysicsWorld.cpp
     src/scene/Scene.cpp
     src/scene/Transform.cpp
