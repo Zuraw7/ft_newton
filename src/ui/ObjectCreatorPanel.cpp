@@ -25,10 +25,10 @@ namespace
 namespace newton::ui
 {
 	/**
-	 * @param meshes Shapes to choose from, must not be empty. Each mesh must outlive the scene objects using it.
+	 * @param shapes Shapes to choose from, must not be empty. Each mesh must outlive the scene objects using it.
 	 */
-	ObjectCreatorPanel::ObjectCreatorPanel(std::vector<MeshOption> meshes)
-		: m_meshes(std::move(meshes))
+	ObjectCreatorPanel::ObjectCreatorPanel(std::vector<ShapeOption> shapes)
+		: m_shapes(std::move(shapes))
 	{}
 
 	/**
@@ -49,12 +49,12 @@ namespace newton::ui
 
 		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 		if (ImGui::Begin("Object", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-			drawMeshCombo();
+			drawShapeCombo();
 			drawTransformFields();
 			drawAppearanceFields();
 			drawRigidBodyFields();
 
-			ImGui::BeginDisabled(m_meshes.empty());
+			ImGui::BeginDisabled(m_shapes.empty());
 			if (ImGui::Button("Create"))
 				createObject(scene, world);
 			ImGui::EndDisabled();
@@ -66,14 +66,14 @@ namespace newton::ui
 		return bottom;
 	}
 
-	void ObjectCreatorPanel::drawMeshCombo()
+	void ObjectCreatorPanel::drawShapeCombo()
 	{
-		const char *preview = m_meshes.empty() ? "None" : m_meshes[m_selectedMesh].name;
-		if (ImGui::BeginCombo("Mesh", preview)) {
-			for (std::size_t i = 0; i < m_meshes.size(); i++) {
-				const bool selected = i == m_selectedMesh;
-				if (ImGui::Selectable(m_meshes[i].name, selected))
-					m_selectedMesh = i;
+		const char *preview = m_shapes.empty() ? "None" : m_shapes[m_selectedShape].name;
+		if (ImGui::BeginCombo("Shape", preview)) {
+			for (std::size_t i = 0; i < m_shapes.size(); i++) {
+				const bool selected = i == m_selectedShape;
+				if (ImGui::Selectable(m_shapes[i].name, selected))
+					m_selectedShape = i;
 				if (selected)
 					ImGui::SetItemDefaultFocus();
 			}
@@ -94,8 +94,8 @@ namespace newton::ui
 		ImGui::DragFloat3("Position", &m_position.x, 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::DragFloat3("Rotation", &m_rotationDegrees.x, 1.0f, 0.0f, 0.0f, "%.2f");
 
-		const bool isSphere = !m_meshes.empty() && std::holds_alternative<physics::Collider::Sphere>(
-													   m_meshes[m_selectedMesh].collider.shape);
+		const bool isSphere = !m_shapes.empty() && std::holds_alternative<physics::Collider::Sphere>(
+													   m_shapes[m_selectedShape].collider.shape);
 
 		if (isSphere) {
 			ImGui::DragFloat("Scale", &m_scale.x, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
@@ -121,8 +121,8 @@ namespace newton::ui
 		ImGui::SeparatorText("Rigid body");
 		ImGui::Checkbox("Physics", &m_physics);
 
-		const bool isPlane = !m_meshes.empty() &&
-		                     std::holds_alternative<physics::Collider::Plane>(m_meshes[m_selectedMesh].collider.shape);
+		const bool isPlane = !m_shapes.empty() &&
+		                     std::holds_alternative<physics::Collider::Plane>(m_shapes[m_selectedShape].collider.shape);
 		if (isPlane)
 			m_static = true;
 
@@ -154,7 +154,7 @@ namespace newton::ui
 	void ObjectCreatorPanel::createObject(scene::Scene &scene, physics::PhysicsWorld &world) const
 	{
 		scene::SceneObject object;
-		object.mesh = m_meshes[m_selectedMesh].mesh;
+		object.mesh = m_shapes[m_selectedShape].mesh;
 		object.transform.position = m_position;
 		object.transform.rotation = glm::quat(glm::radians(m_rotationDegrees));
 		object.transform.scale = m_scale;
@@ -166,7 +166,7 @@ namespace newton::ui
 			body.rotation = object.transform.rotation;
 			body.velocity = m_static ? glm::vec3(0.0f) : m_velocity;
 			body.inverseMass = m_static ? 0.0f : 1.0f / m_mass;
-			body.collider = physics::scaleCollider(m_meshes[m_selectedMesh].collider, object.transform.scale);
+			body.collider = physics::scaleCollider(m_shapes[m_selectedShape].collider, object.transform.scale);
 			object.bodyIndex = world.add(body);
 		}
 

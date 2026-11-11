@@ -24,29 +24,29 @@ namespace newton::ui
 	{
 		public:
 			/**
-			 * @brief Shape offered in the combo.
+			 * @brief Shape offered in the combo: the mesh that is drawn and the collider used for physics.
 			 */
-			struct MeshOption
+			struct ShapeOption
 			{
 					const char *name;           ///< Text shown in the combo. Must stay valid, e.g. a string literal.
-					const graphics::Mesh *mesh; ///< Shape given to created objects, not owned.
+					const graphics::Mesh *mesh; ///< Mesh given to created objects, not owned.
 					physics::Collider collider; ///< Collider of the mesh at scale 1, fitted to each created object.
 			};
 
-			explicit ObjectCreatorPanel(std::vector<MeshOption> meshes);
+			explicit ObjectCreatorPanel(std::vector<ShapeOption> shapes);
 
 			float draw(scene::Scene &scene, physics::PhysicsWorld &world, float top);
 
 		private:
-			void drawMeshCombo();
+			void drawShapeCombo();
 			void drawTransformFields();
 			void drawAppearanceFields();
 			void drawRigidBodyFields();
 			void createObject(scene::Scene &scene, physics::PhysicsWorld &world) const;
 
 			// Shape
-			std::vector<MeshOption> m_meshes; ///< Shapes offered in the combo.
-			std::size_t m_selectedMesh = 0;   ///< Index of the chosen shape in @ref m_meshes.
+			std::vector<ShapeOption> m_shapes; ///< Shapes offered in the combo.
+			std::size_t m_selectedShape = 0;   ///< Index of the chosen shape in @ref m_shapes.
 
 			// Transform
 			glm::vec3 m_position{0.0f, 0.5f, 0.0f}; ///< Center of the object.
