@@ -42,8 +42,8 @@ namespace newton::graphics
 			bool isVisible() const;
 
 			void beginFrame(Camera &camera);
-			void drawBox(const glm::vec3 &position, const glm::vec3 &halfExtents, const glm::quat &rotation);
-			void drawSphere(const glm::vec3 &position, float radius);
+			void drawBox(const glm::vec3 &position, const glm::quat &rotation, const glm::vec3 &halfExtents);
+			void drawSphere(const glm::vec3 &position, const glm::quat &rotation, float radius);
 			void drawPlane(const glm::vec3 &position, const glm::quat &rotation);
 
 		private:

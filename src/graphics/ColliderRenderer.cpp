@@ -111,10 +111,10 @@ namespace newton::graphics
 	 * @pre @ref beginFrame() was called in this frame.
 	 *
 	 * @param position Center of the box.
-	 * @param halfExtents Half of the size along each local axis, as in the box collider.
 	 * @param rotation Rotation of the body.
+	 * @param halfExtents Half of the size along each local axis, as in the box collider.
 	 */
-	void ColliderRenderer::drawBox(const glm::vec3 &position, const glm::vec3 &halfExtents, const glm::quat &rotation)
+	void ColliderRenderer::drawBox(const glm::vec3 &position, const glm::quat &rotation, const glm::vec3 &halfExtents)
 	{
 		if (!m_visible)
 			return;
@@ -131,20 +131,23 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Draws a sphere as three circles, one around each axis.
+	 * @brief Draws a sphere as three circles, one around each local axis.
 	 *
 	 * @pre @ref beginFrame() was called in this frame.
 	 *
 	 * @param position Center of the sphere.
+	 * @param rotation Rotation of the body. It does not change the shape, it only turns the circles so the
+	 *        rotation of the sphere can be seen.
 	 * @param radius Radius, as in the sphere collider.
 	 */
-	void ColliderRenderer::drawSphere(const glm::vec3 &position, float radius)
+	void ColliderRenderer::drawSphere(const glm::vec3 &position, const glm::quat &rotation, float radius)
 	{
 		if (!m_visible)
 			return;
 
 		glm::mat4 model{1.0f};
 		model = glm::translate(model, position);
+		model = model * glm::mat4_cast(rotation);
 		model = glm::scale(model, glm::vec3(radius));
 
 		m_shader->setMat4("uModel", model);

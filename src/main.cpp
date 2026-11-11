@@ -44,12 +44,12 @@ namespace
 
 			void operator()(const newton::physics::Collider::Sphere &sphere) const
 			{
-				renderer.drawSphere(position, sphere.radius);
+				renderer.drawSphere(position, rotation, sphere.radius);
 			}
 
 			void operator()(const newton::physics::Collider::Box &box) const
 			{
-				renderer.drawBox(position, box.halfExtents, rotation);
+				renderer.drawBox(position, rotation, box.halfExtents);
 			}
 
 			void operator()(const newton::physics::Collider::Plane &) const
