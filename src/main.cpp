@@ -13,7 +13,7 @@
 #include "graphics/GLError.hpp"
 #include "graphics/GridRenderer.hpp"
 #include "graphics/Mesh.hpp"
-#include "graphics/Renderer.hpp"
+#include "graphics/MeshRenderer.hpp"
 #include "input/InputManager.hpp"
 #include "physics/Collider.hpp"
 #include "physics/PhysicsWorld.hpp"
@@ -29,7 +29,7 @@
 
 using namespace newton;
 
-static void handleGameInput(graphics::Context &context, graphics::Renderer &renderer);
+static void handleGameInput(graphics::Context &context, graphics::MeshRenderer &renderer);
 
 namespace
 {
@@ -74,12 +74,12 @@ int main()
 
 	ui::ImGuiLayer imguiLayer(context->window());
 
-	// Renderer creation
-	std::unique_ptr<graphics::Renderer> renderer =
-		graphics::Renderer::create("assets/shaders/basic.vert", "assets/shaders/basic.frag");
-	if (!renderer)
+	// Renderers creation
+	std::unique_ptr<graphics::MeshRenderer> meshRenderer =
+		graphics::MeshRenderer::create("assets/shaders/mesh.vert", "assets/shaders/mesh.frag");
+	if (!meshRenderer)
 		return -1;
-	renderer->setBackgroundColor(graphics::rgb(77, 189, 255));
+	meshRenderer->setBackgroundColor(graphics::rgb(77, 189, 255));
 
 	std::unique_ptr<graphics::GridRenderer> gridRenderer =
 		graphics::GridRenderer::create("assets/shaders/grid.vert", "assets/shaders/grid.frag");
@@ -114,7 +114,7 @@ int main()
 		context->pollEvents();
 
 		if (!imguiLayer.wantsKeyboard())
-			handleGameInput(*context, *renderer);
+			handleGameInput(*context, *meshRenderer);
 
 		context->update();
 		mainCamera.setAspectRatio(context->aspectRatio());
@@ -140,10 +140,10 @@ int main()
 		panelTop = ui::drawPhysicsPanel(world, panelTop);
 		objectCreatorPanel.draw(scene, world, panelTop);
 
-		renderer->beginFrame(mainCamera);
+		meshRenderer->beginFrame(mainCamera);
 
 		for (const scene::SceneObject &object : scene.objects())
-			renderer->draw(*object.mesh, object.transform.matrix(), object.color);
+			meshRenderer->draw(*object.mesh, object.transform.matrix(), object.color);
 
 		gridRenderer->draw(mainCamera);
 
@@ -161,7 +161,7 @@ int main()
 	return 0;
 }
 
-void handleGameInput(graphics::Context &context, graphics::Renderer &renderer)
+void handleGameInput(graphics::Context &context, graphics::MeshRenderer &renderer)
 {
 	if (input::InputManager::isKeyPressed(GLFW_KEY_ESCAPE))
 		context.requestClose();

@@ -31,7 +31,7 @@ add_executable(ft_newton
     src/graphics/GLError.cpp
     src/graphics/GridRenderer.cpp
     src/graphics/Mesh.cpp
-    src/graphics/Renderer.cpp
+    src/graphics/MeshRenderer.cpp
     src/graphics/Shader.cpp
     src/input/InputManager.cpp
     src/input/utils.cpp

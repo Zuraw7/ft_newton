@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_RENDERER_HPP
-#define GRAPHICS_RENDERER_HPP
+#ifndef GRAPHICS_MESHRENDERER_HPP
+#define GRAPHICS_MESHRENDERER_HPP
 
 #include <memory>
 
@@ -18,14 +18,14 @@ namespace newton::graphics
 	 * Methods call OpenGL directly, so they can be used only after a successful @ref Context::create().
 	 * Non-copyable.
 	 */
-	class Renderer
+	class MeshRenderer
 	{
 		public:
-			static std::unique_ptr<Renderer> create(const std::string &vertex, const std::string &fragment);
-			~Renderer() = default;
+			static std::unique_ptr<MeshRenderer> create(const std::string &vertex, const std::string &fragment);
+			~MeshRenderer() = default;
 
-			Renderer(const Renderer &) = delete;
-			Renderer &operator=(const Renderer &) = delete;
+			MeshRenderer(const MeshRenderer &) = delete;
+			MeshRenderer &operator=(const MeshRenderer &) = delete;
 
 			void beginFrame(Camera &camera);
 			void draw(const Mesh &mesh, const glm::mat4 &model, const glm::vec3 &color);
@@ -34,7 +34,7 @@ namespace newton::graphics
 			void togglePolygonMode();
 
 		private:
-			explicit Renderer(std::unique_ptr<Shader> shader);
+			explicit MeshRenderer(std::unique_ptr<Shader> shader);
 
 			void clear() const;
 
@@ -47,4 +47,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_RENDERER_HPP
+#endif // GRAPHICS_MESHRENDERER_HPP

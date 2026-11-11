@@ -1,4 +1,4 @@
-#include "graphics/Renderer.hpp"
+#include "graphics/MeshRenderer.hpp"
 
 #include <glad/gl.h>
 #include <memory>
@@ -10,13 +10,13 @@
 
 namespace
 {
-	const char *cClassName = "Renderer";
+	const char *cClassName = "MeshRenderer";
 
 } // unnamed namespace
 
 namespace newton::graphics
 {
-	common::Logger &Renderer::m_logger = common::Logger::getInstance();
+	common::Logger &MeshRenderer::m_logger = common::Logger::getInstance();
 
 	/**
 	 * @brief Creates the renderer together with its shader.
@@ -28,7 +28,7 @@ namespace newton::graphics
 	 * @param fragment Path to the fragment shader source, relative to the working directory.
 	 * @return The renderer, or nullptr if the shader could not be created.
 	 */
-	std::unique_ptr<Renderer> Renderer::create(const std::string &vertex, const std::string &fragment)
+	std::unique_ptr<MeshRenderer> MeshRenderer::create(const std::string &vertex, const std::string &fragment)
 	{
 		auto shader = Shader::create(vertex, fragment);
 		if (!shader) {
@@ -36,13 +36,13 @@ namespace newton::graphics
 			                cClassName);
 			return nullptr;
 		}
-		return std::unique_ptr<Renderer>(new Renderer(std::move(shader)));
+		return std::unique_ptr<MeshRenderer>(new MeshRenderer(std::move(shader)));
 	}
 
 	/**
 	 * @brief Takes ownership of an already created shader. Called by @ref create().
 	 */
-	Renderer::Renderer(std::unique_ptr<Shader> shader)
+	MeshRenderer::MeshRenderer(std::unique_ptr<Shader> shader)
 		: m_shader(std::move(shader))
 		, m_polygonMode(false)
 	{
@@ -56,7 +56,7 @@ namespace newton::graphics
 	 *
 	 * @param camera Camera the frame is seen from.
 	 */
-	void Renderer::beginFrame(Camera &camera)
+	void MeshRenderer::beginFrame(Camera &camera)
 	{
 		clear();
 
@@ -75,7 +75,7 @@ namespace newton::graphics
 	 * @param model Model matrix, from model space to world space.
 	 * @param color Color in the [0, 1] range.
 	 */
-	void Renderer::draw(const Mesh &mesh, const glm::mat4 &model, const glm::vec3 &color)
+	void MeshRenderer::draw(const Mesh &mesh, const glm::mat4 &model, const glm::vec3 &color)
 	{
 		m_shader->setMat4("uModel", model);
 		m_shader->setVec3("uColor", color);
@@ -85,7 +85,7 @@ namespace newton::graphics
 	/**
 	 * @brief Sets the color used by @ref clear(). Components are in the [0, 1] range.
 	 */
-	void Renderer::setBackgroundColor(const glm::vec3 &color)
+	void MeshRenderer::setBackgroundColor(const glm::vec3 &color)
 	{
 		glClearColor(color.r, color.g, color.b, 1.0f);
 	}
@@ -95,7 +95,7 @@ namespace newton::graphics
 	 *
 	 * Sets the global OpenGL polygon mode immediately, so it also affects anything drawn outside this renderer.
 	 */
-	void Renderer::togglePolygonMode()
+	void MeshRenderer::togglePolygonMode()
 	{
 		m_polygonMode = !m_polygonMode;
 		glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode ? GL_LINE : GL_FILL);
@@ -104,7 +104,7 @@ namespace newton::graphics
 	/**
 	 * @brief Clears the color and depth buffers. Called by @ref beginFrame().
 	 */
-	void Renderer::clear() const
+	void MeshRenderer::clear() const
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
