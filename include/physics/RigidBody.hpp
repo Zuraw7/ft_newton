@@ -13,9 +13,9 @@ namespace newton::physics
 	 */
 	struct RigidBody
 	{
-			glm::vec3 position{0.0f}; ///< Center of the body in world space.
-			glm::quat rotation{1.0f, 0.0f, 0.0f, 0.0f}; ///< Orientation in world space, unit length. Rotates the collider.
-			glm::vec3 velocity{0.0f}; ///< Linear velocity in units per second.
+			glm::vec3 position{0.0f};                   ///< Center of the body in world space.
+			glm::quat rotation{1.0f, 0.0f, 0.0f, 0.0f}; ///< Orientation in world space, unit length.
+			glm::vec3 velocity{0.0f};                   ///< Linear velocity in units per second.
 			glm::vec3 force{0.0f}; ///< Sum of forces applied since the last step, in newtons. Cleared after each step.
 
 			float inverseMass = 1.0f; ///< 1 / mass in kg, 0 for a static body (infinite mass) that never moves.
