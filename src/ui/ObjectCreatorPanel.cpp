@@ -145,8 +145,8 @@ namespace newton::ui
 	 * @brief Creates an object from the form values and adds it to the scene.
 	 *
 	 * With physics enabled, the body is added to the world first, because @ref scene::Scene::add() copies
-	 * the object and its body index must already be set. The body gets the collider of the chosen mesh, scaled
-	 * to the object's size, see @ref physics::transformCollider() for how rotation is handled.
+	 * the object and its body index must already be set. The body gets the rotation of the object and the
+	 * collider of the chosen mesh, scaled to the object's size.
 	 *
 	 * @param scene Scene the object is added to.
 	 * @param world Physics world the body is added to.
@@ -163,10 +163,10 @@ namespace newton::ui
 		if (m_physics) {
 			physics::RigidBody body;
 			body.position = m_position;
+			body.rotation = object.transform.rotation;
 			body.velocity = m_static ? glm::vec3(0.0f) : m_velocity;
 			body.inverseMass = m_static ? 0.0f : 1.0f / m_mass;
-			body.collider = physics::transformCollider(m_meshes[m_selectedMesh].collider, object.transform.rotation,
-			                                           object.transform.scale);
+			body.collider = physics::scaleCollider(m_meshes[m_selectedMesh].collider, object.transform.scale);
 			object.bodyIndex = world.add(body);
 		}
 

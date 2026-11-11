@@ -1,6 +1,7 @@
 #include "physics/Collision.hpp"
 
 #include <cmath>
+#include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
@@ -17,11 +18,12 @@ namespace
 	using newton::physics::RigidBody;
 
 	constexpr float cEpsilon = 1e-6f;
+	constexpr glm::vec3 cPlaneNormal = {0.0f, 1.0f, 0.0f};
 
 	std::optional<Contact> sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA,
 	                                        const glm::vec3 &posB, const Collider::Sphere &sphereB);
 	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
-	                                       const glm::vec3 &planePos, const Collider::Plane &planeCol);
+	                                       const glm::vec3 &planePos, const glm::quat &planeRot);
 
 	/**
 	 * @brief Calls the test matching the shapes of two bodies, for `std::visit` over both colliders.
@@ -38,15 +40,15 @@ namespace
 				return sphereSphereTest(a.position, sphereA, b.position, sphereB);
 			}
 
-			std::optional<Contact> operator()(const Collider::Sphere &sphere, const Collider::Plane &plane) const
+			std::optional<Contact> operator()(const Collider::Sphere &sphere, const Collider::Plane &) const
 			{
-				return spherePlaneTest(a.position, sphere, b.position, plane);
+				return spherePlaneTest(a.position, sphere, b.position, b.rotation);
 			}
 
 			// Reversed pair: the sphere is body b, so positions are swapped with the shapes and the normal flipped
-			std::optional<Contact> operator()(const Collider::Plane &plane, const Collider::Sphere &sphere) const
+			std::optional<Contact> operator()(const Collider::Plane &, const Collider::Sphere &sphere) const
 			{
-				std::optional<Contact> contact = spherePlaneTest(b.position, sphere, a.position, plane);
+				std::optional<Contact> contact = spherePlaneTest(b.position, sphere, a.position, a.rotation);
 				if (contact)
 					contact->normal = -contact->normal;
 				return contact;
@@ -111,19 +113,21 @@ namespace
 	 * its radius, so it is pushed back to the side the normal points to.
 	 *
 	 * @param planePos Any point on the plane.
+	 * @param planeRot Rotation of the plane body, turning the local +Y axis into the plane normal.
 	 * @return Contact with the normal from the sphere to the plane (the plane normal reversed), or empty if they do
 	 *         not overlap. Body indices are not set.
 	 */
 	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
-	                                       const glm::vec3 &planePos, const Collider::Plane &planeCol)
+	                                       const glm::vec3 &planePos, const glm::quat &planeRot)
 	{
 		const glm::vec3 planeToSphere = spherePos - planePos;
-		const float signedDistance = glm::dot(planeCol.normal, planeToSphere);
+		const glm::vec3 normal = planeRot * cPlaneNormal;
+		const float signedDistance = glm::dot(normal, planeToSphere);
 		if (signedDistance > sphereCol.radius)
 			return std::nullopt;
 
 		Contact contact;
-		contact.normal = -planeCol.normal;
+		contact.normal = -normal;
 		contact.penetration = sphereCol.radius - signedDistance;
 		return contact;
 	}

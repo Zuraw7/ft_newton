@@ -40,6 +40,7 @@ namespace
 	{
 			newton::graphics::ColliderRenderer &renderer;
 			const glm::vec3 &position;
+			const glm::quat &rotation;
 
 			void operator()(const newton::physics::Collider::Sphere &sphere) const
 			{
@@ -48,12 +49,12 @@ namespace
 
 			void operator()(const newton::physics::Collider::Box &box) const
 			{
-				renderer.drawBox(position, box.halfExtents);
+				renderer.drawBox(position, box.halfExtents, rotation);
 			}
 
-			void operator()(const newton::physics::Collider::Plane &plane) const
+			void operator()(const newton::physics::Collider::Plane &) const
 			{
-				renderer.drawPlane(position, plane.normal);
+				renderer.drawPlane(position, rotation);
 			}
 	};
 
@@ -121,9 +122,13 @@ int main()
 		input::InputManager::update();
 
 		world.update(context->deltaTime());
-		for (scene::SceneObject &object : scene.objects())
-			if (object.bodyIndex)
-				object.transform.position = world.body(*object.bodyIndex).position;
+		for (scene::SceneObject &object : scene.objects()) {
+			if (object.bodyIndex) {
+				const physics::RigidBody &body = world.body(*object.bodyIndex);
+				object.transform.position = body.position;
+				object.transform.rotation = body.rotation;
+			}
+		}
 
 		imguiLayer.beginFrame();
 
@@ -144,7 +149,7 @@ int main()
 
 		colliderRenderer->beginFrame(mainCamera);
 		for (const physics::RigidBody &body : world.bodies())
-			std::visit(ColliderDrawer{*colliderRenderer, body.position}, body.collider.shape);
+			std::visit(ColliderDrawer{*colliderRenderer, body.position, body.rotation}, body.collider.shape);
 
 		imguiLayer.endFrame();
 

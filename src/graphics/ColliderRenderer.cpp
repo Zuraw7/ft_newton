@@ -2,6 +2,7 @@
 
 #include <glad/gl.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -105,20 +106,22 @@ namespace newton::graphics
 	}
 
 	/**
-	 * @brief Draws the edges of a box aligned with the world axes.
+	 * @brief Draws the edges of a box.
 	 *
 	 * @pre @ref beginFrame() was called in this frame.
 	 *
 	 * @param position Center of the box.
-	 * @param halfExtents Half of the size along each axis, as in the box collider.
+	 * @param halfExtents Half of the size along each local axis, as in the box collider.
+	 * @param rotation Rotation of the body.
 	 */
-	void ColliderRenderer::drawBox(const glm::vec3 &position, const glm::vec3 &halfExtents)
+	void ColliderRenderer::drawBox(const glm::vec3 &position, const glm::vec3 &halfExtents, const glm::quat &rotation)
 	{
 		if (!m_visible)
 			return;
 
 		glm::mat4 model{1.0f};
 		model = glm::translate(model, position);
+		model = model * glm::mat4_cast(rotation);
 		model = glm::scale(model, halfExtents);
 
 		m_shader->setMat4("uModel", model);
@@ -159,15 +162,12 @@ namespace newton::graphics
 	 * @pre @ref beginFrame() was called in this frame.
 	 *
 	 * @param position Any point on the plane, the grid is centered on it.
-	 * @param normal Unit normal of the plane.
+	 * @param rotation Rotation of the body, turning the local +Y axis into the plane normal.
 	 */
-	void ColliderRenderer::drawPlane(const glm::vec3 &position, const glm::vec3 &normal)
+	void ColliderRenderer::drawPlane(const glm::vec3 &position, const glm::quat &rotation)
 	{
 		if (!m_visible)
 			return;
-
-		// The grid lies on XZ with the arrow along +Y, so +Y is turned to the normal
-		const glm::quat rotation(glm::vec3(0.0f, 1.0f, 0.0f), normal);
 
 		glm::mat4 model{1.0f};
 		model = glm::translate(model, position);

@@ -2,7 +2,6 @@
 #define PHYSICS_COLLIDER_HPP
 
 #include <glm/ext/vector_float3.hpp>
-#include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 
 #include <variant>
@@ -12,8 +11,9 @@ namespace newton::physics
 	/**
 	 * @brief Shape of a body used for collision detection.
 	 *
-	 * Describes only the shape and its size, relative to the center of the body. The position is taken from
-	 * @ref RigidBody::position, so the collider does not change when the body moves.
+	 * Describes only the shape and its size, in the local space of the body. The position and rotation are taken
+	 * from @ref RigidBody::position and @ref RigidBody::rotation. The collider follows the body, but its data
+	 * stays the same when the body moves or turns.
 	 */
 	struct Collider
 	{
@@ -28,14 +28,15 @@ namespace newton::physics
 			/**
 			 * @brief Infinite plane passing through the body position. Only the side the normal points to is
 			 *        outside, everything behind it counts as penetrating.
+			 *
+			 * The normal is the local +Y axis, so the plane has no fields: it is turned by the body rotation,
+			 * e.g. 180° around X for a ceiling.
 			 */
 			struct Plane
-			{
-					glm::vec3 normal{0.0f, 1.0f, 0.0f}; ///< Unit vector pointing out of the plane, in world space.
-			};
+			{};
 
 			/**
-			 * @brief Box centered on the body, aligned with the world axes.
+			 * @brief Box centered on the body, with its edges along the local axes.
 			 */
 			struct Box
 			{
@@ -45,7 +46,7 @@ namespace newton::physics
 			std::variant<Sphere, Plane, Box> shape; ///< The shape with its size. Defaults to a sphere of radius 0.5.
 	};
 
-	Collider transformCollider(Collider collider, const glm::quat &rotation, const glm::vec3 &scale);
+	Collider scaleCollider(Collider collider, const glm::vec3 &scale);
 
 } // namespace newton::physics
 
