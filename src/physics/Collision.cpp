@@ -25,6 +25,8 @@ namespace
 	                      const Collider::Sphere &sphereB, std::vector<Contact> &contacts);
 	void spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol, const glm::vec3 &planePos,
 	                     const glm::quat &planeRot, std::vector<Contact> &contacts);
+	void boxPlaneTest(const glm::vec3 &boxPos, const Collider::Box &boxCol, const glm::quat &boxRot,
+	                  const glm::vec3 &planePos, const glm::quat &planeRot, std::vector<Contact> &contacts);
 
 	void reverseNormals(std::size_t first, std::vector<Contact> &contacts);
 
@@ -54,6 +56,19 @@ namespace
 			{
 				const std::size_t first = contacts.size();
 				spherePlaneTest(b.position, sphere, a.position, a.rotation, contacts);
+
+				reverseNormals(first, contacts);
+			}
+
+			void operator()(const Collider::Box &box, const Collider::Plane &) const
+			{
+				boxPlaneTest(a.position, box, a.rotation, b.position, b.rotation, contacts);
+			}
+
+			void operator()(const Collider::Plane &, const Collider::Box &box) const
+			{
+				const std::size_t first = contacts.size();
+				boxPlaneTest(b.position, box, b.rotation, a.position, a.rotation, contacts);
 
 				reverseNormals(first, contacts);
 			}
@@ -113,7 +128,7 @@ namespace
 		Contact contact;
 		contact.normal = distance > cEpsilon ? aToB / distance : glm::vec3(0.0f, 1.0f, 0.0f);
 		contact.penetration = radiusSum - distance;
-		contact.contactPoint = posA + contact.normal * (sphereA.radius - contact.penetration / 2);
+		contact.point = posA + contact.normal * (sphereA.radius - contact.penetration / 2);
 		contacts.push_back(contact);
 	}
 
@@ -140,9 +155,49 @@ namespace
 
 		Contact contact;
 		contact.normal = -normal;
-		contact.contactPoint = spherePos - normal * signedDistance;
+		contact.point = spherePos - normal * signedDistance;
 		contact.penetration = sphereCol.radius - signedDistance;
 		contacts.push_back(contact);
+	}
+
+	/**
+	 * @brief Tests a box against an infinite plane, one corner at a time.
+	 *
+	 * The distance of each corner from the plane is the distance of the box center plus the corner offset along
+	 * the normal, so the center distance is computed once. Every corner on or behind the plane gives its own
+	 * contact, e.g. 4 for a box lying flat, so one pair can give up to 8 contacts.
+	 *
+	 * @param boxPos Center of the box.
+	 * @param boxCol Box collider, with the half extents along the local axes.
+	 * @param boxRot Rotation of the box body.
+	 * @param planePos Any point on the plane.
+	 * @param planeRot Rotation of the plane body, turning the local +Y axis into the plane normal.
+	 * @param contacts Vector one contact per sunk corner is appended to, with the normal from the box to the plane.
+	 */
+	void boxPlaneTest(const glm::vec3 &boxPos, const Collider::Box &boxCol, const glm::quat &boxRot,
+	                  const glm::vec3 &planePos, const glm::quat &planeRot, std::vector<Contact> &contacts)
+	{
+		const glm::vec3 &h = boxCol.halfExtents;
+		const glm::vec3 corners[8] = {glm::vec3(-h.x, -h.y, -h.z), glm::vec3(-h.x, -h.y, h.z),
+		                              glm::vec3(-h.x, h.y, -h.z),  glm::vec3(-h.x, h.y, h.z),
+		                              glm::vec3(h.x, -h.y, -h.z),  glm::vec3(h.x, -h.y, h.z),
+		                              glm::vec3(h.x, h.y, -h.z),   glm::vec3(h.x, h.y, h.z)};
+
+		const glm::vec3 normal = planeRot * cPlaneNormal;
+		const float centerDistance = glm::dot(normal, boxPos - planePos);
+
+		for (const glm::vec3 &corner : corners) {
+			const glm::vec3 offset = boxRot * corner;
+			const float penetration = -(centerDistance + glm::dot(normal, offset));
+			if (penetration < 0.0f)
+				continue;
+
+			Contact contact;
+			contact.normal = -normal;
+			contact.point = boxPos + offset;
+			contact.penetration = penetration;
+			contacts.push_back(contact);
+		}
 	}
 
 	/**
