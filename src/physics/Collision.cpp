@@ -1,12 +1,13 @@
 #include "physics/Collision.hpp"
 
 #include <cmath>
+#include <cstddef>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
-#include <optional>
 #include <variant>
+#include <vector>
 
 #include "physics/Collider.hpp"
 #include "physics/RigidBody.hpp"
@@ -20,10 +21,12 @@ namespace
 	constexpr float cEpsilon = 1e-6f;
 	constexpr glm::vec3 cPlaneNormal = {0.0f, 1.0f, 0.0f};
 
-	std::optional<Contact> sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA,
-	                                        const glm::vec3 &posB, const Collider::Sphere &sphereB);
-	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
-	                                       const glm::vec3 &planePos, const glm::quat &planeRot);
+	void sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA, const glm::vec3 &posB,
+	                      const Collider::Sphere &sphereB, std::vector<Contact> &contacts);
+	void spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol, const glm::vec3 &planePos,
+	                     const glm::quat &planeRot, std::vector<Contact> &contacts);
+
+	void reverseNormals(std::size_t first, std::vector<Contact> &contacts);
 
 	/**
 	 * @brief Calls the test matching the shapes of two bodies, for `std::visit` over both colliders.
@@ -34,31 +37,30 @@ namespace
 	{
 			const RigidBody &a;
 			const RigidBody &b;
+			std::vector<Contact> &contacts;
 
-			std::optional<Contact> operator()(const Collider::Sphere &sphereA, const Collider::Sphere &sphereB) const
+			void operator()(const Collider::Sphere &sphereA, const Collider::Sphere &sphereB) const
 			{
-				return sphereSphereTest(a.position, sphereA, b.position, sphereB);
+				sphereSphereTest(a.position, sphereA, b.position, sphereB, contacts);
 			}
 
-			std::optional<Contact> operator()(const Collider::Sphere &sphere, const Collider::Plane &) const
+			void operator()(const Collider::Sphere &sphere, const Collider::Plane &) const
 			{
-				return spherePlaneTest(a.position, sphere, b.position, b.rotation);
+				spherePlaneTest(a.position, sphere, b.position, b.rotation, contacts);
 			}
 
-			// Reversed pair: the sphere is body b, so positions are swapped with the shapes and the normal flipped
-			std::optional<Contact> operator()(const Collider::Plane &, const Collider::Sphere &sphere) const
+			// Reversed pair: the sphere is body b, so positions are swapped with the shapes and the normals reversed
+			void operator()(const Collider::Plane &, const Collider::Sphere &sphere) const
 			{
-				std::optional<Contact> contact = spherePlaneTest(b.position, sphere, a.position, a.rotation);
-				if (contact)
-					contact->normal = -contact->normal;
-				return contact;
+				const std::size_t first = contacts.size();
+				spherePlaneTest(b.position, sphere, a.position, a.rotation, contacts);
+
+				reverseNormals(first, contacts);
 			}
 
 			template <typename ShapeA, typename ShapeB>
-			std::optional<Contact> operator()(const ShapeA &, const ShapeB &) const
-			{
-				return std::nullopt;
-			}
+			void operator()(const ShapeA &, const ShapeB &) const
+			{}
 	};
 
 } // unnamed namespace
@@ -68,13 +70,18 @@ namespace newton::physics
 	/**
 	 * @brief Tests whether two bodies overlap, using the test for their pair of shapes.
 	 *
-	 * @note The body indices in the returned contact are always 0 and must be set by the caller.
+	 * Appends the found contacts, with the normal from A to B, to the end of the vector. Adds nothing if the bodies
+	 * do not overlap. Contacts already in the vector are not changed.
 	 *
-	 * @return Contact with the normal from A to B, or empty if the bodies do not overlap.
+	 * @note The body indices in the added contacts are always 0 and must be set by the caller.
+	 *
+	 * @param a First body.
+	 * @param b Second body.
+	 * @param contacts Vector the contacts are appended to.
 	 */
-	std::optional<Contact> detectCollision(const RigidBody &a, const RigidBody &b)
+	void detectCollision(const RigidBody &a, const RigidBody &b, std::vector<Contact> &contacts)
 	{
-		return std::visit(CollisionDispatcher{a, b}, a.collider.shape, b.collider.shape);
+		std::visit(CollisionDispatcher{a, b, contacts}, a.collider.shape, b.collider.shape);
 	}
 
 } // namespace newton::physics
@@ -86,24 +93,28 @@ namespace
 	 *
 	 * Touching spheres (distance equal to the sum of radii) count as a contact with zero penetration.
 	 * When the centers are at the same point, the normal is +Y, because no direction can be derived from them.
+	 * The contact point is in the middle of the overlap, on the line between the centers, so it also fits spheres
+	 * of different sizes.
 	 *
-	 * @return Contact with the normal from A to B, or empty if the spheres do not overlap. Body indices are not set.
+	 * @param contacts Vector one contact is appended to, with the normal from A to B, if the spheres overlap.
+	 *        Body indices are not set.
 	 */
-	std::optional<Contact> sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA,
-	                                        const glm::vec3 &posB, const Collider::Sphere &sphereB)
+	void sphereSphereTest(const glm::vec3 &posA, const Collider::Sphere &sphereA, const glm::vec3 &posB,
+	                      const Collider::Sphere &sphereB, std::vector<Contact> &contacts)
 	{
 		const glm::vec3 aToB = posB - posA;
 		const float radiusSum = sphereA.radius + sphereB.radius;
 		const float distanceSquared = glm::dot(aToB, aToB);
 
 		if (distanceSquared > radiusSum * radiusSum)
-			return std::nullopt;
+			return;
 
 		const float distance = std::sqrt(distanceSquared);
 		Contact contact;
 		contact.normal = distance > cEpsilon ? aToB / distance : glm::vec3(0.0f, 1.0f, 0.0f);
 		contact.penetration = radiusSum - distance;
-		return contact;
+		contact.contactPoint = posA + contact.normal * (sphereA.radius - contact.penetration / 2);
+		contacts.push_back(contact);
 	}
 
 	/**
@@ -114,22 +125,38 @@ namespace
 	 *
 	 * @param planePos Any point on the plane.
 	 * @param planeRot Rotation of the plane body, turning the local +Y axis into the plane normal.
-	 * @return Contact with the normal from the sphere to the plane (the plane normal reversed), or empty if they do
-	 *         not overlap. Body indices are not set.
+	 * @param contacts Vector one contact is appended to if they overlap, with the normal from the sphere to the
+	 *        plane (the plane normal reversed) and the center of the sphere projected onto the plane as the contact
+	 *        point. Body indices are not set.
 	 */
-	std::optional<Contact> spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol,
-	                                       const glm::vec3 &planePos, const glm::quat &planeRot)
+	void spherePlaneTest(const glm::vec3 &spherePos, const Collider::Sphere &sphereCol, const glm::vec3 &planePos,
+	                     const glm::quat &planeRot, std::vector<Contact> &contacts)
 	{
 		const glm::vec3 planeToSphere = spherePos - planePos;
 		const glm::vec3 normal = planeRot * cPlaneNormal;
 		const float signedDistance = glm::dot(normal, planeToSphere);
 		if (signedDistance > sphereCol.radius)
-			return std::nullopt;
+			return;
 
 		Contact contact;
 		contact.normal = -normal;
+		contact.contactPoint = spherePos - normal * signedDistance;
 		contact.penetration = sphereCol.radius - signedDistance;
-		return contact;
+		contacts.push_back(contact);
+	}
+
+	/**
+	 * @brief Reverses the normals of the contacts added by a test called for a reversed pair of shapes.
+	 *
+	 * The tests take the shapes in a fixed order, so for the reversed pair their normals point from B to A.
+	 *
+	 * @param first Size of the vector before the test, the index of its first added contact.
+	 * @param contacts Vector with the contacts, only those from first to the end are changed.
+	 */
+	void reverseNormals(std::size_t first, std::vector<Contact> &contacts)
+	{
+		for (std::size_t i = first; i < contacts.size(); i++)
+			contacts.at(i).normal = -contacts.at(i).normal;
 	}
 
 } // unnamed namespace

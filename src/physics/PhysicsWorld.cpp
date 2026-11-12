@@ -213,11 +213,11 @@ namespace newton::physics
 				if (m_bodies[bodyA].inverseMass == 0.0f && m_bodies[bodyB].inverseMass == 0.0f)
 					continue;
 
-				auto contact = detectCollision(m_bodies[bodyA], m_bodies[bodyB]);
-				if (contact) {
-					contact->bodyA = bodyA;
-					contact->bodyB = bodyB;
-					contacts.push_back(*contact);
+				const std::size_t first = contacts.size();
+				detectCollision(m_bodies[bodyA], m_bodies[bodyB], contacts);
+				for (std::size_t i = first; i < contacts.size(); i++) {
+					contacts.at(i).bodyA = bodyA;
+					contacts.at(i).bodyB = bodyB;
 				}
 			}
 		}
