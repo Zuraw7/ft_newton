@@ -1,5 +1,5 @@
-#ifndef UI_STATSOVERLAY_HPP
-#define UI_STATSOVERLAY_HPP
+#ifndef NEWTON_UI_STATSOVERLAY_HPP
+#define NEWTON_UI_STATSOVERLAY_HPP
 
 #include <cstddef>
 
@@ -9,4 +9,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_STATSOVERLAY_HPP
+#endif // NEWTON_UI_STATSOVERLAY_HPP

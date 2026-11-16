@@ -1,5 +1,5 @@
-#ifndef SCENE_SCENEOBJECT_HPP
-#define SCENE_SCENEOBJECT_HPP
+#ifndef NEWTON_SCENE_SCENEOBJECT_HPP
+#define NEWTON_SCENE_SCENEOBJECT_HPP
 
 #include <glm/vec3.hpp>
 
@@ -25,4 +25,4 @@ namespace newton::scene
 
 } // namespace newton::scene
 
-#endif // SCENE_SCENEOBJECT_HPP
+#endif // NEWTON_SCENE_SCENEOBJECT_HPP

@@ -1,5 +1,5 @@
-#ifndef SCENE_TRANSFORM_HPP
-#define SCENE_TRANSFORM_HPP
+#ifndef NEWTON_SCENE_TRANSFORM_HPP
+#define NEWTON_SCENE_TRANSFORM_HPP
 
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/quaternion_float.hpp>
@@ -24,4 +24,4 @@ namespace newton::scene
 
 } // namespace newton::scene
 
-#endif // SCENE_TRANSFORM_HPP
+#endif // NEWTON_SCENE_TRANSFORM_HPP

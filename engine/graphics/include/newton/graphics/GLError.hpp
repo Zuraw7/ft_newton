@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_GLERROR_HPP
-#define GRAPHICS_GLERROR_HPP
+#ifndef NEWTON_GRAPHICS_GLERROR_HPP
+#define NEWTON_GRAPHICS_GLERROR_HPP
 
 namespace newton::graphics
 {
@@ -7,4 +7,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_GLERROR_HPP
+#endif // NEWTON_GRAPHICS_GLERROR_HPP

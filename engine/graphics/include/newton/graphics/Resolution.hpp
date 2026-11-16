@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_RESOLUTION_HPP
-#define GRAPHICS_RESOLUTION_HPP
+#ifndef NEWTON_GRAPHICS_RESOLUTION_HPP
+#define NEWTON_GRAPHICS_RESOLUTION_HPP
 
 #include <string>
 
@@ -74,4 +74,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_RESOLUTION_HPP
+#endif // NEWTON_GRAPHICS_RESOLUTION_HPP

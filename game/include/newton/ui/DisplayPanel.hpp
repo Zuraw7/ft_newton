@@ -1,5 +1,5 @@
-#ifndef UI_DISPLAYPANEL_HPP
-#define UI_DISPLAYPANEL_HPP
+#ifndef NEWTON_UI_DISPLAYPANEL_HPP
+#define NEWTON_UI_DISPLAYPANEL_HPP
 
 namespace newton::graphics
 {
@@ -14,4 +14,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_DISPLAYPANEL_HPP
+#endif // NEWTON_UI_DISPLAYPANEL_HPP

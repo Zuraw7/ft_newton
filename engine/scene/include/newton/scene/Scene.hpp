@@ -1,5 +1,5 @@
-#ifndef SCENE_SCENE_HPP
-#define SCENE_SCENE_HPP
+#ifndef NEWTON_SCENE_SCENE_HPP
+#define NEWTON_SCENE_SCENE_HPP
 
 #include <cstddef>
 #include <optional>
@@ -28,4 +28,4 @@ namespace newton::scene
 
 } // namespace newton::scene
 
-#endif // SCENE_SCENE_HPP
+#endif // NEWTON_SCENE_SCENE_HPP

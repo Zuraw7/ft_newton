@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_MESHDATA_HPP
-#define GEOMETRY_MESHDATA_HPP
+#ifndef NEWTON_GEOMETRY_MESHDATA_HPP
+#define NEWTON_GEOMETRY_MESHDATA_HPP
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -32,4 +32,4 @@ namespace newton::geometry
 
 } // namespace newton::geometry
 
-#endif // GEOMETRY_MESHDATA_HPP
+#endif // NEWTON_GEOMETRY_MESHDATA_HPP

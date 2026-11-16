@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_SHADER_HPP
-#define GRAPHICS_SHADER_HPP
+#ifndef NEWTON_GRAPHICS_SHADER_HPP
+#define NEWTON_GRAPHICS_SHADER_HPP
 
 #include <memory>
 #include <string>
@@ -56,4 +56,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_SHADER_HPP
+#endif // NEWTON_GRAPHICS_SHADER_HPP

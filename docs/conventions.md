@@ -61,3 +61,5 @@ value, e.g. `graphics::rgb(77, 189, 255)` or `graphics::rgb(0x4dbdff)`.
 - Class documentation is in the header, function documentation is in the source file, private members are
   documented too.
 - Logging goes through `common::Logger` with the class name prefix, e.g. `[MeshRenderer] ...`.
+- Header guards follow the include path in upper case, with `/` and `.` replaced by `_`:
+  `newton/graphics/Camera.hpp` is guarded by `NEWTON_GRAPHICS_CAMERA_HPP`.

@@ -1,5 +1,5 @@
-#ifndef UI_CAMERAPANEL_HPP
-#define UI_CAMERAPANEL_HPP
+#ifndef NEWTON_UI_CAMERAPANEL_HPP
+#define NEWTON_UI_CAMERAPANEL_HPP
 
 namespace newton::controllers
 {
@@ -13,4 +13,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_CAMERAPANEL_HPP
+#endif // NEWTON_UI_CAMERAPANEL_HPP

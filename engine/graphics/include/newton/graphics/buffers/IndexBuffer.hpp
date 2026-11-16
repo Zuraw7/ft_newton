@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_BUFFERS_INDEXBUFFER_HPP
-#define GRAPHICS_BUFFERS_INDEXBUFFER_HPP
+#ifndef NEWTON_GRAPHICS_BUFFERS_INDEXBUFFER_HPP
+#define NEWTON_GRAPHICS_BUFFERS_INDEXBUFFER_HPP
 
 #include <cstddef>
 #include <vector>
@@ -35,4 +35,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_BUFFERS_INDEXBUFFER_HPP
+#endif // NEWTON_GRAPHICS_BUFFERS_INDEXBUFFER_HPP

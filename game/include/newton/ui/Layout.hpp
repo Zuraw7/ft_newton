@@ -1,5 +1,5 @@
-#ifndef UI_LAYOUT_HPP
-#define UI_LAYOUT_HPP
+#ifndef NEWTON_UI_LAYOUT_HPP
+#define NEWTON_UI_LAYOUT_HPP
 
 namespace newton::ui
 {
@@ -8,4 +8,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_LAYOUT_HPP
+#endif // NEWTON_UI_LAYOUT_HPP

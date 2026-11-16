@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_GRIDRENDERER_HPP
-#define GRAPHICS_GRIDRENDERER_HPP
+#ifndef NEWTON_GRAPHICS_GRIDRENDERER_HPP
+#define NEWTON_GRAPHICS_GRIDRENDERER_HPP
 
 #include <memory>
 
@@ -47,4 +47,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_GRIDRENDERER_HPP
+#endif // NEWTON_GRAPHICS_GRIDRENDERER_HPP

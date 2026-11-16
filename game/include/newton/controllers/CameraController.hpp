@@ -1,5 +1,5 @@
-#ifndef CONTROLLERS_CAMERA_CONTROLLER_HPP
-#define CONTROLLERS_CAMERA_CONTROLLER_HPP
+#ifndef NEWTON_CONTROLLERS_CAMERACONTROLLER_HPP
+#define NEWTON_CONTROLLERS_CAMERACONTROLLER_HPP
 
 #include "newton/common/Logger.hpp"
 #include "newton/graphics/Camera.hpp"
@@ -64,4 +64,4 @@ namespace newton::controllers
 
 } // namespace newton::controllers
 
-#endif // CONTROLLERS_CAMERA_CONTROLLER_HPP
+#endif // NEWTON_CONTROLLERS_CAMERACONTROLLER_HPP

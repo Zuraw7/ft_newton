@@ -1,5 +1,5 @@
-#ifndef INPUT_MANAGER_HPP
-#define INPUT_MANAGER_HPP
+#ifndef NEWTON_INPUT_INPUTMANAGER_HPP
+#define NEWTON_INPUT_INPUTMANAGER_HPP
 
 #include <GLFW/glfw3.h>
 
@@ -80,4 +80,4 @@ namespace newton::input
 
 } // namespace newton::input
 
-#endif // INPUT_MANAGER_HPP
+#endif // NEWTON_INPUT_INPUTMANAGER_HPP

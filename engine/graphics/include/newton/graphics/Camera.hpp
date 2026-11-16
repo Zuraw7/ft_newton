@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_CAMERA_HPP
-#define GRAPHICS_CAMERA_HPP
+#ifndef NEWTON_GRAPHICS_CAMERA_HPP
+#define NEWTON_GRAPHICS_CAMERA_HPP
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -81,4 +81,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_CAMERA_HPP
+#endif // NEWTON_GRAPHICS_CAMERA_HPP

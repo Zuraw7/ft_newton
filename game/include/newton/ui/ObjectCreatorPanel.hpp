@@ -1,5 +1,5 @@
-#ifndef UI_OBJECTCREATORPANEL_HPP
-#define UI_OBJECTCREATORPANEL_HPP
+#ifndef NEWTON_UI_OBJECTCREATORPANEL_HPP
+#define NEWTON_UI_OBJECTCREATORPANEL_HPP
 
 #include <glm/ext/vector_float3.hpp>
 #include <glm/vec3.hpp>
@@ -55,4 +55,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_OBJECTCREATORPANEL_HPP
+#endif // NEWTON_UI_OBJECTCREATORPANEL_HPP

@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_MESHRENDERER_HPP
-#define GRAPHICS_MESHRENDERER_HPP
+#ifndef NEWTON_GRAPHICS_MESHRENDERER_HPP
+#define NEWTON_GRAPHICS_MESHRENDERER_HPP
 
 #include <memory>
 
@@ -47,4 +47,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_MESHRENDERER_HPP
+#endif // NEWTON_GRAPHICS_MESHRENDERER_HPP

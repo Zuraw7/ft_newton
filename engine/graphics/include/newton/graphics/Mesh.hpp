@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_MESH_HPP
-#define GRAPHICS_MESH_HPP
+#ifndef NEWTON_GRAPHICS_MESH_HPP
+#define NEWTON_GRAPHICS_MESH_HPP
 
 #include <vector>
 
@@ -43,4 +43,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_MESH_HPP
+#endif // NEWTON_GRAPHICS_MESH_HPP

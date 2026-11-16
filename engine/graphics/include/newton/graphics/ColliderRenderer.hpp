@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_COLLIDERRENDERER_HPP
-#define GRAPHICS_COLLIDERRENDERER_HPP
+#ifndef NEWTON_GRAPHICS_COLLIDERRENDERER_HPP
+#define NEWTON_GRAPHICS_COLLIDERRENDERER_HPP
 
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/vec3.hpp>
@@ -76,4 +76,4 @@ namespace newton::graphics
 
 } // namespace newton::graphics
 
-#endif // GRAPHICS_COLLIDERRENDERER_HPP
+#endif // NEWTON_GRAPHICS_COLLIDERRENDERER_HPP

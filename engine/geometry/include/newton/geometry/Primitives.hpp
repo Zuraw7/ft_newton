@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_PRIMITIVES_HPP
-#define GEOMETRY_PRIMITIVES_HPP
+#ifndef NEWTON_GEOMETRY_PRIMITIVES_HPP
+#define NEWTON_GEOMETRY_PRIMITIVES_HPP
 
 #include "newton/geometry/MeshData.hpp"
 
@@ -11,4 +11,4 @@ namespace newton::geometry
 
 } // namespace newton::geometry
 
-#endif // GEOMETRY_PRIMITIVES_HPP
+#endif // NEWTON_GEOMETRY_PRIMITIVES_HPP

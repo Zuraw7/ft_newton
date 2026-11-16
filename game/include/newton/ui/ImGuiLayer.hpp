@@ -1,5 +1,5 @@
-#ifndef UI_IMGUILAYER_HPP
-#define UI_IMGUILAYER_HPP
+#ifndef NEWTON_UI_IMGUILAYER_HPP
+#define NEWTON_UI_IMGUILAYER_HPP
 
 #include <GLFW/glfw3.h>
 
@@ -33,4 +33,4 @@ namespace newton::ui
 
 } // namespace newton::ui
 
-#endif // UI_IMGUILAYER_HPP
+#endif // NEWTON_UI_IMGUILAYER_HPP
