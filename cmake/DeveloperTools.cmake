@@ -10,9 +10,12 @@ if(CLANG_FORMAT_EXECUTABLE)
 
     file(GLOB_RECURSE FORMAT_SOURCES
         CONFIGURE_DEPENDS
-        "${PROJECT_SOURCE_DIR}/src/*.cpp"
-        "${PROJECT_SOURCE_DIR}/include/*.hpp"
-        "${PROJECT_SOURCE_DIR}/include/*.h"
+        "${PROJECT_SOURCE_DIR}/engine/*.cpp"
+        "${PROJECT_SOURCE_DIR}/engine/*.hpp"
+        "${PROJECT_SOURCE_DIR}/engine/*.h"
+        "${PROJECT_SOURCE_DIR}/game/*.cpp"
+        "${PROJECT_SOURCE_DIR}/game/*.hpp"
+        "${PROJECT_SOURCE_DIR}/game/*.h"
     )
 
     # Format source files
