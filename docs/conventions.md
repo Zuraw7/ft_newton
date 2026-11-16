@@ -8,8 +8,7 @@ or behaves wrong.
 ## Space and units
 
 - Right-handed coordinate system, **Y up**. With no rotation, the camera looks along −Z.
-- Positions and sizes are in world units. Physics treats 1 unit as 1 meter, mass is in kilograms
-  and gravity defaults to 9.81 m/s² along −Y.
+- Positions and sizes are in world units, 1 unit is 1 meter.
 - Time is in seconds, stored as `double` (delta time, frame budget, GLFW time).
 - Angles exposed by the project are in **degrees** (camera FOV, rotation sensitivity per pixel).
 - The world grid lies on y = 0, with lines every 1 and every 10 units. The X axis is red, the Z axis is blue.
@@ -46,8 +45,8 @@ moves objects around the origin instead of in place.
 | 1 | normal (`vec3`) | `aNormal` |
 | 2 | texture coordinates (`vec2`) | `aTexCoords` |
 
-Uniforms used by `Renderer`: `uModel`, `uView`, `uProjection`, `uColor`. A shader passed to
-`Renderer::create()` must provide all four.
+Uniforms used by `MeshRenderer`: `uModel`, `uView`, `uProjection`, `uColor`. A shader passed to
+`MeshRenderer::create()` must provide all four.
 
 Asset paths (`assets/shaders/...`) are relative to the working directory, run the program from the repository root.
 
@@ -61,4 +60,4 @@ value, e.g. `graphics::rgb(77, 189, 255)` or `graphics::rgb(0x4dbdff)`.
 - Formatting is enforced by clang-format (`check-format` target), warnings are errors.
 - Class documentation is in the header, function documentation is in the source file, private members are
   documented too.
-- Logging goes through `common::Logger` with the class name prefix, e.g. `[Renderer] ...`.
+- Logging goes through `common::Logger` with the class name prefix, e.g. `[MeshRenderer] ...`.

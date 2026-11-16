@@ -12,9 +12,8 @@ namespace newton::ui
 	 *
 	 * @param fps Frames per second to show, also converted to the average frame time in ms.
 	 * @param objectCount Number of objects in the scene to show.
-	 * @param physicsObjects Number of rigid bodies in the physics world to show.
 	 */
-	void drawStatsOverlay(int fps, std::size_t objectCount, std::size_t physicsObjects)
+	void drawStatsOverlay(int fps, std::size_t objectCount)
 	{
 		ImGui::SetNextWindowPos({cMargin, cMargin}, ImGuiCond_Always, {0.0f, 0.0f});
 		ImGui::Begin("Stats", nullptr,
@@ -23,7 +22,6 @@ namespace newton::ui
 		                 ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 		ImGui::Text("%d FPS (%.1f ms)", fps, 1000.0 / fps);
 		ImGui::Text("Objects in scene: %zu", objectCount);
-		ImGui::Text("Physics objects: %zu", physicsObjects);
 		ImGui::End();
 	}
 

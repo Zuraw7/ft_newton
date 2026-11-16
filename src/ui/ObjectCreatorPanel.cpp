@@ -6,12 +6,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/trigonometric.hpp>
 #include <utility>
-#include <variant>
 #include <vector>
 
-#include "physics/Collider.hpp"
-#include "physics/PhysicsWorld.hpp"
-#include "physics/RigidBody.hpp"
 #include "scene/Scene.hpp"
 #include "scene/SceneObject.hpp"
 #include "ui/Layout.hpp"
@@ -25,10 +21,10 @@ namespace
 namespace newton::ui
 {
 	/**
-	 * @param meshes Shapes to choose from, must not be empty. Each mesh must outlive the scene objects using it.
+	 * @param shapes Shapes to choose from, must not be empty. Each mesh must outlive the scene objects using it.
 	 */
-	ObjectCreatorPanel::ObjectCreatorPanel(std::vector<MeshOption> meshes)
-		: m_meshes(std::move(meshes))
+	ObjectCreatorPanel::ObjectCreatorPanel(std::vector<ShapeOption> shapes)
+		: m_shapes(std::move(shapes))
 	{}
 
 	/**
@@ -38,25 +34,23 @@ namespace newton::ui
 	 * edge of the screen, also when the main window is resized, and cannot be moved.
 	 *
 	 * @param scene Scene the created objects are added to.
-	 * @param world Physics world the bodies of created objects are added to.
 	 * @param top Position to place the window below, in pixels. @ref cMargin is added to it.
 	 * @return Bottom edge of this window, in pixels, for placing the next one.
 	 */
-	float ObjectCreatorPanel::draw(scene::Scene &scene, physics::PhysicsWorld &world, float top)
+	float ObjectCreatorPanel::draw(scene::Scene &scene, float top)
 	{
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
 		ImGui::SetNextWindowPos({display.x - cMargin, top + cMargin}, ImGuiCond_Always, {1.0f, 0.0f});
 
 		ImGui::SetNextWindowSize({cPanelWidth, 0.0f}, ImGuiCond_Always);
 		if (ImGui::Begin("Object", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-			drawMeshCombo();
+			drawShapeCombo();
 			drawTransformFields();
 			drawAppearanceFields();
-			drawRigidBodyFields();
 
-			ImGui::BeginDisabled(m_meshes.empty());
+			ImGui::BeginDisabled(m_shapes.empty());
 			if (ImGui::Button("Create"))
-				createObject(scene, world);
+				createObject(scene);
 			ImGui::EndDisabled();
 		}
 
@@ -66,14 +60,14 @@ namespace newton::ui
 		return bottom;
 	}
 
-	void ObjectCreatorPanel::drawMeshCombo()
+	void ObjectCreatorPanel::drawShapeCombo()
 	{
-		const char *preview = m_meshes.empty() ? "None" : m_meshes[m_selectedMesh].name;
-		if (ImGui::BeginCombo("Mesh", preview)) {
-			for (std::size_t i = 0; i < m_meshes.size(); i++) {
-				const bool selected = i == m_selectedMesh;
-				if (ImGui::Selectable(m_meshes[i].name, selected))
-					m_selectedMesh = i;
+		const char *preview = m_shapes.empty() ? "None" : m_shapes[m_selectedShape].name;
+		if (ImGui::BeginCombo("Shape", preview)) {
+			for (std::size_t i = 0; i < m_shapes.size(); i++) {
+				const bool selected = i == m_selectedShape;
+				if (ImGui::Selectable(m_shapes[i].name, selected))
+					m_selectedShape = i;
 				if (selected)
 					ImGui::SetItemDefaultFocus();
 			}
@@ -81,12 +75,6 @@ namespace newton::ui
 		}
 	}
 
-	/**
-	 * @brief Draws the position, rotation and scale fields.
-	 *
-	 * For a sphere, the scale is a single value applied to all axes, so it cannot become an ellipsoid that
-	 * a sphere collider would not match.
-	 */
 	void ObjectCreatorPanel::drawTransformFields()
 	{
 		ImGui::SeparatorText("Transform");
@@ -94,14 +82,7 @@ namespace newton::ui
 		ImGui::DragFloat3("Position", &m_position.x, 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::DragFloat3("Rotation", &m_rotationDegrees.x, 1.0f, 0.0f, 0.0f, "%.2f");
 
-		const bool isSphere = !m_meshes.empty() && std::holds_alternative<physics::Collider::Sphere>(
-													   m_meshes[m_selectedMesh].collider.shape);
-
-		if (isSphere) {
-			ImGui::DragFloat("Scale", &m_scale.x, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-			m_scale = glm::vec3(m_scale.x);
-		} else
-			ImGui::DragFloat3("Scale", &m_scale.x, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat3("Scale", &m_scale.x, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 	}
 
 	void ObjectCreatorPanel::drawAppearanceFields()
@@ -111,64 +92,18 @@ namespace newton::ui
 	}
 
 	/**
-	 * @brief Draws the rigid body fields.
-	 *
-	 * Static is disabled without physics, and always set and disabled for a plane, which must not move.
-	 * Mass and velocity are disabled for a static body.
-	 */
-	void ObjectCreatorPanel::drawRigidBodyFields()
-	{
-		ImGui::SeparatorText("Rigid body");
-		ImGui::Checkbox("Physics", &m_physics);
-
-		const bool isPlane = !m_meshes.empty() &&
-		                     std::holds_alternative<physics::Collider::Plane>(m_meshes[m_selectedMesh].collider.shape);
-		if (isPlane)
-			m_static = true;
-
-		ImGui::BeginDisabled(!m_physics);
-		ImGui::SameLine();
-
-		ImGui::BeginDisabled(isPlane);
-		ImGui::Checkbox("Static", &m_static);
-		ImGui::EndDisabled();
-
-		ImGui::BeginDisabled(m_static);
-		ImGui::DragFloat("Mass", &m_mass, 0.1f, 0.01f, 1000.0f, "%.2f kg", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::DragFloat3("Velocity", &m_velocity.x, 0.1f, 0.0f, 0.0f, "%.2f");
-		ImGui::EndDisabled();
-
-		ImGui::EndDisabled();
-	}
-
-	/**
 	 * @brief Creates an object from the form values and adds it to the scene.
 	 *
-	 * With physics enabled, the body is added to the world first, because @ref scene::Scene::add() copies
-	 * the object and its body index must already be set. The body gets the collider of the chosen mesh, scaled
-	 * to the object's size, see @ref physics::transformCollider() for how rotation is handled.
-	 *
 	 * @param scene Scene the object is added to.
-	 * @param world Physics world the body is added to.
 	 */
-	void ObjectCreatorPanel::createObject(scene::Scene &scene, physics::PhysicsWorld &world) const
+	void ObjectCreatorPanel::createObject(scene::Scene &scene) const
 	{
 		scene::SceneObject object;
-		object.mesh = m_meshes[m_selectedMesh].mesh;
+		object.mesh = m_shapes[m_selectedShape].mesh;
 		object.transform.position = m_position;
 		object.transform.rotation = glm::quat(glm::radians(m_rotationDegrees));
 		object.transform.scale = m_scale;
 		object.color = m_color;
-
-		if (m_physics) {
-			physics::RigidBody body;
-			body.position = m_position;
-			body.velocity = m_static ? glm::vec3(0.0f) : m_velocity;
-			body.inverseMass = m_static ? 0.0f : 1.0f / m_mass;
-			body.collider = physics::transformCollider(m_meshes[m_selectedMesh].collider, object.transform.rotation,
-			                                           object.transform.scale);
-			object.bodyIndex = world.add(body);
-		}
 
 		scene.add(object);
 	}
