@@ -16,7 +16,6 @@ Each directory in `include/` and `src/` is one module with its own namespace `ne
 | `graphics` | Window and OpenGL context (@ref newton::graphics::Context "Context"), frame timing, shaders (@ref newton::graphics::Shader "Shader"), GPU buffers, meshes (@ref newton::graphics::Mesh "Mesh"), camera (@ref newton::graphics::Camera "Camera"), renderers (@ref newton::graphics::MeshRenderer "MeshRenderer", @ref newton::graphics::GridRenderer "GridRenderer", @ref newton::graphics::ColliderRenderer "ColliderRenderer") |
 | `input` | Keyboard and mouse state collected from GLFW callbacks (@ref newton::input::InputManager "InputManager") |
 | `controllers` | Turn input into actions, e.g. @ref newton::controllers::CameraController "CameraController" moves the camera |
-| `physics` | Rigid body simulation: @ref newton::physics::PhysicsWorld "PhysicsWorld", @ref newton::physics::RigidBody "RigidBody" |
 | `scene` | Objects in the world: @ref newton::scene::Scene "Scene", @ref newton::scene::SceneObject "SceneObject", @ref newton::scene::Transform "Transform" |
 | `ui` | Dear ImGui lifetime (@ref newton::ui::ImGuiLayer "ImGuiLayer") and the windows drawn with it |
 
@@ -35,9 +34,6 @@ without touching the rest.
   state between frames, like @ref newton::ui::ObjectCreatorPanel "ObjectCreatorPanel".
 - `controllers` know nothing about the UI. Whether the mouse belongs to an ImGui window is passed in as a plain `bool`.
 - `scene` only stores objects, they must be passed to the renderer from outside. Objects point to meshes they do not own.
-- `physics` knows neither the scene nor graphics. A scene object only stores the index of its body, so the body
-  positions must be copied into the objects' transforms after every
-  @ref newton::physics::PhysicsWorld::update "PhysicsWorld::update()" and before drawing.
 
 ## Startup and shutdown order
 
@@ -48,7 +44,6 @@ without touching the rest.
 | @ref newton::ui::ImGuiLayer "ui::ImGuiLayer" | Must come after `InputManager::init()`: the ImGui GLFW backend chains the callbacks already set, callbacks set later would replace its own |
 | @ref newton::graphics::MeshRenderer::create "graphics::MeshRenderer::create()" | Compiles the mesh shader, needs the context |
 | @ref newton::graphics::GridRenderer::create "graphics::GridRenderer::create()" | Compiles the grid shader, needs the context |
-| @ref newton::graphics::ColliderRenderer::create "graphics::ColliderRenderer::create()" | Compiles the line shader and uploads the collider line meshes, needs the context |
 | Camera, controller, meshes | Meshes upload data to the GPU, need the context |
 | @ref newton::scene::Scene "scene::Scene" | Its objects point to meshes, which must outlive it |
 

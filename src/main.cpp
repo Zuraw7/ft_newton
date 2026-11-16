@@ -1,13 +1,11 @@
 #include <GLFW/glfw3.h>
 
 #include <memory>
-#include <variant>
 
 #include "common/Logger.hpp"
 #include "controllers/CameraController.hpp"
 #include "geometry/Primitives.hpp"
 #include "graphics/Camera.hpp"
-#include "graphics/ColliderRenderer.hpp"
 #include "graphics/Color.hpp"
 #include "graphics/Context.hpp"
 #include "graphics/GLError.hpp"
@@ -15,50 +13,17 @@
 #include "graphics/Mesh.hpp"
 #include "graphics/MeshRenderer.hpp"
 #include "input/InputManager.hpp"
-#include "physics/Collider.hpp"
-#include "physics/PhysicsWorld.hpp"
-#include "physics/RigidBody.hpp"
 #include "scene/Scene.hpp"
 #include "scene/SceneObject.hpp"
 #include "ui/CameraPanel.hpp"
 #include "ui/DisplayPanel.hpp"
 #include "ui/ImGuiLayer.hpp"
 #include "ui/ObjectCreatorPanel.hpp"
-#include "ui/PhysicsPanel.hpp"
 #include "ui/StatsOverlay.hpp"
 
 using namespace newton;
 
 static void handleGameInput(graphics::Context &context, graphics::MeshRenderer &renderer);
-
-namespace
-{
-	/**
-	 * @brief Draws one collider with the matching graphics::ColliderRenderer method.
-	 */
-	struct ColliderDrawer
-	{
-			newton::graphics::ColliderRenderer &renderer;
-			const glm::vec3 &position;
-			const glm::quat &rotation;
-
-			void operator()(const newton::physics::Collider::Sphere &sphere) const
-			{
-				renderer.drawSphere(position, rotation, sphere.radius);
-			}
-
-			void operator()(const newton::physics::Collider::Box &box) const
-			{
-				renderer.drawBox(position, rotation, box.halfExtents);
-			}
-
-			void operator()(const newton::physics::Collider::Plane &) const
-			{
-				renderer.drawPlane(position, rotation);
-			}
-	};
-
-} // unnamed namespace
 
 int main()
 {
@@ -86,11 +51,6 @@ int main()
 	if (!gridRenderer)
 		return -1;
 
-	std::unique_ptr<graphics::ColliderRenderer> colliderRenderer =
-		graphics::ColliderRenderer::create("assets/shaders/line.vert", "assets/shaders/line.frag");
-	if (!colliderRenderer)
-		return -1;
-
 	// Camera creation
 	graphics::Camera mainCamera({0, 4, 10}, {0, 0, 0}, {0, 1, 0});
 	controllers::CameraController cameraController(mainCamera);
@@ -102,12 +62,9 @@ int main()
 
 	// Scene creation
 	scene::Scene scene;
-	physics::PhysicsWorld world;
 
 	// Create object creator panel
-	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh, {physics::Collider::Box{}}},
-	                                           {"Sphere", &sphereMesh, {physics::Collider::Sphere{}}},
-	                                           {"Plane", &planeMesh, {physics::Collider::Plane{}}}});
+	ui::ObjectCreatorPanel objectCreatorPanel({{"Cube", &cubeMesh}, {"Sphere", &sphereMesh}, {"Plane", &planeMesh}});
 
 	// Game loop
 	while (context->shouldClose() == false) {
@@ -121,24 +78,14 @@ int main()
 		cameraController.update(context->deltaTime(), imguiLayer.wantsMouse());
 		input::InputManager::update();
 
-		world.update(context->deltaTime());
-		for (scene::SceneObject &object : scene.objects()) {
-			if (object.bodyIndex) {
-				const physics::RigidBody &body = world.body(*object.bodyIndex);
-				object.transform.position = body.position;
-				object.transform.rotation = body.rotation;
-			}
-		}
-
 		imguiLayer.beginFrame();
 
-		ui::drawStatsOverlay(context->FPS(), scene.size(), world.size());
+		ui::drawStatsOverlay(context->FPS(), scene.size());
 
 		float panelTop = 0;
-		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, *colliderRenderer, panelTop);
+		panelTop = ui::drawDisplayPanel(*context, *gridRenderer, panelTop);
 		panelTop = ui::drawCameraPanel(cameraController, panelTop);
-		panelTop = ui::drawPhysicsPanel(world, panelTop);
-		objectCreatorPanel.draw(scene, world, panelTop);
+		objectCreatorPanel.draw(scene, panelTop);
 
 		meshRenderer->beginFrame(mainCamera);
 
@@ -146,10 +93,6 @@ int main()
 			meshRenderer->draw(*object.mesh, object.transform.matrix(), object.color);
 
 		gridRenderer->draw(mainCamera);
-
-		colliderRenderer->beginFrame(mainCamera);
-		for (const physics::RigidBody &body : world.bodies())
-			std::visit(ColliderDrawer{*colliderRenderer, body.position, body.rotation}, body.collider.shape);
 
 		imguiLayer.endFrame();
 

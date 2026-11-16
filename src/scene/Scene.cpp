@@ -41,7 +41,7 @@ namespace newton::scene
 	}
 
 	/**
-	 * @brief Gives write access to the objects, e.g. to copy body positions after the physics update.
+	 * @brief Gives write access to the objects.
 	 *
 	 * @note Change the objects only, add them with @ref add().
 	 */
