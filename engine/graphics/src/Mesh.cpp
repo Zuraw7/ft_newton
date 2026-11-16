@@ -1,0 +1,93 @@
+#include "newton/graphics/Mesh.hpp"
+
+#include <glad/gl.h>
+
+#include <cstddef>
+
+#include "newton/common/Logger.hpp"
+#include "newton/geometry/MeshData.hpp"
+#include "newton/graphics/GLError.hpp"
+
+namespace
+{
+	const char *cClassName = "Mesh";
+	newton::common::Logger &logger = newton::common::Logger::getInstance();
+
+} // unnamed namespace
+
+namespace newton::graphics
+{
+	/**
+	 * @brief Uploads the vertices and indices to the GPU and sets up the vertex attributes.
+	 *
+	 * The data is copied to the GPU, so the vectors can be discarded afterwards.
+	 *
+	 * @param vertices Vertex data.
+	 * @param indices Triangle indices into @p vertices, counter-clockwise for front faces.
+	 */
+	Mesh::Mesh(const std::vector<geometry::Vertex> &vertices, const std::vector<unsigned int> &indices)
+		: m_VAO()
+		, m_VBO(vertices)
+		, m_EBO(indices)
+		, m_indexCount(static_cast<int>(indices.size()))
+	{
+		m_VAO.bind();
+		m_VBO.bind();
+		m_EBO.bind();
+
+		setupMesh();
+
+		m_VAO.unbind();
+		m_VBO.unbind();
+		m_EBO.unbind();
+
+		graphics::checkGLError("Mesh::Mesh");
+
+		logger.printf(common::LogLevel::DEBUG, "[%s] Mesh created: %zu vertices, %d indices\n", cClassName,
+		              vertices.size(), m_indexCount);
+	}
+
+	/**
+	 * @copybrief Mesh(const std::vector<geometry::Vertex> &, const std::vector<unsigned int> &)
+	 *
+	 * @param data Vertices and indices.
+	 */
+	Mesh::Mesh(const geometry::MeshData &data)
+		: Mesh(data.vertices, data.indices)
+	{}
+
+	/**
+	 * @brief Draws the mesh as triangles with the currently bound shader.
+	 */
+	void Mesh::draw() const
+	{
+		m_VAO.bind();
+		glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr);
+		m_VAO.unbind();
+	}
+
+	/**
+	 * @brief Describes the @ref geometry::Vertex layout to OpenGL.
+	 *
+	 * Must be called with @ref m_VAO and @ref m_VBO bound, so the attributes are recorded in the VAO
+	 * and read from the VBO.
+	 */
+	void Mesh::setupMesh()
+	{
+		// The attributes below assume vec3 position + vec3 normal + vec2 texCoords: 8 floats, no padding
+		static_assert(sizeof(geometry::Vertex) == 8 * sizeof(float), "Vertex must be tightly packed");
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, position)));
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, normal)));
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(geometry::Vertex),
+		                      reinterpret_cast<void *>(offsetof(geometry::Vertex, texCoords)));
+	}
+
+} // namespace newton::graphics

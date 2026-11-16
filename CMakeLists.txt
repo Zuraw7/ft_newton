@@ -17,50 +17,6 @@ include(cmake/Dependencies.cmake)
 include(cmake/DeveloperTools.cmake)
 include(cmake/Documentation.cmake)
 
-# Source files
-add_executable(ft_newton
-    src/common/Logger.cpp
-    src/controllers/CameraController.cpp
-    src/geometry/Primitives.cpp
-    src/graphics/buffers/IndexBuffer.cpp
-    src/graphics/buffers/VertexArray.cpp
-    src/graphics/buffers/VertexBuffer.cpp
-    src/graphics/Camera.cpp
-    src/graphics/ColliderRenderer.cpp
-    src/graphics/Context.cpp
-    src/graphics/GLError.cpp
-    src/graphics/GridRenderer.cpp
-    src/graphics/Mesh.cpp
-    src/graphics/MeshRenderer.cpp
-    src/graphics/Shader.cpp
-    src/input/InputManager.cpp
-    src/input/utils.cpp
-    src/main.cpp
-    src/scene/Scene.cpp
-    src/scene/Transform.cpp
-    src/ui/CameraPanel.cpp
-    src/ui/DisplayPanel.cpp
-    src/ui/ImGuiLayer.cpp
-    src/ui/ObjectCreatorPanel.cpp
-    src/ui/StatsOverlay.cpp
-)
-
-# CMake functions
-set_project_warnings(ft_newton)
-
-# Include directories
-target_include_directories(ft_newton PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
-)
-
-target_include_directories(ft_newton SYSTEM PRIVATE
-    ${PROJECT_SOURCE_DIR}/external
-)
-
-# Link libraries
-target_link_libraries(ft_newton PRIVATE
-    glad
-    glfw
-    glm::glm
-    imgui
-)
+# Engine libraries and the game executable
+add_subdirectory(engine)
+add_subdirectory(game)
