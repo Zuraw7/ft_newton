@@ -14,6 +14,12 @@ $(NAME): configure
 docs: configure
 	cmake --build $(BUILD_DIR) --target docs
 
+test:
+	cmake -S . -B build/debug -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+		-DNEWTON_BUILD_TESTS=ON
+	cmake --build build/debug -j$$(nproc)
+	ctest --test-dir build/debug --output-on-failure
+
 clean:
 	rm -rf build
 
@@ -22,4 +28,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all configure $(NAME) docs clean fclean re
+.PHONY: all configure $(NAME) docs test clean fclean re

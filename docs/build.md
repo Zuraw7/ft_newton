@@ -19,6 +19,7 @@ directory (`assets/...`).
 | `make` | Configure and build the project (Release), copy the executable to the root |
 | `make BUILD_TYPE=Debug` | Same, but in Debug mode |
 | `make docs` | Generate Doxygen documentation |
+| `make test` | Configure and build in Debug with tests, run them |
 | `make clean` | Remove the whole `build/` directory (both modes, dependencies and docs) |
 | `make fclean` | `clean` and remove the executable |
 | `make re` | `fclean` and build again |
@@ -64,6 +65,18 @@ For compiler options see `cmake/CompilerOptions.cmake`.
 | `cmake --build build/debug --target format` | Format source files using clang-format |
 | `cmake --build build/debug --target check-format` | Check source formatting |
 
+## Tests
+
+Unit tests use GoogleTest and live in `tests/`, mirroring the engine modules (`tests/math/` tests `newton_math`).
+They are built into the `newton_tests` executable only with `-DNEWTON_BUILD_TESTS=ON`, which `make test` and the
+scripts in `scripts/` pass. `make` builds the game without tests.
+
+| Command | Description |
+| --- | --- |
+| `ctest --test-dir build/debug --output-on-failure` | Run all tests, print the output of failed ones |
+| `./build/debug/tests/newton_tests` | Run the test executable directly |
+| `./build/debug/tests/newton_tests --gtest_filter='Vec3.*'` | Run only the tests of one suite |
+
 ## Documentation
 
 Generated documentation is available at:
@@ -86,8 +99,9 @@ External dependencies are managed automatically through CMake FetchContent.
 | --- | --- |
 | GLFW 3.4 | Window management and input |
 | GLAD 2 | OpenGL 3.3 core function loading |
-| GLM 1.0 | Mathematics |
+| GLM 1.0 | Mathematics for graphics |
 | Dear ImGui 1.91 | Debug and settings UI |
+| GoogleTest 1.17 | Unit tests, downloaded only with `NEWTON_BUILD_TESTS=ON` |
 | stb_image | Image loading |
 
 Dependencies are downloaded and built locally inside each build directory (`build/debug/dependencies`,
