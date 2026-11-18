@@ -31,6 +31,7 @@ linking all engine libraries and Dear ImGui.
 | `graphics` | `newton_graphics` | Window and OpenGL context (@ref newton::graphics::Context "Context"), frame timing, shaders (@ref newton::graphics::Shader "Shader"), GPU buffers, meshes (@ref newton::graphics::Mesh "Mesh"), camera (@ref newton::graphics::Camera "Camera"), renderers (@ref newton::graphics::MeshRenderer "MeshRenderer", @ref newton::graphics::GridRenderer "GridRenderer", @ref newton::graphics::ColliderRenderer "ColliderRenderer") |
 | `input` | `newton_input` | Keyboard and mouse state collected from GLFW callbacks (@ref newton::input::InputManager "InputManager") |
 | `math` | `newton_math` | Own math for physics, no dependencies: @ref newton::math::Vec3 "Vec3" |
+| `physics` | `newton_physics` | Simulation built on `math`: @ref newton::physics::Particle "Particle" |
 | `scene` | `newton_scene` | Objects in the world: @ref newton::scene::Scene "Scene", @ref newton::scene::SceneObject "SceneObject", @ref newton::scene::Transform "Transform" |
 | `controllers` | game | Turn input into actions, e.g. @ref newton::controllers::CameraController "CameraController" moves the camera |
 | `ui` | game | Dear ImGui lifetime (@ref newton::ui::ImGuiLayer "ImGuiLayer") and the windows drawn with it |
