@@ -203,6 +203,8 @@ STRIP_FROM_INC_PATH    = engine/common/include \
                          engine/geometry/include \
                          engine/graphics/include \
                          engine/input/include \
+                         engine/math/include \
+                         engine/physics/include \
                          engine/scene/include \
                          game/include
 
