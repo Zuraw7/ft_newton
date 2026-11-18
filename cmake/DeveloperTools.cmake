@@ -16,6 +16,8 @@ if(CLANG_FORMAT_EXECUTABLE)
         "${PROJECT_SOURCE_DIR}/game/*.cpp"
         "${PROJECT_SOURCE_DIR}/game/*.hpp"
         "${PROJECT_SOURCE_DIR}/game/*.h"
+        "${PROJECT_SOURCE_DIR}/tests/*.cpp"
+        "${PROJECT_SOURCE_DIR}/tests/*.hpp"
     )
 
     # Format source files

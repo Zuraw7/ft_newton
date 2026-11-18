@@ -100,3 +100,27 @@ target_include_directories(imgui SYSTEM PUBLIC
 )
 
 target_link_libraries(imgui PUBLIC glfw)
+
+# ==========================================
+# GoogleTest
+# ==========================================
+
+if(NEWTON_BUILD_TESTS)
+    set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.17.0
+        GIT_SHALLOW TRUE
+    )
+
+    FetchContent_MakeAvailable(googletest)
+
+    # Treat GoogleTest headers as system headers
+    get_target_property(GTEST_INCLUDE_DIRS gtest INTERFACE_INCLUDE_DIRECTORIES)
+    set_target_properties(gtest PROPERTIES
+        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${GTEST_INCLUDE_DIRS}"
+    )
+endif()
